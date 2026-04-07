@@ -1,21 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Proyecto BancoSol</title>
-
-    <style>
-        body {font-family: sans-serif; display: flex; flex-wrap: wrap; background: #e6c7f0; flex: 3; padding: 2rem; width: 100%;}
-        main {font-family: sans-serif; display: flex; flex-wrap: wrap; background: #e6c7f0; flex: 3; padding: 2rem;}
-        header, footer {width: 100%; background: #e2b1f3; color: white; padding: 1rem; text-align: center; }
-        nav {width: 100%; background: white; color: #e2b1f3; padding: 1rem; text-align: center;}
-        h2 {color: #000000; }
-        aside {flex:1; background-color: #e2b1f3; padding: 2rem; flex:3;}
-        table {width: 100%; background-color: white; }
-
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="AsignaciónTurnos.css">
+    <title>Ventana de inicio</title>
 </head>
-
 <body>
 
 <header>
@@ -23,189 +13,95 @@
 </header>
 
 <nav>
-    <h3> Gestion de turnos de los voluntarios de diferentes campañas</h3>
+    <h3>Gestión de turnos de los voluntarios de diferentes campañas</h3>
 </nav>
 
-<main>
-    <section class="form-section">
+<div class="container">
+    <main>
+        <section class="form-section">
+            <h2>Selección de campaña:</h2>
+            <div class="campaign-options">
+                <label class="separator">
+                    <input type="radio" name="campanya" value="GR"> GR
+                </label>
+                <label class="separator">
+                    <input type="radio" name="campanya" value="Primavera"> Primavera
+                </label>
+            </div>
 
-        <h2>Selección de campaña:</h2>
+            <br>
 
-        <div class="separator">
-            <input type="radio" name="campanya" value="GR"> GR
-        </div>
+            <fieldset>
+                <legend> Selección de fechas </legend>
+                <div class="date-row">
+                    <div class="date-group">
+                        <label for="desde">Desde:</label>
+                        <input type="date" id="desde" name="fecha_desde">
+                    </div>
+                    <div class="date-group">
+                        <label for="hasta">Hasta:</label>
+                        <input type="date" id="hasta" name="fecha_hasta">
+                    </div>
+                </div>
+            </fieldset>
 
-        <div class="separator">
-            <input type="radio" name="campanya" value="Primavera"> Primavera
-        </div>
+            <h2>Asignación de fechas:</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Voluntario</th>
+                        <th>Establecimiento</th>
+                        <th>Mañana</th>
+                        <th>Tarde</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Ejemplo Voluntario 1</td>
+                        <td>
+                            <select name="establecimiento">
+                                <option value="1">Establecimiento 1</option>
+                                <option value="2">Establecimiento 2</option>
+                                <option value="3">Establecimiento 3</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="manyana">
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="tarde">
+                                <option value="si">Sí</option>
+                                <option value="no">No</option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <br>
+            <div class="action-area">
+                <button type="submit" class="btn-save">Guardar en Base de Datos</button>
+            </div>
+        </section>
+    </main>
 
-        <fieldset>
-            <legend> Selección de fechas: </legend>
-
-            <p> Desde: </p>
-
-            <select size=1 name="día">
-                <option value="1"> 1 </option>
-                <option value="2"> 2 </option>
-                <option value="3"> 3 </option>
-                <option value="4"> 4 </option>
-                <option value="5"> 5 </option>
-                <option value="6"> 6 </option>
-                <option value="7"> 7 </option>
-                <option value="8"> 8 </option>
-                <option value="9"> 9 </option>
-                <option value="10"> 10 </option>
-                <option value="11"> 11 </option>
-                <option value="12"> 12 </option>
-                <option value="13"> 13 </option>
-                <option value="14"> 14 </option>
-                <option value="15"> 15 </option>
-                <option value="16"> 16 </option>
-                <option value="17"> 17 </option>
-                <option value="18"> 18 </option>
-                <option value="19"> 19 </option>
-                <option value="20"> 20 </option>
-                <option value="21"> 21 </option>
-                <option value="22"> 22 </option>
-                <option value="23"> 23 </option>
-                <option value="24"> 24 </option>
-                <option value="25"> 25 </option>
-                <option value="26"> 26 </option>
-                <option value="27"> 27 </option>
-                <option value="28"> 28 </option>
-                <option value="29"> 29 </option>
-                <option value="30"> 30 </option>
-                <option value="31"> 31 </option>
-            </select>
-
-            <select size=1 name="mes">
-                <option value="1"> 1 </option>
-                <option value="2"> 2 </option>
-                <option value="3"> 3 </option>
-                <option value="4"> 4 </option>
-                <option value="5"> 5 </option>
-                <option value="6"> 6 </option>
-                <option value="7"> 7 </option>
-                <option value="8"> 8 </option>
-                <option value="9"> 9 </option>
-                <option value="10"> 10 </option>
-                <option value="11"> 11 </option>
-                <option value="12"> 12 </option>
-            </select>
-
-            <textarea name="Rellenar año" cols="10" rows="1">Año</textarea>
-
-            <p> Hasta: </p>
-
-            <select size=1 name="día">
-                <option value="1"> 1 </option>
-                <option value="2"> 2 </option>
-                <option value="3"> 3 </option>
-                <option value="4"> 4 </option>
-                <option value="5"> 5 </option>
-                <option value="6"> 6 </option>
-                <option value="7"> 7 </option>
-                <option value="8"> 8 </option>
-                <option value="9"> 9 </option>
-                <option value="10"> 10 </option>
-                <option value="11"> 11 </option>
-                <option value="12"> 12 </option>
-                <option value="13"> 13 </option>
-                <option value="14"> 14 </option>
-                <option value="15"> 15 </option>
-                <option value="16"> 16 </option>
-                <option value="17"> 17 </option>
-                <option value="18"> 18 </option>
-                <option value="19"> 19 </option>
-                <option value="20"> 20 </option>
-                <option value="21"> 21 </option>
-                <option value="22"> 22 </option>
-                <option value="23"> 23 </option>
-                <option value="24"> 24 </option>
-                <option value="25"> 25 </option>
-                <option value="26"> 26 </option>
-                <option value="27"> 27 </option>
-                <option value="28"> 28 </option>
-                <option value="29"> 29 </option>
-                <option value="30"> 30 </option>
-                <option value="31"> 31 </option>
-            </select>
-
-            <select size=1 name="mes">
-                <option value="1"> 1 </option>
-                <option value="2"> 2 </option>
-                <option value="3"> 3 </option>
-                <option value="4"> 4 </option>
-                <option value="5"> 5 </option>
-                <option value="6"> 6 </option>
-                <option value="7"> 7 </option>
-                <option value="8"> 8 </option>
-                <option value="9"> 9 </option>
-                <option value="10"> 10 </option>
-                <option value="11"> 11 </option>
-                <option value="12"> 12 </option>
-            </select>
-
-            <textarea name="Rellenar año" cols="10" rows="1">Año</textarea>
-
-        </fieldset>
-
-        <h2>Asignación de fechas:</h2>
-
-        <table border="1" width="100%">
-            <thead>
-            <tr>
-                <th>Voluntario</th>
-                <th>Establecimiento</th>
-                <th>Mañana</th>
-                <th>Tarde</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>Ejemplo Voluntario 1</td>
-                <td>
-                    <select size=1 name="establecimiento">
-                        <option value="1"> Establecimiento 1 </option>
-                        <option value="2"> Establecimiento 2 </option>
-                        <option value="3"> Establecimiento 3 </option>
-                    </select>
-                </td>
-                <td>
-                    <select size=1 name="manyana">
-                        <option value="1"> sí </option>
-                        <option value="2"> no </option>
-                    </select>
-                </td>
-
-                <td>
-                    <select size=1 name="tarde">
-                        <option value="1"> sí </option>
-                        <option value="2"> no </option>
-                    </select>
-            </tr>
-            </tbody>
-        </table>
-
-        <p>Aquí se debería insertar un botón para guardar los datos introducidos en la tabla, y que se guarden en la base de datos</p>
-    </section>
-</main>
-</body>
-
-<aside class="menu">
-    <h2>Menú de Recursos</h2>
-    Aquí podemos incluir el índice para acceder a las diferentes pestañas del proyecto:
-</aside>
+    <aside class="menu">
+        <h2>Menú de Recursos</h2>
+        <p>Índice de pestañas del proyecto:</p>
+        <ul>
+            <li><a href="#">Inicio</a></li>
+        </ul>
+    </aside>
+</div>
 
 <footer>
-    <p><strong>Autores:</strong> Grupo 12</p>
-    <p><strong>Grupo:</strong> Grupo 12</p>
-    <p><strong>Asignatura:</strong> Tecnologías del Cliente y el Servidor para Aplicaciones Web</p>
-    <p><strong>Titulación:</strong> Ingeniería del Software Plan 2023</p>
-    <p><strong>Universidad / Centro:</strong> Universidad de Málaga</p>
-    <p><strong>Año:</strong> 2026</p>
+    <p><strong>Autores:</strong> Grupo 12 | <strong>Asignatura:</strong> Tecnologías del Cliente y el Servidor</p>
+    <p>Ingeniería del Software (Plan 2023) - Universidad de Málaga - 2026</p>
 </footer>
 
+</body>
 </html>
