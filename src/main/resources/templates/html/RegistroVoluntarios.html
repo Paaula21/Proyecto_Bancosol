@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="RegistroVoluntarios.css">
+    <title>Registro de Voluntarios</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>Bancosol</h1>
+    </header>
+
+    <nav>
+        Registro de usuarios
+    </nav>
+
+    <main>
+
+        <p>
+            Para continuar deberá rellenar el siguiente formulario con sus datos personales y preferencias de horarios según su disponibilidad. <br>
+        </p>
+
+        <section class="form-section">
+            <fieldset>
+                <legend> <h3>Información Personal</h3></legend>
+                <p>
+                    <textarea name="nombre" cols="30" rows="1" type=text required> Nombre</textarea>
+                </p>
+                <p>
+                    <textarea name="email" cols="30" rows="1" type=email required> Email</textarea>
+                </p>
+                <p>
+                    <textarea name="telefono" cols="30" rows="1" type=tel min=9 required> Teléfono</textarea>
+                </p>
+                <p>
+                    <textarea name="FechaNacimiento" cols="30" rows="1" type=date required> Fecha de nacimiento</textarea>
+                </p>
+                <p>
+                    <label>Especifique su género:</label> <br>
+                    <input type="radio" name="genero" value="hombre"> Masculino <br>
+                    <input type="radio" name="genero" value="mujer"> Femenino <br>
+                    <input type="radio" name="genero" value="otro"> Otro <br>
+                    <input type="radio" name="genero" value="nodecirlo"> Prefiero no decirlo
+                </p>
+            </fieldset>
+        </section>
+
+        <section class="form-section">
+            <fieldset>
+                <legend> <h3>Disponibilidad de horarios</h3></legend>
+                <p>
+                    <label>Especifique su disponibilidad de los siguientes turnos:</label> <br> <br>
+                    <input type="radio" name="fecha" value="lunesmanyana"> Lunes Mañana<br>
+                    <input type="radio" name="fecha" value="lunestarde"> Lunes Tarde <br> <br>
+                    <input type="radio" name="fecha" value="martesmanyana"> Martes Mañana<br>
+                    <input type="radio" name="fecha" value="martestarde"> Martes Tarde <br> <br>
+                    <input type="radio" name="fecha" value="miercolesmanyana"> Miércoles Mañana<br>
+                    <input type="radio" name="fecha" value="miercolestarde"> Miércoles Tarde <br> <br>
+                    <input type="radio" name="fecha" value="juevesmanyana"> Jueves Mañana<br>
+                    <input type="radio" name="fecha" value="juevestarde"> Jueves Tarde <br> <br>
+                    <input type="radio" name="fecha" value="viernesmanyana"> Viernes Mañana<br>
+                    <input type="radio" name="fecha" value="viernestarde"> Viernes Tarde <br> <br>
+                    <input type="radio" name="fecha" value="sabadomanyana"> Sábado Mañana<br>
+                    <input type="radio" name="fecha" value="sabadotarde"> Sábado Tarde <br> <br>
+                    <input type="radio" name="fecha" value="domingomanyana"> Domingo Mañana<br>
+                    <input type="radio" name="fecha" value="domingotarde"> Domingo Tarde <br>
+                </p>
+
+                <br>
+
+                <p>
+                    <textarea name="observaciones" cols="50" rows="1"> Observaciones que debemos tener en cuenta</textarea>
+                </p>
+            </fieldset>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Autores:</strong> Grupo 12 | <strong>Asignatura:</strong> Tecnologías del Cliente y el Servidor</p>
+        <p>Ingeniería del Software (Plan 2023) - Universidad de Málaga - 2026</p>
+    </footer>
+
+</body>
+</html>
