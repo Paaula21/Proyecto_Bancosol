@@ -11,5 +11,10 @@ public class BancosolController {
     public String mostrarColaboradores(){
         return "Colaboradores";
     }
+
+    @GetMapping("/Login")
+    public String mostrarLogin(){
+        return "Login";
+    }
 }
 
