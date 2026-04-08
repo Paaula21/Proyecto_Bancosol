@@ -45,40 +45,62 @@
                 </div>
             </fieldset>
 
+            <fieldset>
+                <!-- TERMINAR Y HACER UNA BÚSQUEDA -->
+                <legend> Filtros </legend>
+                <p>
+                    <textarea name="cadena" cols="30" rows="1" type=text> Cadena </textarea>
+                </p>
+                <p>
+                    <textarea name="localidad" cols="30" rows="1" type=text> Localidad </textarea>
+                </p>
+            </fieldset>
+
             <br>
 
             <h2>Asignación de fechas:</h2>
+            <!-- Lo hacen los administradores y coordinadores -->
             <div class="table-container">
-                <table>
+                <table border ="1" width="100%">
                     <thead>
                     <tr>
-                        <th>Voluntario</th>
-                        <th>Establecimiento</th>
-                        <th>Mañana</th>
-                        <th>Tarde</th>
+                        <th>TIENDA</th>
+                        <th>DOMICILIO</th>
+                        <th>LOCALIDAD</th>
+                        <th>CAPITÁN</th>
+                        <th>VIERNES MAÑANA</th>
+                        <th>VIERNES TARDE</th>
+                        <th>SÁBADO MAÑANA</th>
+                        <th>SÁBADO TARDE</th>
+                        <th>OBSERVACIONES</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td>Ejemplo Voluntario 1</td>
+                        <td>Ejemplo1</td>
                         <td>
-                            <select name="establecimiento">
-                                <option value="1">Establecimiento 1</option>
-                                <option value="2">Establecimiento 2</option>
-                                <option value="3">Establecimiento 3</option>
-                            </select>
+                            <textarea name="domicilio" cols="20" rows="3" type=text> Domicilio </textarea>
                         </td>
                         <td>
-                            <select name="manyana">
-                                <option value="si">Sí</option>
-                                <option value="no">No</option>
-                            </select>
+                            <textarea name="localidad" cols="20" rows="3" type=text> Localidad </textarea>
                         </td>
                         <td>
-                            <select name="tarde">
-                                <option value="si">Sí</option>
-                                <option value="no">No</option>
-                            </select>
+                            <textarea name="capitán" cols="20" rows="3" type=text> Capitán </textarea>
+                        </td>
+                        <td>
+                            <textarea name="viernesmañana" cols="20" rows="3" type=text> TurnoVM </textarea>
+                        </td>
+                        <td>
+                            <textarea name="viernestarde" cols="20" rows="3" type=text> TurnoVT </textarea>
+                        </td>
+                        <td>
+                            <textarea name="sabadomañana" cols="20" rows="3" type=text> TurnoSM </textarea>
+                        </td>
+                        <td>
+                            <textarea name="sabadotarde" cols="20" rows="3" type=text> TurnoST </textarea>
+                        </td>
+                        <td>
+                            <textarea name="observaciones" cols="20" rows="3" type=text> Observaciones </textarea>
                         </td>
                     </tr>
                     </tbody>
@@ -97,6 +119,7 @@
         <h2>Menú de Recursos</h2>
         <p>Índice de pestañas del proyecto:</p>
         <ul>
+            <!-- La idea es hacer un menú que nos lleve al resto de pestañas (HAY QUE VER SI PODEMOS PONERLO EN EL LADO IZQUIERDO COMO DESPLEGABLE?)-->
             <li><a href="#">Inicio</a></li>
         </ul>
     </aside>
