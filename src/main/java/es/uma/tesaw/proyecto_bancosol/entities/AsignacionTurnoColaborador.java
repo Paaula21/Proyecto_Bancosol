@@ -1,77 +1,42 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
+@Entity
+@Table(name = "asignacion_turno_colaborador")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class AsignacionTurnoColaborador {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_asignacion_turno")
+  private Integer idAsignacionTurno;
 
-  private long idAsignacionTurno;
-  private String idCampana;
-  private long idTienda;
-  private String idColaborador;
-  private java.sql.Date fecha;
-  private java.sql.Time horaInicio;
-  private java.sql.Time horaFin;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_campana", nullable = false)
+  private Campana campana;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_tienda", nullable = false)
+  private Establecimiento tienda;
 
-  public long getIdAsignacionTurno() {
-    return idAsignacionTurno;
-  }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_colaborador", nullable = false)
+  private Colaborador colaborador;
 
-  public void setIdAsignacionTurno(long idAsignacionTurno) {
-    this.idAsignacionTurno = idAsignacionTurno;
-  }
+  @Column(nullable = false)
+  private LocalDate fecha;
 
+  @Column(name = "hora_inicio", nullable = false)
+  private LocalTime horaInicio;
 
-  public String getIdCampana() {
-    return idCampana;
-  }
+  @Column(name = "hora_fin", nullable = false)
+  private LocalTime horaFin;
 
-  public void setIdCampana(String idCampana) {
-    this.idCampana = idCampana;
-  }
-
-
-  public long getIdTienda() {
-    return idTienda;
-  }
-
-  public void setIdTienda(long idTienda) {
-    this.idTienda = idTienda;
-  }
-
-
-  public String getIdColaborador() {
-    return idColaborador;
-  }
-
-  public void setIdColaborador(String idColaborador) {
-    this.idColaborador = idColaborador;
-  }
-
-
-  public java.sql.Date getFecha() {
-    return fecha;
-  }
-
-  public void setFecha(java.sql.Date fecha) {
-    this.fecha = fecha;
-  }
-
-
-  public java.sql.Time getHoraInicio() {
-    return horaInicio;
-  }
-
-  public void setHoraInicio(java.sql.Time horaInicio) {
-    this.horaInicio = horaInicio;
-  }
-
-
-  public java.sql.Time getHoraFin() {
-    return horaFin;
-  }
-
-  public void setHoraFin(java.sql.Time horaFin) {
-    this.horaFin = horaFin;
-  }
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_voluntario")
+  private Voluntario voluntario;
 }

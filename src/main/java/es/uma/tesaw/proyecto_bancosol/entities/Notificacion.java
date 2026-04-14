@@ -1,97 +1,42 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "notificacion")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Notificacion {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_notificacion")
+  private Integer idNotificacion;
 
-  private long idNotificacion;
-  private long idPersonaDestino;
-  private String idTipo;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_persona_destino", nullable = false)
+  private Persona personaDestino;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_tipo", nullable = false)
+  private TipoNotificacion tipo;
+
+  @Column(nullable = false)
   private String titulo;
+
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String mensaje;
-  private String leida;
-  private java.sql.Timestamp fechaCreacion;
-  private java.sql.Timestamp fechaEnvioProgramado;
-  private long idAsignacionRef;
 
+  private Boolean leida = false;
 
-  public long getIdNotificacion() {
-    return idNotificacion;
-  }
+  @Column(name = "fecha_creacion", insertable = false, updatable = false)
+  private LocalDateTime fechaCreacion;
 
-  public void setIdNotificacion(long idNotificacion) {
-    this.idNotificacion = idNotificacion;
-  }
+  @Column(name = "fecha_envio_programado")
+  private LocalDateTime fechaEnvioProgramado;
 
-
-  public long getIdPersonaDestino() {
-    return idPersonaDestino;
-  }
-
-  public void setIdPersonaDestino(long idPersonaDestino) {
-    this.idPersonaDestino = idPersonaDestino;
-  }
-
-
-  public String getIdTipo() {
-    return idTipo;
-  }
-
-  public void setIdTipo(String idTipo) {
-    this.idTipo = idTipo;
-  }
-
-
-  public String getTitulo() {
-    return titulo;
-  }
-
-  public void setTitulo(String titulo) {
-    this.titulo = titulo;
-  }
-
-
-  public String getMensaje() {
-    return mensaje;
-  }
-
-  public void setMensaje(String mensaje) {
-    this.mensaje = mensaje;
-  }
-
-
-  public String getLeida() {
-    return leida;
-  }
-
-  public void setLeida(String leida) {
-    this.leida = leida;
-  }
-
-
-  public java.sql.Timestamp getFechaCreacion() {
-    return fechaCreacion;
-  }
-
-  public void setFechaCreacion(java.sql.Timestamp fechaCreacion) {
-    this.fechaCreacion = fechaCreacion;
-  }
-
-
-  public java.sql.Timestamp getFechaEnvioProgramado() {
-    return fechaEnvioProgramado;
-  }
-
-  public void setFechaEnvioProgramado(java.sql.Timestamp fechaEnvioProgramado) {
-    this.fechaEnvioProgramado = fechaEnvioProgramado;
-  }
-
-
-  public long getIdAsignacionRef() {
-    return idAsignacionRef;
-  }
-
-  public void setIdAsignacionRef(long idAsignacionRef) {
-    this.idAsignacionRef = idAsignacionRef;
-  }
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_asignacion_ref")
+  private AsignacionTurnoColaborador asignacionRef;
 }

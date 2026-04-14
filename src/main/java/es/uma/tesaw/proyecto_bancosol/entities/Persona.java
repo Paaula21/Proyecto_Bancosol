@@ -1,57 +1,25 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "persona")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Persona {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_persona")
+  private Integer idPersona;
 
-  private long idPersona;
+  @Column(name = "nombre_completo", nullable = false)
   private String nombreCompleto;
+
   private String telefono;
+
+  @Column(unique = true)
   private String email;
+
   private String observacion;
-
-
-  public long getIdPersona() {
-    return idPersona;
-  }
-
-  public void setIdPersona(long idPersona) {
-    this.idPersona = idPersona;
-  }
-
-
-  public String getNombreCompleto() {
-    return nombreCompleto;
-  }
-
-  public void setNombreCompleto(String nombreCompleto) {
-    this.nombreCompleto = nombreCompleto;
-  }
-
-
-  public String getTelefono() {
-    return telefono;
-  }
-
-  public void setTelefono(String telefono) {
-    this.telefono = telefono;
-  }
-
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-
-  public String getObservacion() {
-    return observacion;
-  }
-
-  public void setObservacion(String observacion) {
-    this.observacion = observacion;
-  }
-
 }

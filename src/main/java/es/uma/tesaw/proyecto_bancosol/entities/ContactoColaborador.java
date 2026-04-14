@@ -1,37 +1,26 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "contacto_colaborador")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class ContactoColaborador {
+  @Id
+  @Column(name = "id_contacto")
+  private Integer idContacto;
 
-  private long idContacto;
-  private String idColaborador;
-  private String esPrincipal;
+  @OneToOne(fetch = FetchType.LAZY)
+  @MapsId
+  @JoinColumn(name = "id_contacto")
+  private Persona persona;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_colaborador", nullable = false)
+  private Colaborador colaborador;
 
-  public long getIdContacto() {
-    return idContacto;
-  }
-
-  public void setIdContacto(long idContacto) {
-    this.idContacto = idContacto;
-  }
-
-
-  public String getIdColaborador() {
-    return idColaborador;
-  }
-
-  public void setIdColaborador(String idColaborador) {
-    this.idColaborador = idColaborador;
-  }
-
-
-  public String getEsPrincipal() {
-    return esPrincipal;
-  }
-
-  public void setEsPrincipal(String esPrincipal) {
-    this.esPrincipal = esPrincipal;
-  }
-
+  @Column(name = "es_principal")
+  private Boolean esPrincipal = false;
 }

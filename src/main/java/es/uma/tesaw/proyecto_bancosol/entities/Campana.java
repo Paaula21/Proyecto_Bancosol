@@ -1,47 +1,37 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+import java.util.Set;
 
+@Entity
+@Table(name = "campana")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Campana {
-
+  @Id
+  @Column(name = "id_campana")
   private String idCampana;
+
+  @Column(name = "nombre_campana", nullable = false)
   private String nombreCampana;
-  private java.sql.Date fechaInicio;
-  private java.sql.Date fechaFin;
 
+  @Column(name = "fecha_inicio", nullable = false)
+  private LocalDate fechaInicio;
 
-  public String getIdCampana() {
-    return idCampana;
-  }
+  @Column(name = "fecha_fin", nullable = false)
+  private LocalDate fechaFin;
 
-  public void setIdCampana(String idCampana) {
-    this.idCampana = idCampana;
-  }
+  @Column(nullable = false)
+  private String estado;
 
-
-  public String getNombreCampana() {
-    return nombreCampana;
-  }
-
-  public void setNombreCampana(String nombreCampana) {
-    this.nombreCampana = nombreCampana;
-  }
-
-
-  public java.sql.Date getFechaInicio() {
-    return fechaInicio;
-  }
-
-  public void setFechaInicio(java.sql.Date fechaInicio) {
-    this.fechaInicio = fechaInicio;
-  }
-
-
-  public java.sql.Date getFechaFin() {
-    return fechaFin;
-  }
-
-  public void setFechaFin(java.sql.Date fechaFin) {
-    this.fechaFin = fechaFin;
-  }
-
+  // Relación N:M que representa la tabla campana_cadena
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+          name = "campana_cadena",
+          joinColumns = @JoinColumn(name = "id_campana"),
+          inverseJoinColumns = @JoinColumn(name = "id_cadena")
+  )
+  private Set<Cadena> cadenas;
 }

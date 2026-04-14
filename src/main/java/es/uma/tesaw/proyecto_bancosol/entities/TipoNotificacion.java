@@ -1,27 +1,17 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "tipo_notificacion")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class TipoNotificacion {
-
+  @Id
+  @Column(name = "id_tipo")
   private String idTipo;
+
+  @Column(nullable = false)
   private String descripcion;
-
-
-  public String getIdTipo() {
-    return idTipo;
-  }
-
-  public void setIdTipo(String idTipo) {
-    this.idTipo = idTipo;
-  }
-
-
-  public String getDescripcion() {
-    return descripcion;
-  }
-
-  public void setDescripcion(String descripcion) {
-    this.descripcion = descripcion;
-  }
-
 }

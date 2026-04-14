@@ -1,27 +1,18 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "rol")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Rol {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_rol")
+  private Integer idRol;
 
-  private long idRol;
+  @Column(name = "nombre_rol", nullable = false)
   private String nombreRol;
-
-
-  public long getIdRol() {
-    return idRol;
-  }
-
-  public void setIdRol(long idRol) {
-    this.idRol = idRol;
-  }
-
-
-  public String getNombreRol() {
-    return nombreRol;
-  }
-
-  public void setNombreRol(String nombreRol) {
-    this.nombreRol = nombreRol;
-  }
-
 }

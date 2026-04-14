@@ -1,47 +1,27 @@
 package es.uma.tesaw.proyecto_bancosol.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "asignacion_coordinador")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class AsignacionCoordinador {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_asignacion_coord")
+  private Integer idAsignacionCoord;
 
-  private long idAsignacionCoord;
-  private String idCampana;
-  private long idTienda;
-  private long idUsuarioCoordinador;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_campana", nullable = false)
+  private Campana campana;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_tienda", nullable = false)
+  private Establecimiento tienda;
 
-  public long getIdAsignacionCoord() {
-    return idAsignacionCoord;
-  }
-
-  public void setIdAsignacionCoord(long idAsignacionCoord) {
-    this.idAsignacionCoord = idAsignacionCoord;
-  }
-
-
-  public String getIdCampana() {
-    return idCampana;
-  }
-
-  public void setIdCampana(String idCampana) {
-    this.idCampana = idCampana;
-  }
-
-
-  public long getIdTienda() {
-    return idTienda;
-  }
-
-  public void setIdTienda(long idTienda) {
-    this.idTienda = idTienda;
-  }
-
-
-  public long getIdUsuarioCoordinador() {
-    return idUsuarioCoordinador;
-  }
-
-  public void setIdUsuarioCoordinador(long idUsuarioCoordinador) {
-    this.idUsuarioCoordinador = idUsuarioCoordinador;
-  }
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_usuario_coordinador", nullable = false)
+  private Usuario usuarioCoordinador;
 }
