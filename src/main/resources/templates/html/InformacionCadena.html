@@ -1,0 +1,94 @@
+<!--DUDAS:
+- ¿El codigo identificador de la cadena lo escribe el administrador o se lo asigna la base?
+- Mirar el excel con los datos para comparar que no nos falta nada--->
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Cadenas</title>
+</head>
+<body>
+
+    <header id="cabecera-cadenas">
+        <div id="textos-cabecera">
+            <h1>Cadenas de Establecimientos</h1>
+            <p>Panel de administración para registrar y gestionar las marcas de los supermercados</p>
+        </div>
+    </header>
+
+    <main id="contenido-principal">
+
+        <section id="seccion-crear-cadena">
+            <h2>Añadir nueva cadena</h2>
+
+            <form id="formulario-nueva-cadena">
+                <div id="bloque-id-cadena">
+                    <label for="input_id_cadena">Código identificador (ID):</label>
+                    <br>
+                    <input type="text" id="input_id_cadena" name="id_cadena" placeholder="Ej: CAR, MER, DIA...">
+                </div>
+
+                <br>
+
+                <div id="bloque-nombre-cadena">
+                    <label for="input_nombre_cadena">Nombre de la cadena:</label>
+                    <br>
+                    <input type="text" id="input_nombre_cadena" name="nombre_cadena" placeholder="Escribe el nombre comercial...">
+                </div>
+
+                <br>
+
+                <div id="bloque-boton-guardar">
+                    <button type="submit" id="btn-guardar-cadena">Guardar Cadena</button>
+                </div>
+            </form>
+        </section>
+
+        <hr> <section id="seccion-listado-cadenas">
+        <h2>Cadenas registradas actualmente</h2>
+
+        <table id="tabla-cadenas">
+
+            <thead>
+            <tr>
+                <th>ID Cadena</th>
+                <th>Nombre de la Cadena</th>
+                <th>Acciones de Gestión</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>CAR</td>
+                <td>Carrefour</td>
+                <td>
+                    <button type="button">Editar</button>
+                    <button type="button">Borrar</button>
+                </td>
+            </tr>
+            <tr>
+                <td>MER</td>
+                <td>Mercadona</td>
+                <td>
+                    <button type="button">Editar</button>
+                    <button type="button">Borrar</button>
+                </td>
+            </tr>
+            <tr>
+                <td>DIA</td>
+                <td>Supermercados Dia</td>
+                <td>
+                    <button type="button">Editar</button>
+                    <button type="button">Borrar</button>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </section>
+    </main>
+
+</body>
+</html>

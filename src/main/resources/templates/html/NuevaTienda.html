@@ -1,0 +1,58 @@
+<!--COSAS QUE FALTAN:
+    1.Lineales ?? mirar en la base de dato que es-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Tienda</title>
+</head>
+<body>
+    <h1>Nuevo Establecimiento</h1>
+    <p>Añadir un nuevo establecimiento</p>
+    <form>
+        <fieldset>
+            <legend>Información de la Cadena</legend>
+            <label for="nombre-cadena">Cadena</label>
+            <select id="nombre-cadena" >
+                <option value="mercadona">Mercadona</option>
+                <option value="carrefour">Carrefour</option>
+                <option value="dia">Dia</option>
+            </select>
+            <br>
+            <label for="nombre-establecimiento">Nombre</label>
+            <input type="text" id="nombre-establecimiento" name="nombre-establecimiento" required>
+            <br>
+        </fieldset>
+        <fieldset>
+            <legend>Direccion</legend>
+            <label for="calle-establecimiento">Calle</label>
+            <input type="text" id="calle-establecimiento" name="calle-establecimiento" required>
+            <br>
+            <label for="tipo-via">Tipo de Vía</label>
+            <select id="tipo-via" name="tipo-via">
+                <option value="calle">Calle</option>
+                <option value="avenida">Avenida</option>
+                <option value="plaza">Plaza</option>
+                <option value="camino">Camino</option>
+                <option value="pasaje">Pasaje</option>
+            </select>
+            <br>
+            <label for="numero-establecimiento">Número</label>
+            <input type="text" id="numero-establecimiento" name="numero-establecimiento">
+            <br>
+            <label for="cp-establecimiento">Código Postal</label>
+            <input type="text" id="cp-establecimiento" name="cp-establecimiento">
+            <br>
+            <label for="distrito-establecimiento">Distrito</label>
+            <input type="text" id="distrito-establecimiento" name="distrito-establecimiento">
+            <br>
+            <label for="localidad-establecimiento">Localidad</label>
+            <input type="text" id="localidad-establecimiento" name="localidad-establecimiento" required>
+            <br>
+        </fieldset>
+        <br>
+        <button type="submit">Crear Campaña</button>
+        <button type="reset">Cancelar</button>
+        </form>
+</body>
+</html>
