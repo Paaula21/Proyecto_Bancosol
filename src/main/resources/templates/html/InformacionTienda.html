@@ -1,120 +1,124 @@
+<!--UNIFICAR EL IDIOMA Y PASAR TODO AL INGLES-->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Establecimientos</title>
+    <link rel="stylesheet" href="Colaboradores.css">
 </head>
 <body>
-    <header id="cabecera-principal">
-        <div id="textos-cabecera">
-            <h1>Establecimientos</h1>
-            <p>Gestión de establecimientos participantes en las campañas</p>
-        </div>
+<header class="cabecera">
+    <nav>
+        <img src="../images/icono.png" alt="Descripción del icono">
+        <h1>Establecimientos</h1>
+        <p>Gestión de establecimientos participantes en las campañas</p>
+        <button id="btn-notificaciones">Notificaciones</button>
+    </nav>
+</header>
 
-        <div id="acciones-cabecera">
-            <input type="text" id="buscador-global" placeholder="Buscar...">
-            <button id="btn-notificaciones">Notificaciones</button>
-        </div>
-    </header>
+<div class="main-layout">
+    <main>
 
-    <main id="contenido-principal">
+        <section class="filters">
+            <div class="filter-group">
+                <label for="filtro_cadena">Cadena</label>
+                <select id="filtro_cadena" name="cadena">
+                    <option value="todas">Todas</option>
+                </select>
+            </div>
 
-        <section id="panel-filtros">
-            <div id="contenedor-controles">
+            <div class="filter-group">
+                <label for="filtro_zona">Zona Geográfica</label>
+                <select id="filtro_zona" name="zona">
+                    <option value="todas">Todas</option>
+                </select>
+            </div>
 
-                <div id="bloque-cadena">
-                    <label for="filtro_cadena">Cadena</label>
-                    <br>
-                    <select id="filtro_cadena" name="cadena">
-                        <option value="todas">Todas</option>
-                    </select>
-                </div>
+            <div class="filter-group">
+                <label for="filtro_localidad">Localidad</label>
+                <input type="text" id="filtro_localidad" name="localidad" placeholder="Buscar localidad...">
+            </div>
 
-                <div id="bloque-zona">
-                    <label for="filtro_zona">Zona Geográfica</label>
-                    <br>
-                    <select id="filtro_zona" name="zona">
-                        <option value="todas">Todas</option>
-                    </select>
-                </div>
+            <div class="filter-group">
+                <label for="filtro_coordinador">Coordinador</label>
+                <select id="filtro_coordinador" name="coordinador">
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
 
-                <div id="bloque-localidad">
-                    <label for="filtro_localidad">Localidad</label>
-                    <br>
-                    <input type="text" id="filtro_localidad" name="localidad" placeholder="Buscar localidad...">
-                </div>
-
-                <div id="bloque-coordinador">
-                    <label for="filtro_coordinador">Coordinador</label>
-                    <br>
-                    <select id="filtro_coordinador" name="coordinador">
-                        <option value="todos">Todos</option>
-                    </select>
-                </div>
-
-                <div id="bloque-boton-filtrar">
-                    <br>
-                    <button type="button" id="btn-filtrar">Filtrar</button>
-                </div>
-
+            <div class="filter-button">
+                <button type="button" id="btn-filtrar">Filtrar</button>
             </div>
         </section>
 
-        <section id="resultados-busqueda">
+        <section class="content-wrapper">
 
-            <div id="encabezado-resultados">
-                <h2>Listado de Establecimientos</h2>
-                <p>Los establecimientos encontrados:</p>
+            <div class="list-container">
+                <div class="list-header">
+                    <h2>Listado de Establecimientos</h2>
+                    <p>Los establecimientos encontrados:</p>
+                    <div class="list-actions">
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Localidad</th>
+                        <th>Coordinador</th>
+                        <th>¿Participa en GR?</th>
+                        <th>¿Participa en Primavera?</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>Carrefour Hiper</strong></td>
+                        <td>Rincon de la Victoria</td>
+                        <td>J.M. Cobos</td>
+                        <td>Si</td>
+                        <td>Si</td>
+                        <td>
+                            <button type="button">Editar</button>
+                            <button type="button">Borrar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Carrefour Express</strong></td>
+                        <td>Rincon de la Victoria</td>
+                        <td>J.M. Cobos</td>
+                        <td>Si</td>
+                        <td>No</td>
+                        <td>
+                            <button type="button">Editar</button>
+                            <button type="button">Borrar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Carrefour Market</strong></td>
+                        <td>Rincon de la Victoria</td>
+                        <td>J.M. Cobos</td>
+                        <td>Si</td>
+                        <td>Si</td>
+                        <td>
+                            <button type="button">Editar</button>
+                            <button type="button">Borrar</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <table id="tabla-tiendas">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Localidad</th>
-                    <th>Coordinador</th>
-                    <th>¿Participa en GR?</th>
-                    <th>¿Participa en Primavera?</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Carrefour Hiper</td>
-                    <td>Rincon de la Victoria</td>
-                    <td>J.M. Cobos</td>
-                    <td>Si</td>
-                    <td>Si</td>
-                    <td>
-                        <button type="button">Editar</button>
-                        <button type="button">Borrar</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Carrefour Express</td>
-                    <td>Rincon de la Victoria</td>
-                    <td>J.M. Cobos</td>
-                    <td>Si</td>
-                    <td>No</td>
-                    <td>
-                        <button type="button">Editar</button>
-                        <button type="button">Borrar</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Carrefour Market</td>
-                    <td>Rincon de la Victoria</td>
-                    <td>J.M. Cobos</td>
-                    <td>Si</td>
-                    <td>Si</td>
-                    <td>
-                        <button type="button">Editar</button>
-                        <button type="button">Borrar</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <aside class="detail-panel">
+                <div class="empty-state">
+                    <p>Selecciona un establecimiento para ver sus detalles.</p>
+                </div>
+            </aside>
+
         </section>
     </main>
+</div>
 </body>
 </html>
