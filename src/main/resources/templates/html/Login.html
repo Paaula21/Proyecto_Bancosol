@@ -6,6 +6,7 @@
         <!-- Cambiar la hiperreferencia a la correcta -->
         <link rel="stylesheet" href="../../static/css/Login.css">
         <title>Ventana de inicio</title>
+        <script src="Login.js" defer></script>
 </head>
 <body>
         <div class="main-container">
@@ -15,7 +16,7 @@
                         <h1>Inicio de sesión</h1>
                 </div>
                 <fieldset class="login-container">
-                        <form class="form-login">
+                        <form class="form-login" id="form-login">
                                 <label for="username">Nombre de usuario</label><br>
                                 <input type="text" id="username" name="username" placeholder="Ej: Cristóbal" required /><br><br>
 
@@ -33,7 +34,8 @@
                                 <button type="submit">Inicio de sesión</button>
                         </form>
                 </fieldset>
-                
+                <!-- Esto muestra mensajes de error o éxito -->
+                <p id="message"></p>
         </div>
 </body>
 </html>
