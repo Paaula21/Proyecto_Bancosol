@@ -3,20 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="AsignaciónTurnos.css">
+    <link rel="stylesheet" href="Sidebar.css">
+
     <title>Asignación de turnos</title>
 </head>
 <body>
 
-<header>
-    <h1>BancoSol</h1>
+<header class="cabecera">
+    <nav>
+        <h1>Asignación de turnos</h1>
+        <p>Gestión de horarios para voluntarios</p>
+
+        <div class="top-bar-actions">
+            <input type="search" placeholder="Buscar...">
+        </div>
+    </nav>
 </header>
 
-<nav>
-    <h3>Gestión de turnos de los voluntarios de diferentes campañas</h3>
-</nav>
+<div class="main-layout">
+    <!--Barra lateral que hay que añadir-->
+    <aside class="sidebar">
+    </aside>
+    <!--Seccion de selección de campaña-->
 
-<div class="container">
+    <div class="content-wrapper">
+        <section class="list-container">
+            <header class="list-header">
+                <h2>Listado de Voluntarios</h2>
+                <p>5 colaboradores registrados</p>
+                <div class="list-actions">
+                    <button type="button"> Exportar</button>
+                    <button type="button">+ Añadir</button>
+                </div>
+            </header>
+        </section>
+    </div>
+
+    <!-- Sección de Asignación de fechas -->
+
+    <div class="content-wrapper">
+        <section class="list-container">
+            <header class="list-header">
+                <h2>Asignación de fechas</h2>
+                <p>5 colaboradores registrados</p>
+                <div class="list-actions">
+                    <button type="button"> Exportar</button>
+                    <button type="button">+ Añadir</button>
+                </div>
+            </header>
+        </section>
+    </div>
+
     <main>
         <section class="form-section">
             <h2>Selección de campaña:</h2>
