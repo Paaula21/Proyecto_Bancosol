@@ -21,5 +21,5 @@ public class Persona {
   @Column(unique = true)
   private String email;
 
-  private String observacion;
+  private String Observacion;
 }
