@@ -1,0 +1,22 @@
+package es.uma.tesaw.proyecto_bancosol.mapper;
+
+import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Voluntario;
+import org.springframework.stereotype.Component;
+
+@Component
+public class VoluntarioMapper extends MapperDTO<VoluntarioDTO, Voluntario> {
+
+    @Override
+    public VoluntarioDTO toDTO(Voluntario entity) {
+        if (entity == null) return null;
+
+        VoluntarioDTO dto = new VoluntarioDTO();
+        dto.setIdVoluntario(entity.getIdVoluntario());
+        dto.setIdPersona(entity.getPersona() != null ? entity.getPersona().getIdPersona() : null);
+        dto.setPreferenciaHorario(entity.getPreferenciaHorario());
+        dto.setIdColaborador(entity.getColaborador() != null ? entity.getColaborador().getIdColaborador() : null);
+
+        return dto;
+    }
+}

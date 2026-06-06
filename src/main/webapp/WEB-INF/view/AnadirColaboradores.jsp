@@ -1,0 +1,114 @@
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
+<%@ page import="java.util.List" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    List<ZonaGeografica> zonasDisponibles = (List<ZonaGeografica>) request.getAttribute("zonasDisponibles");
+%>
+
+<div id="formulario-anadir-colaborador" class="datos-colaborador" style="<%= "anadir".equals(modoPanel) ? "display: block;" : "display: none;" %>">
+    <h3 class="ficha-titulo-principal">Nuevo Colaborador</h3>
+
+    <form id="form-nuevo-colaborador-lateral" action="/colaboradores/guardar" method="POST">
+
+        <div class="ficha-tarjeta-info tarjeta-cabecera-edit">
+            <h5>Nombre de la Entidad / Colaborador</h5>
+            <input type="text" id="nuevo-nombre" name="nombreColaborador" class="input-ficha-lateral input-nombre-principal" required placeholder="Ej. Banco de Alimentos">
+        </div>
+
+        <div class="ficha-tarjeta-info">
+            <h5>Ubicación</h5>
+            <div class="campo-formulario-ficha">
+            <label for="nuevo-zona"><strong>Zona Geográfica:</strong></label>
+            <select id="nuevo-zona" name="nombreZona" class="select-ficha-lateral" required>
+                <option value="" disabled selected>Seleccione zona...</option>
+                <%
+                    if (zonasDisponibles != null) {
+                        for (ZonaGeografica z : zonasDisponibles) {
+                %>
+                <option value="<%= z.getNombreZona() %>"><%= z.getNombreZona() %></option>
+                <%
+                        }
+                    }
+                %>
+            </select>
+        </div>
+        </div>
+
+        <div class="ficha-tarjeta-info">
+            <h5>Datos de Contacto</h5>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-contacto-nombre"><strong>Persona:</strong></label>
+                <input type="text" id="nuevo-contacto-nombre" name="contactoNombre" class="input-ficha-lateral" placeholder="Nombre completo">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-contacto-email"><strong>Email:</strong></label>
+                <input type="email" id="nuevo-contacto-email" name="contactoEmail" class="input-ficha-lateral" placeholder="ejemplo@correo.com">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-contacto-tel"><strong>Teléfono:</strong></label>
+                <input type="tel" id="nuevo-contacto-tel" name="contactoTel" class="input-ficha-lateral" placeholder="600 000 000">
+            </div>
+        </div>
+
+        <div class="ficha-tarjeta-info sin-margen-inferior">
+            <h5>Dirección Postal</h5>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-tipo-via"><strong>Tipo de Vía:</strong></label>
+                <select id="nuevo-tipo-via" name="tipoVia" class="select-ficha-lateral">
+                    <option value="">Ninguno</option>
+                    <option value="Calle">Calle</option>
+                    <option value="Avenida">Avenida</option>
+                    <option value="Plaza">Plaza</option>
+                </select>
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-direccion-via"><strong>Calle / Vía:</strong></label>
+                <input type="text" id="nuevo-direccion-via" name="nombreVia" class="input-ficha-lateral" required placeholder="Ej. Av. de Andalucía">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-direccion-num"><strong>Número:</strong></label>
+                <input type="text" id="nuevo-direccion-num" name="numero" class="input-ficha-lateral" placeholder="Ej. 12, 3ºB">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-cp"><strong>Cód. Postal:</strong></label>
+                <input type="text" id="nuevo-cp" name="codigoPostal" class="input-ficha-lateral" required maxlength="5" placeholder="29000">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="nuevo-localidad"><strong>Localidad:</strong></label>
+                <input type="text" id="nuevo-localidad" name="nombreDivision" class="input-ficha-lateral" required placeholder="Ej. Málaga">
+            </div>
+        </div>
+
+        <div class="ficha-tarjeta-info sin-margen-inferior" style="margin-top: 15px;">
+            <h5>Observaciones</h5>
+            <input type="text" id="nuevo-observaciones" name="observaciones" class="input-ficha-lateral" placeholder="Detalles adicionales...">
+        </div>
+    </form>
+</div>
+
+<div class="overlay" id="overlay-exito-nuevo">
+    <div class="popup" id="popup-exito-nuevo">
+        <h3>¡Creado con éxito!</h3>
+        <p>El colaborador y sus datos de contacto se han creado correctamente en el sistema.</p>
+
+        <div class="popup-actions">
+            <form action="">
+                <button type="button" class="btn-add" id="btn-aceptar-exito-nuevo">Aceptar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="overlay-error-nuevo">
+    <div class="popup" id="popup-error-nuevo">
+        <h3>Ha ocurrido un error</h3>
+        <p id="texto-error-popup-nuevo">No se pudieron crear las relaciones en el servidor.</p>
+
+        <div class="popup-actions">
+            <form action="">
+                <button type="button" class="btn-cerrar-popup" id="btn-aceptar-error-nuevo">Aceptar</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,191 @@
+/* ==========================================================================
+   ESTILOS GENERALES Y BASE (Basados en Registro y Edición)
+   ========================================================================== */
+body {
+    background-color: #f5f7f9 !important;
+    font-family: Arial, sans-serif;
+    color: #111827;
+    margin: 0;
+}
+
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-logo {
+    height: 50px;
+}
+
+/* ==========================================================================
+   ESTRUCTURA DE PANTALLA COMPLETA
+   ========================================================================== */
+/* Asegura que el contenedor del formulario ocupe todo el espacio disponible */
+.form-container {
+    width: 100%;
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+.form-edit {
+    display: block; /* Permite que los elementos hijos se expandan al 100% de manera natural */
+    width: 100%;
+}
+
+.form-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    width: 100%; /* Ocupa el ancho completo asignado por el contenedor */
+    max-width: none; /* ELIMINADO el límite para que use toda la pantalla */
+    box-sizing: border-box;
+}
+
+fieldset {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    background-color: #fcfcfc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+legend {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    padding: 4px 12px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Inputs de texto habituales (Nombre, Email, Teléfono, etc.) */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group select {
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #111827;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #420098;
+    box-shadow: 0 0 0 3px rgba(66, 0, 152, 0.1);
+}
+
+/* ==========================================================================
+   TABLA DE DISPONIBILIDAD (Estilo fluido e idéntico al Registro)
+   ========================================================================== */
+.tabla-registro {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 16px;
+    background-color: #ffffff;
+}
+
+.tabla-registro th {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-registro td {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+/* Alineación a la izquierda para la primera columna de turnos (Mañana/Tarde) */
+.tabla-registro td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Estilo unificado para las checkboxes de asistencia */
+.tabla-registro input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #420098;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+/* ==========================================================================
+   BOTONES DE ACCIÓN (Manteniendo la paleta corporativa #420098)
+   ========================================================================== */
+.form-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #f3f4f6;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    width: 100%;
+}
+
+.btn-submit {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-color: #420098;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #310073;
+}
+
+.btn-cancel {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #f3f4f6;
+}

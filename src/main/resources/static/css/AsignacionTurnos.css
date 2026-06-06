@@ -1,0 +1,419 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7f9;
+    color: #111827;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #420098;
+    color: white;
+}
+
+.right-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+header.main-header {
+    background-color: #f8fafc;
+    padding: 16px 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+header.main-header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-branding {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo {
+    height: 50px;
+}
+
+.header-titles h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.header-titles p {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+main {
+    padding: 24px 32px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.list-container,
+.detail-panel {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.list-container {
+    flex: 2;
+}
+
+.detail-panel {
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-bottom: 5px;
+}
+
+.list-header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.list-header p {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* ======================================================== */
+/* MODIFICADO: CONTENEDOR Y SCROLL IDÉNTICO A LA FOTO      */
+/* ======================================================== */
+.table-wrapper {
+    max-height: 420px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin-top: 30px;
+}
+
+/* Ancho general de la barra de scroll */
+.table-wrapper::-webkit-scrollbar {
+    width: 14px; /* Un poco más ancha para que se noten las flechas como en la foto */
+}
+
+/* Fondo del carril del scroll (gris muy suave y limpio) */
+.table-wrapper::-webkit-scrollbar-track {
+    background: #fcfcfc;
+    border-left: 1px solid #f1f1f1;
+}
+
+/* La pastilla / indicador (Gris oscuro y redondeada) */
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #aaaaaa;
+    border-radius: 20px;
+    border: 3px solid #fcfcfc; /* Crea un margen interior simulado alrededor de la pastilla */
+}
+
+/* Cambio de color sutil al pasar el ratón */
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #888888;
+}
+
+/* Botones de flecha (Arriba y Abajo) para que quede exactamente igual */
+.table-wrapper::-webkit-scrollbar-button:single-button {
+    background-color: #fcfcfc;
+    display: block;
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 14px;
+}
+
+/* Flecha hacia arriba */
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23555555'><polygon points='50,15 15,85 85,85'/></svg>");
+}
+
+/* Flecha hacia abajo */
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23555555'><polygon points='15,15 85,15 50,85'/></svg>");
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 0;
+}
+
+th {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    border-bottom: 1px solid #e5e7eb;
+
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    z-index: 1;
+    box-shadow: inset 0 -1px 0 #e5e7eb;
+}
+
+td {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+.store-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.store-header-text h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.store-header-text p {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.detail-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.field {
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.field span {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    margin-top: 10px;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #444;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.btn-add {
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #420098;
+    color: #ffffff;
+}
+
+
+
+.filters {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group--small {
+    flex: 1;
+    min-width: 0;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background-color: #ffffff;
+    color: #374151;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #420098;
+}
+
+
+/* ======================================================== */
+/* ESTILOS DEL POPUP / MODAL DE CONFIRMACIÓN DE ELIMINACIÓN  */
+/* ======================================================== */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: none;
+    z-index: 9998;
+}
+
+.popup-confirmacion {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 28px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 9999;
+    width: 90%;
+    max-width: 460px;
+    text-align: center;
+}
+
+.overlay.active,
+.popup-confirmacion.active {
+    display: block;
+}
+
+.popup-confirmacion h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.popup-confirmacion p {
+    margin: 0 0 24px 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn-cancelar {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    transition: background-color 0.2s ease;
+}
+
+.btn-cancelar:hover {
+    background-color: #f9fafb;
+}
+
+.btn-confirmar {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background-color: #ef4444;
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.btn-confirmar:hover {
+    background-color: #dc2626;
+}
+
+.btn-confirmar:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}

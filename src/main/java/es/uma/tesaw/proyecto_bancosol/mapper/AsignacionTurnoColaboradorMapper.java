@@ -1,0 +1,26 @@
+package es.uma.tesaw.proyecto_bancosol.mapper;
+
+import es.uma.tesaw.proyecto_bancosol.dto.AsignacionTurnoColaboradorDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AsignacionTurnoColaboradorMapper extends MapperDTO<AsignacionTurnoColaboradorDTO, AsignacionTurnoColaborador> {
+
+    @Override
+    public AsignacionTurnoColaboradorDTO toDTO(AsignacionTurnoColaborador entity) {
+        if (entity == null) return null;
+
+        AsignacionTurnoColaboradorDTO dto = new AsignacionTurnoColaboradorDTO();
+        dto.setIdAsignacionTurno(entity.getIdAsignacionTurno());
+        dto.setIdCampana(entity.getCampana() != null ? entity.getCampana().getIdCampana() : null);
+        dto.setIdTienda(entity.getTienda() != null ? entity.getTienda().getIdEstablecimiento() : null);
+        dto.setIdColaborador(entity.getColaborador() != null ? entity.getColaborador().getIdColaborador() : null);
+        dto.setFecha(entity.getFecha());
+        dto.setHoraInicio(entity.getHoraInicio());
+        dto.setHoraFin(entity.getHoraFin());
+        dto.setIdVoluntario(entity.getVoluntario() != null ? entity.getVoluntario().getIdVoluntario() : null);
+
+        return dto;
+    }
+}
