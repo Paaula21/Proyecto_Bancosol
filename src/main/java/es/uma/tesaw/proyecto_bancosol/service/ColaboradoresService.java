@@ -1,13 +1,15 @@
+/*
+Paula Fernández Jiménez: 75%
+IA: 25%
+*/
 
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaColaboradoresDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.Direccion;
-import es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores;
+import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.ColaboradorMapper;
 import es.uma.tesaw.proyecto_bancosol.mapper.VistaColaboradoresMapper;
 import lombok.AllArgsConstructor;
@@ -26,13 +28,18 @@ public class ColaboradoresService {
     private final ColaboradorRepository colaboradorRepository;
     private final ContactoColaboradorRepository contactoColaboradorRepository;
     private final DireccionRepository direccionRepository;
-    private final ColaboradorMapper colaboradorMapper;
-    private final VistaColaboradoresMapper vistaColaboradoresMapper;
     private final VistaColaboradoresRepository vistaColaboradoresRepository;
     private final ZonaGeograficaRepository zonaGeograficaRepository;
+    private final DivisionTerritorialRepository divisionTerritorialRepository;
+    private final CodigoPostalRepository codigoPostalRepository;
+    private final PersonaRepository personaRepository;
+
+    private final ColaboradorMapper colaboradorMapper;
+    private final VistaColaboradoresMapper vistaColaboradoresMapper;
+
 
     @Transactional(readOnly = true)
-    public List<VistaColaboradoresDTO> listarColaboradoresDesdeVistaDTO(String busqueda, String zona) {
+    public List<VistaColaboradoresDTO> listarColaboradoresDTO(String busqueda, String zona) {
         String busquedaNormalizada = busqueda == null ? "" : busqueda;
         String zonaNormalizada = zona == null || zona.isBlank() ? TODAS_LAS_ZONAS : zona;
 
@@ -50,21 +57,126 @@ public class ColaboradoresService {
 
         return this.vistaColaboradoresMapper.toDTOList(vistas);
     }
+
+    @Transactional
+    public void guardarColaborador(FormularioColaboradorDTO dto) {
+        // Ponemos final para que se guarde correctamente el valor deseado
+        final ZonaGeografica zona;
+        if (dto.getNombreZona() != null && !dto.getNombreZona().isEmpty()) {
+            zona = zonaGeograficaRepository.findByNombreZona(dto.getNombreZona())
+                    .orElseGet(() -> {
+                        ZonaGeografica z = new ZonaGeografica();
+                        z.setIdZona((int) (System.currentTimeMillis() % 100000));
+                        z.setNombreZona(dto.getNombreZona());
+                        return zonaGeograficaRepository.save(z);
+                    });
+        } else {
+            zona = null;
+        }
+
+        final DivisionTerritorial division;
+        if (dto.getNombreDivision() != null && !dto.getNombreDivision().isEmpty()) {
+            division = divisionTerritorialRepository.findByNombreDivision(dto.getNombreDivision())
+                    .orElseGet(() -> {
+                        DivisionTerritorial d = new DivisionTerritorial();
+                        d.setIdDivision((int) (System.currentTimeMillis() % 100000));
+                        d.setNombreDivision(dto.getNombreDivision());
+                        d.setTipo(false);
+                        d.setZona(zona);
+                        return divisionTerritorialRepository.save(d);
+                    });
+        } else {
+            division = null;
+        }
+
+        CodigoPostal cp = null;
+        if (dto.getCodigoPostal() != null && !dto.getCodigoPostal().isEmpty()) {
+            cp = codigoPostalRepository.findByCodigo(dto.getCodigoPostal())
+                    .orElseGet(() -> {
+                        CodigoPostal c = new CodigoPostal();
+                        c.setIdCp((int) (System.currentTimeMillis() % 100000));
+                        c.setCodigo(dto.getCodigoPostal());
+                        c.setDivision(division);
+                        return codigoPostalRepository.save(c);
+                    });
+        }
+
+        Colaborador colaborador = null;
+        if (dto.getIdColaborador() != null && !dto.getIdColaborador().isEmpty()) {
+            colaborador = colaboradorRepository.findById(dto.getIdColaborador()).orElse(null);
+        }
+
+        Direccion direccion;
+        if (colaborador != null && colaborador.getDireccion() != null) {
+            direccion = colaborador.getDireccion();
+        } else {
+            direccion = new Direccion();
+            direccion.setIdDireccion((int) (System.currentTimeMillis() % 100000));
+        }
+        direccion.setTipoVia(dto.getTipoVia());
+        direccion.setNombreVia(dto.getNombreVia());
+        direccion.setNumero(dto.getNumero());
+        direccion.setCp(cp);
+        direccion = direccionRepository.save(direccion);
+
+        if (colaborador == null) {
+            colaborador = new Colaborador();
+            colaborador.setIdColaborador("COL-" + (System.currentTimeMillis() % 1000000));
+        }
+        colaborador.setNombreColaborador(dto.getNombreColaborador());
+        colaborador.setObservaciones(dto.getObservaciones());
+        colaborador.setDireccion(direccion);
+        colaborador = colaboradorRepository.save(colaborador);
+
+        if (dto.getContactoNombre() != null && !dto.getContactoNombre().isEmpty()) {
+            ContactoColaborador contacto = contactoColaboradorRepository.findByColaborador(colaborador).orElse(null);
+            Persona persona;
+
+            if (contacto != null) {
+                persona = contacto.getPersona();
+            } else {
+                contacto = new ContactoColaborador();
+                contacto.setColaborador(colaborador);
+                contacto.setEsPrincipal(true);
+                persona = new Persona();
+            }
+
+            persona.setNombreCompleto(dto.getContactoNombre());
+            persona.setEmail(dto.getContactoEmail());
+            persona.setTelefono(dto.getContactoTel());
+            persona = personaRepository.save(persona);
+
+            contacto.setPersona(persona);
+            contactoColaboradorRepository.save(contacto);
+        }
+    }
+
+    @Transactional
+    public void eliminarColaboradorCompleto(String idColaborador) {
+        Colaborador colab = colaboradorRepository.findById(idColaborador).orElse(null);
+        if (colab != null) {
+            contactoColaboradorRepository.findByColaborador(colab)
+                    .ifPresent(contactoColaboradorRepository::delete);
+
+            colaboradorRepository.delete(colab);
+        }
+    }
+
+
     @Transactional(readOnly = true)
-    public List<ColaboradorDTO> listarColaboradores (String busqueda, String zona) {
+    public List<ColaboradorDTO> listarColaboradores(String busqueda, String zona) {
         List<Colaborador> colaboradores = this.filtrarColaboradoresEntidad(busqueda, zona);
         return this.colaboradorMapper.toDTOList(colaboradores);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ColaboradorDTO> obtenerColaborador (String id) {
+    public Optional<ColaboradorDTO> obtenerColaborador(String id) {
         Colaborador colaborador = this.colaboradorRepository.findById(id).orElse(null);
         return Optional.ofNullable(this.colaboradorMapper.toDTO(colaborador));
     }
 
     @Transactional
-    public ColaboradorDTO crearColaborador (ColaboradorDTO dto) {
-
+    public ColaboradorDTO crearColaborador(ColaboradorDTO dto) {
         Colaborador colaborador = new Colaborador();
         colaborador.setIdColaborador(dto.getIdColaborador());
         colaborador.setNombreColaborador(dto.getNombreColaborador());
@@ -76,7 +188,7 @@ public class ColaboradoresService {
     }
 
     @Transactional
-    public Optional<ColaboradorDTO> actualizarColaborador (String id, ColaboradorDTO dto) {
+    public Optional<ColaboradorDTO> actualizarColaborador(String id, ColaboradorDTO dto) {
         Colaborador colaborador = this.colaboradorRepository.findById(id).orElse(null);
 
         if (colaborador != null) {
@@ -89,7 +201,7 @@ public class ColaboradoresService {
     }
 
     @Transactional
-    public boolean eliminarColaborador (String id) {
+    public boolean eliminarColaborador(String id) {
         if (!this.colaboradorRepository.existsById(id)) {
             return false;
         }
@@ -100,7 +212,7 @@ public class ColaboradoresService {
 
 
     @Transactional(readOnly = true)
-    public List<Colaborador> filtrarColaboradoresEntidad (String busqueda, String zona) {
+    public List<Colaborador> filtrarColaboradoresEntidad(String busqueda, String zona) {
         String busquedaNormalizada = busqueda == null ? "" : busqueda;
         String zonaNormalizada = zona == null || zona.isBlank() ? TODAS_LAS_ZONAS : zona;
 
@@ -115,7 +227,23 @@ public class ColaboradoresService {
         }
     }
 
-    private void aplicarCambios (Colaborador colaborador, ColaboradorDTO dto) {
+    @Transactional(readOnly = true)
+    public Optional<Colaborador> obtenerColaboradorEntidad(String id) {
+        return this.colaboradorRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ContactoColaborador> obtenerContactoPorColaborador(Colaborador colaborador) {
+        return this.contactoColaboradorRepository.findByColaborador(colaborador);
+    }
+
+    @Transactional
+    public Colaborador guardarColaboradorEntidad(Colaborador colaborador) {
+        return this.colaboradorRepository.save(colaborador);
+    }
+
+
+    private void aplicarCambios(Colaborador colaborador, ColaboradorDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("El colaborador es obligatorio");
         }
@@ -130,28 +258,8 @@ public class ColaboradoresService {
         }
     }
 
-    private Direccion buscarDireccionObligatoria (Integer idDireccion) {
+    private Direccion buscarDireccionObligatoria(Integer idDireccion) {
         return this.direccionRepository.findById(idDireccion)
                 .orElseThrow(() -> new IllegalArgumentException("No existe direccion con id " + idDireccion));
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Colaborador> obtenerColaboradorEntidad (String id) {
-        return this.colaboradorRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ContactoColaborador> obtenerTodosLosContactos () {
-        return this.contactoColaboradorRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<ContactoColaborador> obtenerContactoPorColaborador (Colaborador colaborador) {
-        return this.contactoColaboradorRepository.findByColaborador(colaborador);
-    }
-
-    @Transactional
-    public Colaborador guardarColaboradorEntidad (Colaborador colaborador) {
-        return this.colaboradorRepository.save(colaborador);
     }
 }

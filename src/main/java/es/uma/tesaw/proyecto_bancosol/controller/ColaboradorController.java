@@ -6,6 +6,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import java.util.List;
 
+import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaColaboradoresDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
@@ -34,7 +35,7 @@ public class ColaboradorController {
             @RequestParam(required = false) String accion,
             Model model) {
 
-        List<VistaColaboradoresDTO> colaboradores = this.colaboradoresService.listarColaboradoresDesdeVistaDTO(busqueda, zona);
+        List<VistaColaboradoresDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
         List<ZonaGeografica> zonasDisponibles = this.zonaGeograficaService.obtenerTodasLasZonas();
 
         if (busqueda == null) busqueda = "";
@@ -72,21 +73,21 @@ public class ColaboradorController {
     }
 
     @PostMapping("/colaboradores/guardar")
-    public String guardarColaborador(Colaborador nuevoColaborador) {
-        this.colaboradoresService.guardarColaboradorEntidad(nuevoColaborador);
+    public String guardarColaborador(FormularioColaboradorDTO nuevoColaborador) {
+        this.colaboradoresService.guardarColaborador(nuevoColaborador);
         return "redirect:/colaboradores";
     }
 
     // Actualizar colaborador
     @PostMapping("/colaboradores/actualizar")
-    public String actualizarColaborador(Colaborador colaboradorEditado) {
-        this.colaboradoresService.guardarColaboradorEntidad(colaboradorEditado);
+    public String actualizarColaborador(FormularioColaboradorDTO colaboradorEditado) {
+        this.colaboradoresService.guardarColaborador(colaboradorEditado);
         return "redirect:/colaboradores?id=" + colaboradorEditado.getIdColaborador();
     }
 
     // Eliminar colaborador
     @PostMapping("/colaboradores/eliminar")
-    public String eliminarColaborador(@RequestParam String id) {
+    public String eliminarColaboradorCompleto(@RequestParam String id) {
         this.colaboradoresService.eliminarColaborador(id);
         return "redirect:/colaboradores";
     }
