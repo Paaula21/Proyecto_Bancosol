@@ -1,0 +1,109 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/AsignacionTurnos.css">
+    <link rel="stylesheet" href="../css/Sidebar.css">
+    <link rel="stylesheet" href="../css/Header.css">
+    <link rel="stylesheet" href="../css/Common.css">
+
+    <script src="../javascript/Header.js" defer></script>
+    <script src="../javascript/Sidebar.js" defer></script>
+    <script src="../javascript/IncludeHTML.js"></script>
+    <script src="../javascript/AsignacionTurnos.js" defer></script>
+
+    <title>Asignación de turnos</title>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- <aside class="sidebar">
+        <include-html src="../html/Sidebar.html"></include-html>
+    </aside> -->
+
+    <div class="right-content">
+
+        <!-- <header class="main-header">
+            <include-html src="../html/header.html"></include-html>
+        </header> -->
+
+        <div class="main-layout">
+            <main>
+                <form>
+                    <section class="filters">
+                        <div class="filter-group">
+                            <label for="filter-turnos">Disponibilidad Horaria</label>
+                            <select id="filter-turnos">
+
+                                <option value=""> Todos los turnos </option>
+
+                                <option value="lunes-mañana">Lunes mañana</option>
+                                <option value="martes-mañana">Martes mañana</option>
+                                <option value="miercoles-mañana">Miercoles mañana</option>
+                                <option value="jueves-mañana">Jueves mañana</option>
+                                <option value="viernes-mañana">Viernes mañana</option>
+                                <option value="sabado-mañana">Sabado mañana</option>
+                                <option value="domingo-mañana">Domingo mañana</option>
+
+                                <option value="lunes-tarde">Lunes tarde</option>
+                                <option value="martes-tarde">Martes tarde</option>
+                                <option value="miercoles-tarde">Miercoles tarde</option>
+                                <option value="jueves-tarde">Jueves tarde</option>
+                                <option value="viernes-tarde">Viernes tarde</option>
+                                <option value="sabado-tarde">Sabado tarde</option>
+                                <option value="domingo-tarde">Domingo tarde</option>
+                            </select>
+                        </div>
+                        <div class="filter-button">
+                            <button type="button" id="btn-filter" class="btn btn--primary">Filtrar</button>
+                        </div>
+                    </section>
+                </form>
+
+                <form id="form-voluntario">
+                    <div class="list-container">
+                        <div class="list-header">
+                            <h2>Listado de Voluntarios</h2>
+                            <button type="button" class="btn btn--primary"
+                                    onclick="window.location.href='RegistroVoluntarios.html'">Añadir Voluntario</button>
+                            <p id="contador-voluntarios">Cargando...</p>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tabla-voluntarios">
+                                <tr><td colspan="4" style="text-align: center; padding: 20px;">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </form>
+            </main>
+        </div>
+    </div>
+</div>
+
+<div id="overlay-eliminar" class="overlay"></div>
+<div id="popup-eliminar" class="popup-confirmacion">
+    <h3>¿Estás seguro de que deseas eliminar este voluntario?</h3>
+    <p>Esta acción eliminará de forma permanente al voluntario y a la persona vinculada en la base de datos.</p>
+    <div class="popup-actions">
+        <button type="button" id="btn-cancelar-eliminar" class="btn-cancelar">Cancelar</button>
+        <button type="button" id="btn-confirmar-eliminar" class="btn-confirmar">Eliminar definitivamente</button>
+    </div>
+</div>
+
+</body>
+</html>
