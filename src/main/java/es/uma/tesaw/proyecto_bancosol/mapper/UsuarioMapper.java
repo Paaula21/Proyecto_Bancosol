@@ -15,7 +15,6 @@ public class UsuarioMapper extends MapperDTO<UsuarioDTO, Usuario> {
         dto.setIdUsuario(entity.getIdUsuario());
         dto.setIdPersona(entity.getPersona() != null ? entity.getPersona().getIdPersona() : null);
         dto.setIdRol(entity.getRol() != null ? entity.getRol().getIdRol() : null);
-        dto.setContrasenia(entity.getContrasenia());
         dto.setUsuario(entity.getUsuario());
 
         return dto;

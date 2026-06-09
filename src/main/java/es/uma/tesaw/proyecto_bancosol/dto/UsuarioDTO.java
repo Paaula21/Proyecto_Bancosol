@@ -11,6 +11,5 @@ public class UsuarioDTO {
     private Integer idUsuario;
     private Integer idPersona;
     private Integer idRol;
-    private String contrasenia;
     private String usuario;
 }
