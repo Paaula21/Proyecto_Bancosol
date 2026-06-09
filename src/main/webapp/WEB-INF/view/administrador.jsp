@@ -1,9 +1,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Campana" %>
-<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    // Recuperamos las listas que nos ha mandado el Controlador
+    Integer campanasActivasCount = (Integer) request.getAttribute("campanasActivasCount");
+    Long tiendasTotales = (Long) request.getAttribute("tiendasTotales");
+    Long zonasTotales = (Long) request.getAttribute("zonasTotales");
+    Long colaboradoresTotales = (Long) request.getAttribute("colaboradoresTotales");
+    Integer coordinadoresTotales = (Integer) request.getAttribute("coordinadoresTotales");
     List<Campana> proximasCampanas = (List<Campana>) request.getAttribute("proximasCampanas");
 %>
 
@@ -33,21 +36,21 @@
             <section class="grid">
                 <div class="card">
                     <h3>Campañas Activas</h3>
-                    <div class="card" id="stat-campaigns-value">${campanasActivasCount}</div>
+                    <div class="card" id="stat-campaigns-value"><%= campanasActivasCount %></div>
                 </div>
                 <div class="card">
                     <h3>Tiendas Totales</h3>
-                    <div class="card" id="stat-stores-value">${tiendasTotales}</div>
-                    <p class="card" id="stat-stores-subtitle">En ${zonasTotales} zonas geográficas</p>
+                    <div class="card" id="stat-stores-value"><%= tiendasTotales %></div>
+                    <p class="card" id="stat-stores-subtitle">En <%= zonasTotales %> zonas geográficas</p>
                 </div>
                 <div class="card">
                     <h3>Colaboradores</h3>
-                    <div class="card" id="stat-collaborators-value">${colaboradoresTotales}</div>
+                    <div class="card" id="stat-collaborators-value"><%= colaboradoresTotales %></div>
                     <p class="card" id="stat-collaborators-subtitle">Entidades y organizaciones</p>
                 </div>
                 <div class="card">
                     <h3>Coordinadores</h3>
-                    <div class="card" id="stat-coordinators-value">${coordinadoresTotales}</div>
+                    <div class="card" id="stat-coordinators-value"><%= coordinadoresTotales %></div>
                     <p class="card" id="stat-coordinators-subtitle">Activos en campaña</p>
                 </div>
             </section>
@@ -64,10 +67,11 @@
                     </div>
 
                     <div class="campaign-container" id="campaign-container">
-                        <% if (proximasCampanas != null && !proximasCampanas.isEmpty()) {
-                            for (Campana campana : proximasCampanas) {
-                                String fechaInicioStr = (campana.getFechaInicio() != null) ? campana.getFechaInicio().toString() : "Sin fecha";
-                                String fechaFinStr = (campana.getFechaFin() != null) ? campana.getFechaFin().toString() : "Sin fecha";
+                        <%
+                            if (proximasCampanas != null && !proximasCampanas.isEmpty()) {
+                                for (Campana campana : proximasCampanas) {
+                                    String fechaInicioStr = (campana.getFechaInicio() != null) ? campana.getFechaInicio().toString() : "Sin fecha";
+                                    String fechaFinStr = (campana.getFechaFin() != null) ? campana.getFechaFin().toString() : "Sin fecha";
                         %>
                         <div class="campaign-item">
                             <div class="campaign-info">
@@ -80,10 +84,14 @@
                                 </div>
                             </div>
                         </div>
-                        <%     }
-                        } else { %>
+                        <%
+                            }
+                        } else {
+                        %>
                         <p>No hay campañas próximas.</p>
-                        <% } %>
+                        <%
+                            }
+                        %>
                     </div>
                 </div>
 
