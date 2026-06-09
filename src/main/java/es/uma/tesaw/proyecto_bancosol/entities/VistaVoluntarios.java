@@ -1,3 +1,7 @@
+/*
+Ainhoa García Rebollo: 100%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.entities;
 
 import jakarta.persistence.*;
@@ -5,16 +9,14 @@ import jakarta.persistence.*;
 public class VistaVoluntarios {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_voluntario")
     private Integer idVoluntario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona")
-    private Persona persona;
+    private Persona idPersona;
 
     @Column(name = "nombre_completo")
-    private String nombre_completo;
+    private String nombreCompleto;
 
     @Column(name = "email")
     private String email;
