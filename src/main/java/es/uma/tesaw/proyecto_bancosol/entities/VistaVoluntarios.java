@@ -5,15 +5,25 @@ Ainhoa García Rebollo: 100%
 package es.uma.tesaw.proyecto_bancosol.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Entity
+@Table(name = "vista_voluntario")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class VistaVoluntarios {
 
     @Id
     @Column(name = "id_voluntario")
-    private Integer idVoluntario;
+    private String idVoluntario;
 
     @JoinColumn(name = "id_persona")
-    private Persona idPersona;
+    private String idPersona;
 
     @Column(name = "nombre_completo")
     private String nombreCompleto;
