@@ -128,15 +128,22 @@ public class VoluntariosController {
 
 
     @GetMapping("/borrar")
-    public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user, @RequestParam("id") Integer id) {
+    public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user,
+                           @RequestParam("id") Integer id) {
 
         if (user == null) {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         }
 
-        voluntariosService.eliminarVoluntarioConPersona(id);
+        try {
+            voluntariosService.eliminarVoluntarioConPersona(id);
+        } catch (Exception e) {
+            // Si la BD impide el borrado, lo veremos en letras rojas en tu IDE
+            System.err.println("Error al intentar borrar el voluntario con ID: " + id);
+            e.printStackTrace();
+        }
 
-        return "redirect:/voluntarios/";
+        return "redirect:/voluntarios"; // Redirigimos limpios
     }
 
 

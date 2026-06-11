@@ -88,7 +88,7 @@
                                 <td><%= telV %></td>
                                 <td>
                                     <a href="/voluntarios/editar?id=<%= v.getIdVoluntario() %>" class="btn btn-edit" style="text-decoration: none; border-color:#d1d5db; color: #374151;">Editar</a>
-                                    <button type="button" class="btn btn--delete" onclick="abrirModalEliminar(<%= v.getIdVoluntario() %>)">Eliminar</button>
+                                    <a href="/voluntarios/borrar?id=<%= v.getIdVoluntario() %>" class="btn btn--delete" style="text-decoration: none; display: inline-block; text-align: center;">Eliminar</a>
                                 </td>
                             </tr>
                             <%

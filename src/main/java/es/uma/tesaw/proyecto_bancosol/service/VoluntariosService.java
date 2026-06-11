@@ -48,6 +48,11 @@ public class VoluntariosService {
         List<VistaVoluntarioDTO> resultadoVista = new ArrayList<>();
         for (Voluntario v : lista) {
             VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
+
+            // --> ¡AÑADE ESTA LÍNEA! Así el JSP sabrá cuál es el ID del voluntario <--
+            dto.setIdVoluntario(String.valueOf(v.getIdVoluntario()));
+            // Nota: Si te da error en rojo, mira si el método de la entidad se llama v.getId()
+
             if (v.getPersona() != null) {
                 dto.setIdPersona(String.valueOf(v.getPersona().getIdPersona()));
                 dto.setNombreCompleto(v.getPersona().getNombreCompleto());
