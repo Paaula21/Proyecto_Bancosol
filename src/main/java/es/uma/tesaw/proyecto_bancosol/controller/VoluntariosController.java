@@ -1,7 +1,6 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO; // CAMBIADO: Importamos la vista DTO
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,27 +16,30 @@ public class VoluntariosController {
 
     private final VoluntariosService voluntariosService;
 
-    @GetMapping("/")
+    @GetMapping({ "/"})
     public String doInit(
-            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String nombre_completo,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String telefono,
             @RequestParam(required = false) String disponibilidad,
             Model model) {
 
-        if (user == null) {
-            return "redirect:/";
-        }
-
-        // CAMBIADO: Ahora devuelve una lista de VistaVoluntarioDTO
         List<VistaVoluntarioDTO> voluntarios =
-                voluntariosService.listarVoluntariosFiltrados(nombre_completo, email, telefono, disponibilidad);
+                voluntariosService.listarVoluntariosFiltrados(
+                        nombre_completo,
+                        email,
+                        telefono,
+                        disponibilidad
+                );
 
-        model.addAttribute("nombre_completo", nombre_completo);
-        model.addAttribute("email", email);
-        model.addAttribute("telefono", telefono);
-        model.addAttribute("disponibilidad", disponibilidad);
+        model.addAttribute("nombre_completo",
+                nombre_completo != null ? nombre_completo : "");
+        model.addAttribute("email",
+                email != null ? email : "");
+        model.addAttribute("telefono",
+                telefono != null ? telefono : "");
+        model.addAttribute("disponibilidad",
+                disponibilidad != null ? disponibilidad : "");
 
         model.addAttribute("voluntarios", voluntarios);
 
@@ -49,69 +51,45 @@ public class VoluntariosController {
             @RequestParam(required = false) String nombre_completo,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String telefono,
-            @RequestParam(required = false) String disponibilidad,
-            Model model) {
+            @RequestParam(required = false) String disponibilidad) {
 
-        // CAMBIADO: Ahora devuelve una lista de VistaVoluntarioDTO
-        List<VistaVoluntarioDTO> voluntarios =
-                voluntariosService.listarVoluntariosFiltrados(nombre_completo, email, telefono, disponibilidad);
-
-        model.addAttribute("voluntarios", voluntarios);
-
-        return "voluntarios_table";
-    }
-
-    protected String editarCrear(Integer id, Model model) {
-
-        // CAMBIADO: Usamos VistaVoluntarioDTO para que al editar también aparezcan rellenos los campos de texto
-        VistaVoluntarioDTO voluntario = null;
-
-        if (id != null) {
-            voluntario = voluntariosService.obtenerVoluntario(id).orElse(null);
-        }
-
-        model.addAttribute("voluntario", voluntario);
-
-        return "voluntario_edit";
-    }
-
-    @PostMapping("/anadir")
-    public String doAnadir(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            Model model) {
-
-        if (user == null) {
-            return "redirect:/";
-        }
-
-        return editarCrear(null, model);
+        return "redirect:/voluntarios/?nombre_completo="
+                + emptyIfNull(nombre_completo)
+                + "&email=" + emptyIfNull(email)
+                + "&telefono=" + emptyIfNull(telefono)
+                + "&disponibilidad=" + emptyIfNull(disponibilidad);
     }
 
     @GetMapping("/editar")
     public String doEditar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam("id") Integer id,
             Model model) {
 
-        if (user == null) {
-            return "redirect:/";
-        }
+        VistaVoluntarioDTO voluntario =
+                voluntariosService.obtenerVoluntario(id).orElse(null);
 
-        return editarCrear(id, model);
+        model.addAttribute("voluntario", voluntario);
+        model.addAttribute("modoPanel",
+                voluntario != null ? "editar" : "anadir");
+
+        model.addAttribute("voluntarios",
+                voluntariosService.listarVoluntariosFiltrados(
+                        null, null, null, null));
+
+        return "voluntarios";
     }
 
-    @GetMapping("/borrar")
-    public String doBorrar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            @RequestParam("id") Integer id) {
+    @GetMapping("/nuevo")
+    public String doNuevo(Model model) {
 
-        if (user == null) {
-            return "redirect:/";
-        }
+        model.addAttribute("voluntario", null);
+        model.addAttribute("modoPanel", "anadir");
 
-        voluntariosService.eliminarVoluntarioConPersona(id);
+        model.addAttribute("voluntarios",
+                voluntariosService.listarVoluntariosFiltrados(
+                        null, null, null, null));
 
-        return "redirect:/voluntarios/";
+        return "voluntarios";
     }
 
     @PostMapping("/guardar")
@@ -131,5 +109,17 @@ public class VoluntariosController {
         );
 
         return "redirect:/voluntarios/";
+    }
+
+    @GetMapping("/borrar")
+    public String doBorrar(@RequestParam("id") Integer id) {
+
+        voluntariosService.eliminarVoluntarioConPersona(id);
+
+        return "redirect:/voluntarios/";
+    }
+
+    private String emptyIfNull(String s) {
+        return s == null ? "" : s;
     }
 }

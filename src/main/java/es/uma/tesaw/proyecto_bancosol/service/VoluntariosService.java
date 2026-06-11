@@ -1,11 +1,17 @@
 package es.uma.tesaw.proyecto_bancosol.service;
 
-import es.uma.tesaw.proyecto_bancosol.dao.*;
-import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.dao.ColaboradorRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.PersonaRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.VistaVoluntariosRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.*;
-import es.uma.tesaw.proyecto_bancosol.mapper.VoluntarioMapper;
+import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
+import es.uma.tesaw.proyecto_bancosol.entities.Persona;
+import es.uma.tesaw.proyecto_bancosol.entities.VistaVoluntarios;
+import es.uma.tesaw.proyecto_bancosol.entities.Voluntario;
 import es.uma.tesaw.proyecto_bancosol.mapper.VistaVoluntarioMapper;
+import es.uma.tesaw.proyecto_bancosol.mapper.VoluntarioMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,33 +32,69 @@ public class VoluntariosService {
     private final VoluntarioMapper voluntarioMapper;
     private final VistaVoluntarioMapper vistaVoluntarioMapper;
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Listado filtrado (usa la vista de BD para evitar N+1 y simplificar joins)
+    // ─────────────────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(String nombre, String email, String telefono, String disponibilidad) {
+    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(
+            String nombre, String email, String telefono, String disponibilidad) {
+
         String nombreNorm = nombre == null ? "" : nombre.trim().toLowerCase();
-        String emailNorm = email == null ? "" : email.trim().toLowerCase();
-        String telefonoNorm = telefono == null ? "" : telefono.trim();
-        String dispNorm = disponibilidad == null ? "" : disponibilidad.trim().toLowerCase();
+        String emailNorm  = email  == null ? "" : email.trim().toLowerCase();
+        String telNorm    = telefono == null ? "" : telefono.trim();
+        String dispNorm   = disponibilidad == null ? "" : disponibilidad.trim().toLowerCase();
 
-        List<VistaVoluntarios> vistas = this.vistaVoluntarioRepository.findAll();
+        List<VistaVoluntarios> vistas;
 
+        // Delegar el filtrado por nombre y disponibilidad al repositorio cuando es posible
+        if (!nombreNorm.isEmpty() && !dispNorm.isEmpty()) {
+            vistas = vistaVoluntarioRepository
+                    .findByNombreCompletoContainingIgnoreCaseAndDisponibilidadContainingIgnoreCase(
+                            nombreNorm, dispNorm);
+        } else if (!nombreNorm.isEmpty()) {
+            vistas = vistaVoluntarioRepository
+                    .findByNombreCompletoContainingIgnoreCase(nombreNorm);
+        } else if (!dispNorm.isEmpty()) {
+            vistas = vistaVoluntarioRepository
+                    .findByDisponibilidadContainingIgnoreCase(dispNorm);
+        } else {
+            vistas = vistaVoluntarioRepository.findAll();
+        }
+
+        // Filtros en memoria para email y teléfono (no están en el repositorio)
         List<VistaVoluntarios> vistasFiltradas = vistas.stream()
-                .filter(v -> nombreNorm.isEmpty() || (v.getNombreCompleto() != null && v.getNombreCompleto().toLowerCase().contains(nombreNorm)))
-                .filter(v -> emailNorm.isEmpty() || (v.getEmail() != null && v.getEmail().toLowerCase().contains(emailNorm)))
-                // SOLUCIÓN CONTAINS: Convertimos el teléfono a String por si es de tipo Integer/Long
-                .filter(v -> telefonoNorm.isEmpty() || (v.getTelefono() != null && String.valueOf(v.getTelefono()).contains(telefonoNorm)))
-                // NOTA: Si getDisponibilidad() sigue dando error, cámbialo por getPreferenciaHorario() dependiendo de tu entidad
-                .filter(v -> dispNorm.isEmpty() || (v.getDisponibilidad() != null && v.getDisponibilidad().toLowerCase().contains(dispNorm)))
+                .filter(v -> emailNorm.isEmpty()
+                        || (v.getEmail() != null && v.getEmail().toLowerCase().contains(emailNorm)))
+                .filter(v -> telNorm.isEmpty()
+                        || (v.getTelefono() != null && String.valueOf(v.getTelefono()).contains(telNorm)))
                 .collect(Collectors.toList());
 
-        // SOLUCIÓN MAPPER: Cambiado a mayúsculas (toDTOList)
-        return this.vistaVoluntarioMapper.toDTOList(vistasFiltradas);
+        return vistaVoluntarioMapper.toDTOList(vistasFiltradas);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Obtener un voluntario por id (devuelve VistaVoluntarioDTO para la vista)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public Optional<VistaVoluntarioDTO> obtenerVoluntario(Integer id) {
+        // La vista usa id_voluntario como String; buscamos por Integer en la tabla real
+        // y luego cruzamos con la vista para no perder datos desnormalizados
+        return vistaVoluntarioRepository.findById(String.valueOf(id))
+                .map(vistaVoluntarioMapper::toDTO);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Guardar (crear o actualizar) un voluntario desde el formulario
+    // ─────────────────────────────────────────────────────────────────────────
+
     @Transactional
-    public void guardarVoluntario(Integer id, String nombreCompleto, String email, String telefono, String disponibilidad) {
+    public void guardarVoluntario(Integer id, String nombreCompleto,
+                                  String email, String telefono,
+                                  String disponibilidad) {
         Voluntario voluntario = null;
-        Persona persona = null;
+        Persona    persona    = null;
 
         if (id != null) {
             voluntario = voluntarioRepository.findById(id).orElse(null);
@@ -65,20 +107,24 @@ public class VoluntariosService {
             persona = new Persona();
         }
 
-        persona.setNombreCompleto(nombreCompleto);
-        persona.setEmail(email);
-        persona.setTelefono(telefono);
+        persona.setNombreCompleto(nombreCompleto != null ? nombreCompleto.trim() : "");
+        persona.setEmail(email != null && !email.isBlank() ? email.trim() : null);
+        persona.setTelefono(telefono != null && !telefono.isBlank() ? telefono.trim() : null);
         persona = personaRepository.save(persona);
 
         if (voluntario == null) {
             voluntario = new Voluntario();
         }
-
         voluntario.setPersona(persona);
-        voluntario.setPreferenciaHorario(disponibilidad);
+        voluntario.setPreferenciaHorario(
+                disponibilidad != null && !disponibilidad.isBlank() ? disponibilidad.trim() : null);
 
         voluntarioRepository.save(voluntario);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Eliminar voluntario y su persona vinculada
+    // ─────────────────────────────────────────────────────────────────────────
 
     @Transactional
     public void eliminarVoluntarioConPersona(Integer idVoluntario) {
@@ -86,25 +132,54 @@ public class VoluntariosService {
         if (voluntario != null) {
             Persona persona = voluntario.getPersona();
             voluntarioRepository.delete(voluntario);
-
             if (persona != null) {
                 personaRepository.delete(persona);
             }
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Métodos de bajo nivel (para uso interno / API REST)
+    // ─────────────────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public List<VoluntarioDTO> listarVoluntarios(String nombre, String email, String telefono, String disponibilidad) {
-        List<Voluntario> voluntarios = this.filtrarVoluntariosEntidad(nombre, email, telefono, disponibilidad);
-        return this.voluntarioMapper.toDTOList(voluntarios);
+    public List<VoluntarioDTO> listarVoluntarios(
+            String nombre, String email, String telefono, String disponibilidad) {
+        return voluntarioMapper.toDTOList(
+                filtrarVoluntariosEntidad(nombre, email, telefono, disponibilidad));
     }
 
     @Transactional(readOnly = true)
-    public Optional<VistaVoluntarioDTO> obtenerVoluntario(Integer id) {
-        return this.vistaVoluntarioRepository.findById(id)
-                // SOLUCIÓN MAPPER: Cambiado a mayúsculas (toDTO)
-                .map(this.vistaVoluntarioMapper::toDTO);
+    public List<Voluntario> filtrarVoluntariosEntidad(
+            String nombre, String email, String telefono, String disponibilidad) {
+
+        String nombreNorm = nombre      == null ? "" : nombre.trim().toLowerCase();
+        String emailNorm  = email       == null ? "" : email.trim().toLowerCase();
+        String telNorm    = telefono    == null ? "" : telefono.trim();
+        String dispNorm   = disponibilidad == null ? "" : disponibilidad.trim().toLowerCase();
+
+        return voluntarioRepository.findAll().stream()
+                .filter(v -> nombreNorm.isEmpty()
+                        || (v.getPersona() != null
+                        && v.getPersona().getNombreCompleto() != null
+                        && v.getPersona().getNombreCompleto().toLowerCase().contains(nombreNorm)))
+                .filter(v -> emailNorm.isEmpty()
+                        || (v.getPersona() != null
+                        && v.getPersona().getEmail() != null
+                        && v.getPersona().getEmail().toLowerCase().contains(emailNorm)))
+                .filter(v -> telNorm.isEmpty()
+                        || (v.getPersona() != null
+                        && v.getPersona().getTelefono() != null
+                        && v.getPersona().getTelefono().contains(telNorm)))
+                .filter(v -> dispNorm.isEmpty()
+                        || (v.getPreferenciaHorario() != null
+                        && v.getPreferenciaHorario().toLowerCase().contains(dispNorm)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Voluntario> obtenerVoluntarioEntidad(Integer id) {
+        return voluntarioRepository.findById(id);
     }
 
     @Transactional
@@ -113,91 +188,59 @@ public class VoluntariosService {
         voluntario.setPreferenciaHorario(dto.getPreferenciaHorario());
 
         if (dto.getIdPersona() != null) {
-            voluntario.setPersona(this.buscarPersonaObligatoria(dto.getIdPersona()));
+            voluntario.setPersona(buscarPersonaObligatoria(dto.getIdPersona()));
         }
-
         if (dto.getIdColaborador() != null && !dto.getIdColaborador().isBlank()) {
-            voluntario.setColaborador(this.colaboradorRepository.findById(dto.getIdColaborador()).orElse(null));
+            voluntario.setColaborador(
+                    colaboradorRepository.findById(dto.getIdColaborador()).orElse(null));
         }
 
-        Voluntario voluntarioGuardado = this.voluntarioRepository.save(voluntario);
-        return this.voluntarioMapper.toDTO(voluntarioGuardado);
+        return voluntarioMapper.toDTO(voluntarioRepository.save(voluntario));
     }
 
     @Transactional
     public Optional<VoluntarioDTO> actualizarVoluntario(Integer id, VoluntarioDTO dto) {
-        Voluntario voluntario = this.voluntarioRepository.findById(id).orElse(null);
-
-        if (voluntario != null) {
-            this.aplicarCambios(voluntario, dto);
-            Voluntario voluntarioActualizado = this.voluntarioRepository.save(voluntario);
-            return Optional.ofNullable(this.voluntarioMapper.toDTO(voluntarioActualizado));
-        }
-
-        return Optional.empty();
+        return voluntarioRepository.findById(id).map(v -> {
+            aplicarCambios(v, dto);
+            return voluntarioMapper.toDTO(voluntarioRepository.save(v));
+        });
     }
 
     @Transactional
     public boolean eliminarVoluntario(Integer id) {
-        if (!this.voluntarioRepository.existsById(id)) {
-            return false;
-        }
-
-        this.voluntarioRepository.deleteById(id);
+        if (!voluntarioRepository.existsById(id)) return false;
+        voluntarioRepository.deleteById(id);
         return true;
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<Voluntario> filtrarVoluntariosEntidad(String nombre, String email, String telefono, String disponibilidad) {
-        String nombreNorm = nombre == null ? "" : nombre.trim().toLowerCase();
-        String emailNorm = email == null ? "" : email.trim().toLowerCase();
-        String telefonoNorm = telefono == null ? "" : telefono.trim();
-        String dispNorm = disponibilidad == null ? "" : disponibilidad.trim().toLowerCase();
-
-        List<Voluntario> voluntarios = this.voluntarioRepository.findAll();
-
-        return voluntarios.stream()
-                .filter(v -> nombreNorm.isEmpty() || (v.getPersona() != null && v.getPersona().getNombreCompleto() != null && v.getPersona().getNombreCompleto().toLowerCase().contains(nombreNorm)))
-                .filter(v -> emailNorm.isEmpty() || (v.getPersona() != null && v.getPersona().getEmail() != null && v.getPersona().getEmail().toLowerCase().contains(emailNorm)))
-                // SOLUCIÓN CONTAINS: Convertimos el teléfono a String en la entidad normal
-                .filter(v -> telefonoNorm.isEmpty() || (v.getPersona() != null && v.getPersona().getTelefono() != null && String.valueOf(v.getPersona().getTelefono()).contains(telefonoNorm)))
-                .filter(v -> dispNorm.isEmpty() || (v.getPreferenciaHorario() != null && v.getPreferenciaHorario().toLowerCase().contains(dispNorm)))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Voluntario> obtenerVoluntarioEntidad(Integer id) {
-        return this.voluntarioRepository.findById(id);
     }
 
     @Transactional
     public Voluntario guardarVoluntarioEntidad(Voluntario voluntario) {
-        return this.voluntarioRepository.save(voluntario);
+        return voluntarioRepository.save(voluntario);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helpers privados
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void aplicarCambios(Voluntario voluntario, VoluntarioDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("El voluntario es obligatorio");
-        }
+        if (dto == null) throw new IllegalArgumentException("El DTO de voluntario es obligatorio");
 
         if (dto.getPreferenciaHorario() != null) {
             voluntario.setPreferenciaHorario(dto.getPreferenciaHorario());
         }
-
         if (dto.getIdPersona() != null) {
-            voluntario.setPersona(this.buscarPersonaObligatoria(dto.getIdPersona()));
+            voluntario.setPersona(buscarPersonaObligatoria(dto.getIdPersona()));
         }
-
         if (dto.getIdColaborador() != null) {
-            Colaborador colaborador = this.colaboradorRepository.findById(dto.getIdColaborador()).orElse(null);
+            Colaborador colaborador =
+                    colaboradorRepository.findById(dto.getIdColaborador()).orElse(null);
             voluntario.setColaborador(colaborador);
         }
     }
 
     private Persona buscarPersonaObligatoria(Integer idPersona) {
-        return this.personaRepository.findById(idPersona)
-                .orElseThrow(() -> new IllegalArgumentException("No existe persona con id " + idPersona));
+        return personaRepository.findById(idPersona)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No existe ninguna persona con id " + idPersona));
     }
 }

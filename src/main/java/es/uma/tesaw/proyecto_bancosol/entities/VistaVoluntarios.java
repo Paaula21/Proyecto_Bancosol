@@ -20,9 +20,9 @@ public class VistaVoluntarios {
 
     @Id
     @Column(name = "id_voluntario")
-    private String idVoluntario;
+    private Integer idVoluntario;
 
-    @JoinColumn(name = "id_persona")
+    @Column(name = "id_persona")
     private String idPersona;
 
     @Column(name = "nombre_completo")
