@@ -6,11 +6,6 @@ import java.util.List;
 
 public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntarios, Integer> {
 
-    List<VistaVoluntarios> findByNombreCompletoContainingIgnoreCase(String nombre);
-
     List<VistaVoluntarios> findByDisponibilidadContainingIgnoreCase(String disponibilidad);
 
-    List<VistaVoluntarios> findByNombreCompletoContainingIgnoreCaseAndDisponibilidadContainingIgnoreCase(
-            String nombre,
-            String disponibilidad);
 }

@@ -17,7 +17,7 @@ public class VistaVoluntarioMapper extends MapperDTO<VistaVoluntarioDTO, VistaVo
 
         VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
 
-        dto.setIdVoluntario(entity.getIdVoluntario());
+        dto.setIdVoluntario(String.valueOf(entity.getIdVoluntario()));
         dto.setNombreCompleto(entity.getNombreCompleto());
         dto.setEmail(entity.getEmail());
         dto.setTelefono(entity.getTelefono());

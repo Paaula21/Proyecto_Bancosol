@@ -8,7 +8,6 @@ import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.Persona;
-import es.uma.tesaw.proyecto_bancosol.entities.VistaVoluntarios;
 import es.uma.tesaw.proyecto_bancosol.entities.Voluntario;
 import es.uma.tesaw.proyecto_bancosol.mapper.VistaVoluntarioMapper;
 import es.uma.tesaw.proyecto_bancosol.mapper.VoluntarioMapper;
@@ -16,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,46 +32,83 @@ public class VoluntariosService {
     private final VoluntarioMapper voluntarioMapper;
     private final VistaVoluntarioMapper vistaVoluntarioMapper;
 
-    // ─────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────
     // Listado filtrado (usa la vista de BD para evitar N+1 y simplificar joins)
     // ─────────────────────────────────────────────────────────────────────────
 
-    @Transactional(readOnly = true)
-    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(
-            String nombre, String email, String telefono, String disponibilidad) {
+    // CAMBIO 1: Modificamos el tipo de retorno a VistaVoluntarioDTO
+    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(String filtro, List<String> disponibilidad) {
+        return this.listarVoluntariosFiltrados(null);
+    }
 
-        String nombreNorm = nombre == null ? "" : nombre.trim().toLowerCase();
-        String emailNorm  = email  == null ? "" : email.trim().toLowerCase();
-        String telNorm    = telefono == null ? "" : telefono.trim();
-        String dispNorm   = disponibilidad == null ? "" : disponibilidad.trim().toLowerCase();
+    // CAMBIO 2: Modificamos el tipo de retorno a VistaVoluntarioDTO
+    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(String disponibilidad) {
+        List<Voluntario> lista;
 
-        List<VistaVoluntarios> vistas;
-
-        // Delegar el filtrado por nombre y disponibilidad al repositorio cuando es posible
-        if (!nombreNorm.isEmpty() && !dispNorm.isEmpty()) {
-            vistas = vistaVoluntarioRepository
-                    .findByNombreCompletoContainingIgnoreCaseAndDisponibilidadContainingIgnoreCase(
-                            nombreNorm, dispNorm);
-        } else if (!nombreNorm.isEmpty()) {
-            vistas = vistaVoluntarioRepository
-                    .findByNombreCompletoContainingIgnoreCase(nombreNorm);
-        } else if (!dispNorm.isEmpty()) {
-            vistas = vistaVoluntarioRepository
-                    .findByDisponibilidadContainingIgnoreCase(dispNorm);
+        if (disponibilidad == null) {
+            // Si no hay filtros, se trae todo de la vista/tabla
+            lista = this.voluntarioRepository.findAll();
         } else {
-            vistas = vistaVoluntarioRepository.findAll();
+            // Si vienen ambos parámetros
+            lista = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(disponibilidad);
         }
 
-        // Filtros en memoria para email y teléfono (no están en el repositorio)
-        List<VistaVoluntarios> vistasFiltradas = vistas.stream()
-                .filter(v -> emailNorm.isEmpty()
-                        || (v.getEmail() != null && v.getEmail().toLowerCase().contains(emailNorm)))
-                .filter(v -> telNorm.isEmpty()
-                        || (v.getTelefono() != null && String.valueOf(v.getTelefono()).contains(telNorm)))
-                .collect(Collectors.toList());
+        // CAMBIO 3: Convertimos manualmente a VistaVoluntarioDTO para que no falle el JSP
+        List<VistaVoluntarioDTO> resultadoVista = new ArrayList<>();
+        for (Voluntario v : lista) {
+            VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
+            if (v.getPersona() != null) {
+                dto.setIdPersona(String.valueOf(v.getPersona().getIdPersona()));
+                dto.setNombreCompleto(v.getPersona().getNombreCompleto());
+                dto.setEmail(v.getPersona().getEmail());
 
-        return vistaVoluntarioMapper.toDTOList(vistasFiltradas);
+                // Evitamos un posible null pointer si no tiene teléfono
+                if (v.getPersona().getTelefono() != null && !v.getPersona().getTelefono().isEmpty()) {
+                    dto.setTelefono(Integer.valueOf(v.getPersona().getTelefono()));
+                }
+            }
+            dto.setDisponibilidad(v.getDisponibilidad());
+            resultadoVista.add(dto);
+        }
+
+        return resultadoVista;
     }
+
+
+
+
+    public List<VistaVoluntarioDTO> listarVoluntariosPorDisponibilidad(List<String> disponibilidad) {
+        List<Voluntario> voluntarios = voluntarioRepository.findAll();
+        List<VistaVoluntarioDTO> voluntariosDTO = new ArrayList<>();
+
+        for (Voluntario v : voluntarios) {
+            // Si no se ha marcado ninguna disponibilidad (es null o vacía), se muestran todos
+            boolean coincideDisponibilidad = (disponibilidad == null || disponibilidad.isEmpty());
+
+            // Si el usuario ha seleccionado opciones, comprobamos si la disponibilidad del voluntario coincide
+            if (!coincideDisponibilidad && v.getDisponibilidad() != null) {
+                for (String disp : disponibilidad) {
+                    if (v.getDisponibilidad().toLowerCase().contains(disp.toLowerCase())) {
+                        coincideDisponibilidad = true;
+                        break; // Con que coincida con una de las seleccionadas, nos sirve
+                    }
+                }
+            }
+
+            // Si cumple la condición de disponibilidad, lo añadimos al DTO de la vista
+            if (coincideDisponibilidad) {
+                VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
+                dto.setIdPersona(String.valueOf(v.getPersona().getIdPersona()));
+                dto.setNombreCompleto(v.getPersona().getNombreCompleto());
+                dto.setEmail(v.getPersona().getEmail());
+                dto.setTelefono(Integer.valueOf(v.getPersona().getTelefono()));
+                dto.setDisponibilidad(v.getDisponibilidad());
+                voluntariosDTO.add(dto);
+            }
+        }
+        return voluntariosDTO;
+    }
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // Obtener un voluntario por id (devuelve VistaVoluntarioDTO para la vista)
@@ -116,7 +153,7 @@ public class VoluntariosService {
             voluntario = new Voluntario();
         }
         voluntario.setPersona(persona);
-        voluntario.setPreferenciaHorario(
+        voluntario.setDisponibilidad(
                 disponibilidad != null && !disponibilidad.isBlank() ? disponibilidad.trim() : null);
 
         voluntarioRepository.save(voluntario);
@@ -172,8 +209,8 @@ public class VoluntariosService {
                         && v.getPersona().getTelefono() != null
                         && v.getPersona().getTelefono().contains(telNorm)))
                 .filter(v -> dispNorm.isEmpty()
-                        || (v.getPreferenciaHorario() != null
-                        && v.getPreferenciaHorario().toLowerCase().contains(dispNorm)))
+                        || (v.getDisponibilidad() != null
+                        && v.getDisponibilidad().toLowerCase().contains(dispNorm)))
                 .collect(Collectors.toList());
     }
 
@@ -185,10 +222,10 @@ public class VoluntariosService {
     @Transactional
     public VoluntarioDTO crearVoluntario(VoluntarioDTO dto) {
         Voluntario voluntario = new Voluntario();
-        voluntario.setPreferenciaHorario(dto.getPreferenciaHorario());
+        voluntario.setDisponibilidad(dto.getPreferenciaHorario());
 
         if (dto.getIdPersona() != null) {
-            voluntario.setPersona(buscarPersonaObligatoria(dto.getIdPersona()));
+            voluntario.setPersona(buscarPersonaObligatoria(Integer.valueOf(dto.getIdPersona())));
         }
         if (dto.getIdColaborador() != null && !dto.getIdColaborador().isBlank()) {
             voluntario.setColaborador(
@@ -226,10 +263,10 @@ public class VoluntariosService {
         if (dto == null) throw new IllegalArgumentException("El DTO de voluntario es obligatorio");
 
         if (dto.getPreferenciaHorario() != null) {
-            voluntario.setPreferenciaHorario(dto.getPreferenciaHorario());
+            voluntario.setDisponibilidad(dto.getPreferenciaHorario());
         }
         if (dto.getIdPersona() != null) {
-            voluntario.setPersona(buscarPersonaObligatoria(dto.getIdPersona()));
+            voluntario.setPersona(buscarPersonaObligatoria(Integer.valueOf(dto.getIdPersona())));
         }
         if (dto.getIdColaborador() != null) {
             Colaborador colaborador =

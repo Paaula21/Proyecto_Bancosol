@@ -12,17 +12,16 @@ public class VoluntarioMapper extends MapperDTO<VoluntarioDTO, Voluntario> {
         if (entity == null) return null;
 
         VoluntarioDTO dto = new VoluntarioDTO();
-        dto.setIdVoluntario(entity.getIdVoluntario());
-        dto.setPreferenciaHorario(entity.getPreferenciaHorario());
+        dto.setIdVoluntario(String.valueOf(entity.getIdVoluntario()));
+        dto.setPreferenciaHorario(entity.getDisponibilidad());
 
         if (entity.getPersona() != null) {
-            dto.setIdPersona(entity.getPersona().getIdPersona());
+            dto.setIdPersona(String.valueOf(entity.getPersona().getIdPersona()));
             dto.setNombreVoluntario(entity.getPersona().getNombreCompleto());
         }
 
-        if (entity.getColaborador() != null) {
-            dto.setIdColaborador(entity.getColaborador().getIdColaborador());
-            dto.setNombreColaborador(entity.getColaborador().getNombreColaborador());
+        if (entity.getIdVoluntario() != null) {
+            dto.setIdVoluntario(String.valueOf(entity.getIdVoluntario()));
         }
 
         return dto;

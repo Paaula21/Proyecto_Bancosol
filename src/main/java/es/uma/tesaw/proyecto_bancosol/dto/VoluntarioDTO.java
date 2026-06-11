@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoluntarioDTO {
-    private Integer idVoluntario;
+    private String idVoluntario;
     private String preferenciaHorario;
-    private Integer idPersona;
+    private String idPersona;
     private String nombreVoluntario;
     private String idColaborador;
     private String nombreColaborador;

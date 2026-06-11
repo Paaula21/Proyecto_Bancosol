@@ -1,13 +1,13 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -27,17 +27,14 @@ public class VoluntariosController {
 
         if (user == null) {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
+        } else {
+            List<VistaVoluntarioDTO> voluntarios = voluntariosService.listarVoluntariosFiltrados(null);
+            model.addAttribute("voluntarios", voluntarios);
+
+            return "voluntarios";
         }
 
-        List<VistaVoluntarioDTO> voluntarios =
-                voluntariosService.listarVoluntariosFiltrados(
-                        nombre_completo,
-                        email,
-                        telefono,
-                        disponibilidad
-                );
-
-        model.addAttribute("nombre_completo",
+        /*model.addAttribute("nombre_completo",
                 nombre_completo != null ? nombre_completo : "");
         model.addAttribute("email",
                 email != null ? email : "");
@@ -46,28 +43,21 @@ public class VoluntariosController {
         model.addAttribute("disponibilidad",
                 disponibilidad != null ? disponibilidad : "");
 
-        model.addAttribute("voluntarios", voluntarios);
-
-        return "voluntarios";
+        model.addAttribute("voluntarios"); */
     }
 
     @PostMapping("/filtrar")
     public String doFiltrar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            @RequestParam(required = false) String nombre_completo,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String telefono,
-            @RequestParam(required = false) String disponibilidad) {
+            @RequestParam(value = "disponibilidad", required = false) List<String> disponibilidad,
+            Model model) {
 
-        if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
-        }
+        // Llamamos al nuevo método del servicio que filtra únicamente por disponibilidad
+        List<VistaVoluntarioDTO> voluntarioFiltrado = this.voluntariosService.listarVoluntariosPorDisponibilidad(disponibilidad);
 
-        return "redirect:/voluntarios/?nombre_completo="
-                + emptyIfNull(nombre_completo)
-                + "&email=" + emptyIfNull(email)
-                + "&telefono=" + emptyIfNull(telefono)
-                + "&disponibilidad=" + emptyIfNull(disponibilidad);
+        // Enviamos el resultado a la vista bajo el atributo "voluntarios"
+        model.addAttribute("voluntarios", voluntarioFiltrado);
+
+        return "voluntarios";
     }
 
     @GetMapping("/editar")
@@ -88,8 +78,7 @@ public class VoluntariosController {
                 voluntario != null ? "editar" : "anadir");
 
         model.addAttribute("voluntarios",
-                voluntariosService.listarVoluntariosFiltrados(
-                        null, null, null, null));
+                voluntariosService.listarVoluntariosFiltrados(null));
 
         return "voluntarios";
     }
@@ -105,8 +94,7 @@ public class VoluntariosController {
         model.addAttribute("modoPanel", "anadir");
 
         model.addAttribute("voluntarios",
-                voluntariosService.listarVoluntariosFiltrados(
-                        null, null, null, null));
+                voluntariosService.listarVoluntariosFiltrados(null));
 
         return "voluntarios";
     }
