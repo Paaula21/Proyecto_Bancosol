@@ -2,11 +2,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.VistaColaboradoresDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
 <%
-    List<VistaColaboradoresDTO> colaboradores = (List<VistaColaboradoresDTO>) request.getAttribute("colaboradores");
+    List<ColaboradorDTO> colaboradores = (List<ColaboradorDTO>) request.getAttribute("colaboradores");
     List<ContactoColaborador> contacto = (List<ContactoColaborador>) request.getAttribute("ContactoColaborador");
     List<ZonaGeografica> zonasDisponibles = (List<ZonaGeografica>) request.getAttribute("zonasDisponibles");
     Colaborador seleccionado = (Colaborador) request.getAttribute("colaboradorSeleccionado");
@@ -95,7 +95,7 @@
                             <tbody id="tabla-colaboradores">
                             <%
                                 if (colaboradores != null && !colaboradores.isEmpty()) {
-                                    for (VistaColaboradoresDTO c : colaboradores) {
+                                    for (ColaboradorDTO c : colaboradores) {
                                         // Al venir del DTO, simplemente comprobamos si son nulos para dar un valor por defecto
                                         String localidad = c.getNombreDivision() != null ? c.getNombreDivision() : "Sin asignar";
                                         String zonaCol = c.getNombreZona() != null ? c.getNombreZona() : "Sin asignar";

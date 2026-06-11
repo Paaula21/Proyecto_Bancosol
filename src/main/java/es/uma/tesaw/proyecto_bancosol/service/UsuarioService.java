@@ -1,25 +1,17 @@
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-<<<<<<< HEAD
 import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-=======
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
->>>>>>> c8f71cf314dfa85190795d8306a552f7f05b51e3
 @Service
 @AllArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-<<<<<<< HEAD
     @Transactional
     public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
 
@@ -47,8 +39,3 @@ public class UsuarioService {
         this.usuarioRepository.save(usuario);
     }
 }
-
-=======
-    public Usuario auth(String username, String password) { return this.usuarioRepository.autenticar(username, password); }
-}
->>>>>>> c8f71cf314dfa85190795d8306a552f7f05b51e3
