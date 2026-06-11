@@ -106,3 +106,7 @@
 .bottom-menu {
     margin-top: auto;
 }
+
+.enlace-perfil {
+    text-decoration: none;
+}

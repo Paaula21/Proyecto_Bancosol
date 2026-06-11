@@ -18,8 +18,8 @@ public class Usuario {
   @JoinColumn(name = "id_usuario")
   private Persona persona;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_rol", nullable = false)
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "id_rol")
   private Rol rol;
 
   @Column(nullable = false)

@@ -1,5 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<%
+    String error = (String)request.getAttribute("error");
+%>
+
 <html>
 <head>
     <!-- Cambiar la hiperreferencia a la correcta -->
@@ -9,11 +13,11 @@
 <body>
 <div class="main-container">
     <div class="div-image">
-        <img src="/icono.png" alt="Logo de BancoSol">
+        <img src="images/icono.png" alt="Logo de BancoSol">
         <h1>Inicio de sesión</h1>
     </div>
     <fieldset class="login-container">
-        <form method="POST" action="/login" class="form-login" id="form-login">
+        <form method="POST" action="/autentica" class="form-login" id="form-login">
             <!-- Añadimos los parámetros autocomplete para la opción de recordarme -->
             <label for="username">Nombre de usuario</label><br>
             <input type="text" id="username" name="username" placeholder="Ej: Cristóbal" required autocomplete="username" /><br><br>
@@ -33,7 +37,14 @@
         </form>
     </fieldset>
     <!-- Esto muestra mensajes de error o éxito -->
-    <p id="message"></p>
+    <%
+        if (error != null) {
+    %>
+    <p id="message"><%= error %></p>
+    <%
+        }
+    %>
+
 </div>
 </body>
 </html>
