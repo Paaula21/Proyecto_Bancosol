@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Campana" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     Integer campanasActivasCount = (Integer) request.getAttribute("campanasActivasCount");
@@ -8,6 +9,7 @@
     Long colaboradoresTotales = (Long) request.getAttribute("colaboradoresTotales");
     Integer coordinadoresTotales = (Integer) request.getAttribute("coordinadoresTotales");
     List<Campana> proximasCampanas = (List<Campana>) request.getAttribute("proximasCampanas");
+    List<CoberturaZonaDTO> coberturasZona = (List<CoberturaZonaDTO>) request.getAttribute("coberturasZona");
 %>
 
 <!DOCTYPE html>
@@ -101,6 +103,28 @@
                         <p>Número de tiendas por zona</p>
                     </div>
                     <div class="shops-list" id="shops-list">
+                        <%
+                            if (coberturasZona != null && !coberturasZona.isEmpty()) {
+                                for (CoberturaZonaDTO cob : coberturasZona) {
+                        %>
+                        <div class="shops-item">
+                            <div class="shop-labels">
+                                <span><%= cob.getNombreZona() %></span>
+                                <span><%= cob.getTiendas() %> tiendas</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <!-- Usamos data-target-width para que JS sepa hasta dónde animar -->
+                                <div class="progress-bar" data-target-width="<%= cob.getPorcentaje() %>%" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <%
+                            }
+                        } else {
+                        %>
+                        <p style="color: #6b7280; font-size: 0.875rem;">No hay datos de cobertura.</p>
+                        <%
+                            }
+                        %>
                     </div>
                 </div>
 
@@ -109,5 +133,22 @@
         </main>
     </div>
 </div>
+
+<script>
+    // Mantenemos la lógica visual de la animación en JS, separada de la carga de datos
+    document.addEventListener("DOMContentLoaded", function () {
+        const barras = document.querySelectorAll('.progress-bar');
+
+        barras.forEach(function(barra, indice) {
+            const anchoObjetivo = barra.getAttribute('data-target-width');
+
+            // Retardo escalonado (100ms inicial + 80ms por cada barra extra)
+            setTimeout(function () {
+                barra.style.width = anchoObjetivo;
+            }, 100 + (indice * 80));
+        });
+    });
+</script>
+
 </body>
 </html>

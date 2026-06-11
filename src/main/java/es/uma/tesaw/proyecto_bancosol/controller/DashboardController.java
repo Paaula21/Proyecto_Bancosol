@@ -1,6 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Campana;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,6 +37,24 @@ public class DashboardController {
         model.addAttribute("coordinadoresTotales", usuarioRepository.countByIdRol(2).size());
         List<Campana> proximasCampanas = campanaRepository.findAll();
         model.addAttribute("proximasCampanas", proximasCampanas);
+
+        List<Object[]> conteoPorZona = establecimientoRepository.countEstablecimientosPorZona();
+        List<CoberturaZonaDTO> coberturas = new ArrayList<>();
+
+        if (!conteoPorZona.isEmpty()) {
+            // Como viene ordenado DESC, el primer elemento es el máximo
+            Long maxTiendas = (Long) conteoPorZona.get(0)[1];
+
+            for (Object[] fila : conteoPorZona) {
+                String nombreZona = (String) fila[0];
+                Long tiendas = (Long) fila[1];
+                // Calculamos el porcentaje
+                int porcentaje = (int) Math.round((tiendas.doubleValue() / maxTiendas) * 100);
+
+                coberturas.add(new CoberturaZonaDTO(nombreZona, tiendas, porcentaje));
+            }
+        }
+        model.addAttribute("coberturasZona", coberturas);
 
         return "administrador";
     }

@@ -1,0 +1,18 @@
+package es.uma.tesaw.proyecto_bancosol.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/*
+* DTO para poder calcular cómodamente el porcentaje de cobertura de cada zona
+* */
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CoberturaZonaDTO {
+    private String nombreZona;
+    private Long tiendas;
+    private Integer porcentaje;
+}

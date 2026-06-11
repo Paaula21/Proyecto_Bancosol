@@ -6,6 +6,10 @@
     String currentURI = request.getRequestURI();
 %>
 
+<head>
+    <link rel="stylesheet" href="/css/Sidebar.css">
+</head>
+
 <aside class="sidebar">
     <a href="/perfil" class="enlace-perfil">
         <div class="user-block">
