@@ -6,8 +6,8 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import java.util.List;
 
+import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
-import es.uma.tesaw.proyecto_bancosol.dto.VistaColaboradoresDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
@@ -35,7 +35,7 @@ public class ColaboradorController {
             @RequestParam(required = false) String accion,
             Model model) {
 
-        List<VistaColaboradoresDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
+        List<ColaboradorDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
         List<ZonaGeografica> zonasDisponibles = this.zonaGeograficaService.obtenerTodasLasZonas();
 
         if (busqueda == null) busqueda = "";
@@ -88,7 +88,7 @@ public class ColaboradorController {
     // Eliminar colaborador
     @PostMapping("/colaboradores/eliminar")
     public String eliminarColaboradorCompleto(@RequestParam String id) {
-        this.colaboradoresService.eliminarColaborador(id);
+        this.colaboradoresService.eliminarColaboradorCompleto(id);
         return "redirect:/colaboradores";
     }
 

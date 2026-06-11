@@ -3,7 +3,6 @@ Paula Fernández Jiménez: 100%
 */
 
 package es.uma.tesaw.proyecto_bancosol.dto;
-// Conjunto de datos para manejar cada componente de un colaborador. Contiene el colaborador, la dirección y el contacto del colaborador
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

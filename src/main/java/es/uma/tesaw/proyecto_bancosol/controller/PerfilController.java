@@ -1,0 +1,60 @@
+/*
+Paula Fernández Jiménez: 100%
+*/
+
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@AllArgsConstructor
+public class PerfilController {
+
+    private final UsuarioService usuarioService;
+
+    @GetMapping("/perfil")
+    public String mostrarPerfil(HttpSession session, Model model) {
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario");
+
+        // Redirección de seguridad si no hay sesión activa
+        if (usuarioLogueado == null) {
+            return "redirect:/login";
+        }
+
+        // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
+        return "Perfil";
+    }
+
+    @PostMapping("/perfil/cambiar_contrasena")
+    public String procesarCambioContrasena(
+            @ModelAttribute CambioContrasenaDTO cambioContrasenaDTO,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario");
+        if (usuarioLogueado == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            this.usuarioService.cambiarContrasena(usuarioLogueado.getIdUsuario(), cambioContrasenaDTO);
+            redirectAttributes.addFlashAttribute("mensajeTexto", "¡Contraseña actualizada con éxito!");
+            redirectAttributes.addFlashAttribute("mensajeTipo", "exito");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensajeTexto", e.getMessage());
+            redirectAttributes.addFlashAttribute("mensajeTipo", "error");
+        }
+
+        return "redirect:/perfil";
+    }
+}

@@ -4,18 +4,18 @@ Paula Fernández Jiménez: 100%
 
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
-import es.uma.tesaw.proyecto_bancosol.dto.VistaColaboradoresDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VistaColaboradoresMapper extends MapperDTO<VistaColaboradoresDTO, VistaColaboradores> {
+public class VistaColaboradoresMapper extends MapperDTO<ColaboradorDTO, VistaColaboradores> {
 
     @Override
-    public VistaColaboradoresDTO toDTO(VistaColaboradores entity) {
+    public ColaboradorDTO toDTO(VistaColaboradores entity) {
         if (entity == null) return null;
 
-        VistaColaboradoresDTO dto = new VistaColaboradoresDTO();
+        ColaboradorDTO dto = new ColaboradorDTO();
         dto.setIdColaborador(entity.getIdColaborador());
         dto.setNombreColaborador(entity.getNombreColaborador());
         dto.setObservaciones(entity.getObservaciones());

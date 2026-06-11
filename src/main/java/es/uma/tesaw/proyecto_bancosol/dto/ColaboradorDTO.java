@@ -1,3 +1,7 @@
+/*
+Paula Fernández Jiménez: 100%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import lombok.AllArgsConstructor;
@@ -11,5 +15,9 @@ public class ColaboradorDTO {
     private String idColaborador;
     private String nombreColaborador;
     private String observaciones;
-    private Integer idDireccion;
+    private String nombreDivision;
+    private String nombreZona;
+    private String nombreContacto;
+    private String emailContacto;
+    private String telefonoContacto;
 }
