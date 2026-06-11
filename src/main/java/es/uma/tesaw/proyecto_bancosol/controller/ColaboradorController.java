@@ -13,6 +13,8 @@ import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
 import es.uma.tesaw.proyecto_bancosol.service.ColaboradoresService;
 import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,12 +31,15 @@ public class ColaboradorController {
 
     @GetMapping("/colaboradores")
     public String listarYGestionarColaboradores(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String busqueda,
             @RequestParam(required = false) String zona,
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String accion,
             Model model) {
-
+        if (user == null) {
+            return "redirect:/";
+        }
         List<ColaboradorDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
         List<ZonaGeografica> zonasDisponibles = this.zonaGeograficaService.obtenerTodasLasZonas();
 
@@ -73,21 +78,36 @@ public class ColaboradorController {
     }
 
     @PostMapping("/colaboradores/guardar")
-    public String guardarColaborador(FormularioColaboradorDTO nuevoColaborador) {
+    public String guardarColaborador(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            FormularioColaboradorDTO nuevoColaborador) {
+        if (user == null) {
+            return "redirect:/";
+        }
         this.colaboradoresService.guardarColaborador(nuevoColaborador);
         return "redirect:/colaboradores";
     }
 
     // Actualizar colaborador
     @PostMapping("/colaboradores/actualizar")
-    public String actualizarColaborador(FormularioColaboradorDTO colaboradorEditado) {
+    public String actualizarColaborador(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            FormularioColaboradorDTO colaboradorEditado) {
+        if (user == null) {
+            return "redirect:/";
+        }
         this.colaboradoresService.guardarColaborador(colaboradorEditado);
         return "redirect:/colaboradores?id=" + colaboradorEditado.getIdColaborador();
     }
 
     // Eliminar colaborador
     @PostMapping("/colaboradores/eliminar")
-    public String eliminarColaboradorCompleto(@RequestParam String id) {
+    public String eliminarColaboradorCompleto(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam String id) {
+        if (user == null) {
+            return "redirect:/";
+        }
         this.colaboradoresService.eliminarColaboradorCompleto(id);
         return "redirect:/colaboradores";
     }

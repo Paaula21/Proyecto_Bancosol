@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
 <%
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario");
+    Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
     String mensajeTexto = (String) request.getAttribute("mensajeTexto");
     String mensajeTipo = (String) request.getAttribute("mensajeTipo");
 
@@ -11,7 +11,7 @@
             "2", "Coordinador",
             "3", "Colaborador"
     );
-    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getRol()), "Invitado");
+    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getRol().getIdRol()), "Invitado");
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,20 +21,20 @@
     <link rel="stylesheet" href="/css/Common.css">
     <link rel="stylesheet" href="/css/Sidebar.css">
     <link rel="stylesheet" href="/css/Header.css">
-    <link rel="stylesheet" href="/css/Perfil.css">
+    <link rel="stylesheet" href="/css/PerfilUsuario.css">
 </head>
 <body>
 <div class="main-layout">
 
-    <aside class="sidebar">
-        <jsp:include page="Sidebar.jsp" />
-    </aside>
+
+        <jsp:include page="sidebar.jsp" />
+
 
     <div class="right-content">
 
-        <header class="main-header">
-            <jsp:include page="Header.jsp" />
-        </header>
+
+            <jsp:include page="header.jsp" />
+
 
         <main class="content-wrapper">
             <div class="content">

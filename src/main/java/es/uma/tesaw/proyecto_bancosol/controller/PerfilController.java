@@ -24,11 +24,11 @@ public class PerfilController {
 
     @GetMapping("/perfil")
     public String mostrarPerfil(HttpSession session, Model model) {
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario");
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
 
         // Redirección de seguridad si no hay sesión activa
         if (usuarioLogueado == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
@@ -41,9 +41,9 @@ public class PerfilController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario");
+        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
         if (usuarioLogueado == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         try {

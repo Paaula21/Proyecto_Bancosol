@@ -35,13 +35,9 @@
 
 <body>
 <div class="main-layout">
-    <aside class="sidebar">
         <jsp:include page="sidebar.jsp" />
-    </aside>
     <div class="right-content">
-        <header class="main-header">
             <jsp:include page="header.jsp" />
-        </header>
         <main>
             <form action="/colaboradores" method="GET" style="margin: 0; padding: 0; display: contents;">
                 <section class="filters">
