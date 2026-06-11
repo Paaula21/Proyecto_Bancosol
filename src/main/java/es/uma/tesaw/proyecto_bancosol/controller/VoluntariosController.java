@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@RequestMapping("/voluntarios")
 @AllArgsConstructor
 public class VoluntariosController {
 
     private final VoluntariosService voluntariosService;
 
-    @GetMapping("/voluntarios")
+    @GetMapping({"", "/"})
     public String doInit(
             @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String nombre_completo,
@@ -28,37 +29,33 @@ public class VoluntariosController {
         if (user == null) {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         } else {
-            List<VistaVoluntarioDTO> voluntarios = voluntariosService.listarVoluntariosFiltrados(null);
+            List<VistaVoluntarioDTO> voluntarios = voluntariosService.listarVoluntarios(null);
             model.addAttribute("voluntarios", voluntarios);
 
             return "voluntarios";
         }
 
-        /*model.addAttribute("nombre_completo",
-                nombre_completo != null ? nombre_completo : "");
-        model.addAttribute("email",
-                email != null ? email : "");
-        model.addAttribute("telefono",
-                telefono != null ? telefono : "");
-        model.addAttribute("disponibilidad",
-                disponibilidad != null ? disponibilidad : "");
-
-        model.addAttribute("voluntarios"); */
     }
 
     @PostMapping("/filtrar")
     public String doFiltrar(
-            @RequestParam(value = "disponibilidad", required = false) List<String> disponibilidad,
+            @RequestParam(value = "disponibilidad", required = false) String disponibilidad,
             Model model) {
 
-        // Llamamos al nuevo método del servicio que filtra únicamente por disponibilidad
-        List<VistaVoluntarioDTO> voluntarioFiltrado = this.voluntariosService.listarVoluntariosPorDisponibilidad(disponibilidad);
+        // 1. Usamos listarVoluntarios en lugar de filtrarVoluntarios para obtener la lista de VistaVoluntarioDTO
+        List<VistaVoluntarioDTO> voluntarioFiltrado = this.voluntariosService.listarVoluntarios(disponibilidad);
 
-        // Enviamos el resultado a la vista bajo el atributo "voluntarios"
+        // 2. Pasamos los voluntarios filtrados a la vista
         model.addAttribute("voluntarios", voluntarioFiltrado);
+
+        // 3. ¡MUY IMPORTANTE! Pasamos la disponibilidad de vuelta para que el <select> mantenga la opción elegida
+        model.addAttribute("disponibilidad", disponibilidad);
+
+        model.addAttribute("currentSection", "voluntarios");
 
         return "voluntarios";
     }
+
 
     @GetMapping("/editar")
     public String doEditar(
@@ -78,25 +75,47 @@ public class VoluntariosController {
                 voluntario != null ? "editar" : "anadir");
 
         model.addAttribute("voluntarios",
-                voluntariosService.listarVoluntariosFiltrados(null));
+                voluntariosService.listarVoluntarios(null));
 
         return "voluntarios";
     }
 
     @GetMapping("/nuevo")
-    public String doNuevo(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+    public String doNuevo(@SessionAttribute(name = "user", required = false) Usuario user,
+                          @RequestParam(value = "id", required = false) Integer idVoluntario,
+                          Model model) {
 
         if (user == null) {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         }
 
-        model.addAttribute("voluntario", null);
-        model.addAttribute("modoPanel", "anadir");
+        boolean isEditando = (idVoluntario != null);
 
-        model.addAttribute("voluntarios",
-                voluntariosService.listarVoluntariosFiltrados(null));
+        model.addAttribute("editando", isEditando);
+        model.addAttribute("viendo", false);
+        model.addAttribute("currentSection", "voluntarios");
 
-        return "voluntarios";
+        if (isEditando) {
+            VoluntarioDTO voluntario = this.voluntariosService.buscarVoluntario(idVoluntario);
+            model.addAttribute("voluntarioActual", voluntario);
+        }
+
+        this.cargarDesplegablesFormulario(model);
+
+        return "crear_voluntario";
+    }
+
+    private void cargarDesplegablesFormulario(Model model) {
+        model.addAttribute("cadenas", this.voluntariosService);
+        /*No se que tengo que poner más, Dani puso esto:
+        model.addAttribute("cadenas", this.cadenaService.listarCadenas());
+        model.addAttribute("zonas", this.zonaService.listarZonas());
+        model.addAttribute("municipios", this.municipioService.listarMunicipios());
+        model.addAttribute("localidades", this.localidadService.listarLocalidades());
+        model.addAttribute("distritos", this.distritoService.listarDistritos());
+        model.addAttribute("coordinadores", this.usuarioService.listarCoordinadores());
+        model.addAttribute("capitanes", this.usuarioService.listarCapitanes());
+         */
     }
 
     @PostMapping("/guardar")
@@ -112,7 +131,7 @@ public class VoluntariosController {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         }
 
-        voluntariosService.guardarVoluntario(
+        this.voluntariosService.guardarVoluntario(
                 id,
                 nombre,
                 email,
@@ -120,8 +139,9 @@ public class VoluntariosController {
                 disponibilidad
         );
 
-        return "redirect:/voluntarios/";
+        return "redirect:/voluntarios";
     }
+
 
     @GetMapping("/borrar")
     public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user, @RequestParam("id") Integer id) {
@@ -134,6 +154,7 @@ public class VoluntariosController {
 
         return "redirect:/voluntarios/";
     }
+
 
     private String emptyIfNull(String s) {
         return s == null ? "" : s;

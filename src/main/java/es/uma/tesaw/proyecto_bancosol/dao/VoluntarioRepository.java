@@ -4,9 +4,11 @@ import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;
 import es.uma.tesaw.proyecto_bancosol.entities.VistaVoluntarios;
 import es.uma.tesaw.proyecto_bancosol.entities.Voluntario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface VoluntarioRepository extends JpaRepository<Voluntario, Integer>{
+
     List<Voluntario> findByDisponibilidadContainingIgnoreCase(String disponibilidad);
 }

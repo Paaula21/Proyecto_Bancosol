@@ -32,28 +32,19 @@ public class VoluntariosService {
     private final VoluntarioMapper voluntarioMapper;
     private final VistaVoluntarioMapper vistaVoluntarioMapper;
 
-// ─────────────────────────────────────────────────────────────────────────
-    // Listado filtrado (usa la vista de BD para evitar N+1 y simplificar joins)
-    // ─────────────────────────────────────────────────────────────────────────
-
-    // CAMBIO 1: Modificamos el tipo de retorno a VistaVoluntarioDTO
-    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(String filtro, List<String> disponibilidad) {
-        return this.listarVoluntariosFiltrados(null);
-    }
-
-    // CAMBIO 2: Modificamos el tipo de retorno a VistaVoluntarioDTO
-    public List<VistaVoluntarioDTO> listarVoluntariosFiltrados(String disponibilidad) {
+    // Listado
+    public List<VistaVoluntarioDTO> listarVoluntarios(String disponibilidad) {
         List<Voluntario> lista;
 
-        if (disponibilidad == null) {
-            // Si no hay filtros, se trae todo de la vista/tabla
+        // Si no hay filtro, viene vacío o es la opción de "todos", traemos todo
+        if (disponibilidad == null || disponibilidad.trim().isEmpty() || disponibilidad.equalsIgnoreCase("todos") || disponibilidad.equalsIgnoreCase("todos los turnos")) {
             lista = this.voluntarioRepository.findAll();
         } else {
-            // Si vienen ambos parámetros
-            lista = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(disponibilidad);
+            // Reemplazamos los guiones por espacios para que coincida con la BD
+            String busquedaLimpia = disponibilidad.replace("-", " ").trim();
+            lista = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(busquedaLimpia);
         }
 
-        // CAMBIO 3: Convertimos manualmente a VistaVoluntarioDTO para que no falle el JSP
         List<VistaVoluntarioDTO> resultadoVista = new ArrayList<>();
         for (Voluntario v : lista) {
             VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
@@ -62,7 +53,6 @@ public class VoluntariosService {
                 dto.setNombreCompleto(v.getPersona().getNombreCompleto());
                 dto.setEmail(v.getPersona().getEmail());
 
-                // Evitamos un posible null pointer si no tiene teléfono
                 if (v.getPersona().getTelefono() != null && !v.getPersona().getTelefono().isEmpty()) {
                     dto.setTelefono(Integer.valueOf(v.getPersona().getTelefono()));
                 }
@@ -74,45 +64,26 @@ public class VoluntariosService {
         return resultadoVista;
     }
 
+    // Filtrado
+    public List<VoluntarioDTO> filtrarVoluntarios (String disponibilidad) { // ¡Ojo! Cambiado de Integer a String
+        List<Voluntario> voluntario;
 
-
-
-    public List<VistaVoluntarioDTO> listarVoluntariosPorDisponibilidad(List<String> disponibilidad) {
-        List<Voluntario> voluntarios = voluntarioRepository.findAll();
-        List<VistaVoluntarioDTO> voluntariosDTO = new ArrayList<>();
-
-        for (Voluntario v : voluntarios) {
-            // Si no se ha marcado ninguna disponibilidad (es null o vacía), se muestran todos
-            boolean coincideDisponibilidad = (disponibilidad == null || disponibilidad.isEmpty());
-
-            // Si el usuario ha seleccionado opciones, comprobamos si la disponibilidad del voluntario coincide
-            if (!coincideDisponibilidad && v.getDisponibilidad() != null) {
-                for (String disp : disponibilidad) {
-                    if (v.getDisponibilidad().toLowerCase().contains(disp.toLowerCase())) {
-                        coincideDisponibilidad = true;
-                        break; // Con que coincida con una de las seleccionadas, nos sirve
-                    }
-                }
-            }
-
-            // Si cumple la condición de disponibilidad, lo añadimos al DTO de la vista
-            if (coincideDisponibilidad) {
-                VistaVoluntarioDTO dto = new VistaVoluntarioDTO();
-                dto.setIdPersona(String.valueOf(v.getPersona().getIdPersona()));
-                dto.setNombreCompleto(v.getPersona().getNombreCompleto());
-                dto.setEmail(v.getPersona().getEmail());
-                dto.setTelefono(Integer.valueOf(v.getPersona().getTelefono()));
-                dto.setDisponibilidad(v.getDisponibilidad());
-                voluntariosDTO.add(dto);
-            }
+        // Misma lógica para cuando se quiere ver todo
+        if (disponibilidad == null || disponibilidad.trim().isEmpty() || disponibilidad.equalsIgnoreCase("todos") || disponibilidad.equalsIgnoreCase("todos los turnos")) {
+            voluntario = this.voluntarioRepository.findAll();
+        } else {
+            voluntario = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(disponibilidad.trim());
         }
-        return voluntariosDTO;
+
+        return this.voluntarioMapper.toDTOList(voluntario);
+    }
+
+    public VoluntarioDTO buscarVoluntario(Integer id) {
+        Voluntario voluntario = this.voluntarioRepository.findById(id).orElse(null);
+        return this.voluntarioMapper.toDTO(voluntario);
     }
 
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Obtener un voluntario por id (devuelve VistaVoluntarioDTO para la vista)
-    // ─────────────────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
     public Optional<VistaVoluntarioDTO> obtenerVoluntario(Integer id) {
@@ -178,13 +149,6 @@ public class VoluntariosService {
     // ─────────────────────────────────────────────────────────────────────────
     // Métodos de bajo nivel (para uso interno / API REST)
     // ─────────────────────────────────────────────────────────────────────────
-
-    @Transactional(readOnly = true)
-    public List<VoluntarioDTO> listarVoluntarios(
-            String nombre, String email, String telefono, String disponibilidad) {
-        return voluntarioMapper.toDTOList(
-                filtrarVoluntariosEntidad(nombre, email, telefono, disponibilidad));
-    }
 
     @Transactional(readOnly = true)
     public List<Voluntario> filtrarVoluntariosEntidad(

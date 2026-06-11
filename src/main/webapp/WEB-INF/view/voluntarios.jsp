@@ -40,27 +40,14 @@
 
         <div class="main-layout">
             <main>
-                <form action="/voluntarios/" method="GET">
+                <form action="/voluntarios/filtrar" method="post">
                     <section class="filters">
                         <div class="filter-group">
                             <label for="filter-turnos">Disponibilidad Horaria</label>
                             <select id="filter-turnos" name="disponibilidad">
                                 <option value="" <%= disponibilidad.isEmpty() ? "selected" : "" %>> Todos los turnos </option>
-                                <option value="lunes-mañana" <%= "lunes-mañana".equals(disponibilidad) ? "selected" : "" %>>Lunes mañana</option>
-                                <option value="martes-mañana" <%= "martes-mañana".equals(disponibilidad) ? "selected" : "" %>>Martes mañana</option>
-                                <option value="miercoles-mañana" <%= "miercoles-mañana".equals(disponibilidad) ? "selected" : "" %>>Miércoles mañana</option>
-                                <option value="jueves-mañana" <%= "jueves-mañana".equals(disponibilidad) ? "selected" : "" %>>Jueves mañana</option>
-                                <option value="viernes-mañana" <%= "viernes-mañana".equals(disponibilidad) ? "selected" : "" %>>Viernes mañana</option>
-                                <option value="sabado-mañana" <%= "sabado-mañana".equals(disponibilidad) ? "selected" : "" %>>Sábado mañana</option>
-                                <option value="domingo-mañana" <%= "domingo-mañana".equals(disponibilidad) ? "selected" : "" %>>Domingo mañana</option>
-
-                                <option value="lunes-tarde" <%= "lunes-tarde".equals(disponibilidad) ? "selected" : "" %>>Lunes tarde</option>
-                                <option value="martes-tarde" <%= "martes-tarde".equals(disponibilidad) ? "selected" : "" %>>Martes tarde</option>
-                                <option value="miercoles-tarde" <%= "miercoles-tarde".equals(disponibilidad) ? "selected" : "" %>>Miércoles tarde</option>
-                                <option value="jueves-tarde" <%= "jueves-tarde".equals(disponibilidad) ? "selected" : "" %>>Jueves tarde</option>
-                                <option value="viernes-tarde" <%= "viernes-tarde".equals(disponibilidad) ? "selected" : "" %>>Viernes tarde</option>
-                                <option value="sabado-tarde" <%= "sabado-tarde".equals(disponibilidad) ? "selected" : "" %>>Sábado tarde</option>
-                                <option value="domingo-tarde" <%= "domingo-tarde".equals(disponibilidad) ? "selected" : "" %>>Domingo tarde</option>
+                                <option value="mañana" <%= "mañana".equals(disponibilidad) ? "selected" : "" %>>Turno de Mañana</option>
+                                <option value="tarde" <%= "tarde".equals(disponibilidad) ? "selected" : "" %>>Turno de Tarde</option>
                             </select>
                         </div>
                         <div class="filter-button">

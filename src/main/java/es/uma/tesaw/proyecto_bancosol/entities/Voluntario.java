@@ -17,7 +17,7 @@ public class Voluntario {
     @JoinColumn(name = "id_persona")
     private Persona persona;
 
-    @Column(name = "disponibilidad")
+    @Column(name = "preferencia_horario")
     private String disponibilidad;
 
     @ManyToOne(fetch = FetchType.LAZY)
