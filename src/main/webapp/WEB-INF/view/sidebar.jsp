@@ -11,8 +11,10 @@
 </head>
 
 <aside class="sidebar">
-    <a href="/perfil" class="enlace-perfil">
+    <!-- BLOQUE DEL USUARIO / PERFIL -->
+    <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
         <div class="user-block">
+            <!-- Primera letra del usuario para el Avatar -->
             <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
             <div class="user-info">
                 <p class="user-name"><%= usuario.getUsuario() %></p>
@@ -27,15 +29,41 @@
             <a href="/dashboard">Dashboard</a>
         </li>
 
-        <% if (usuario.getRol().getIdRol() == 1 || usuario.getRol().getIdRol() == 2) { %>
+        <% int idRol = usuario.getRol().getIdRol(); %>
+
+        <!-- ADMINISTRADORES Y COORDINADORES -->
+        <% if (idRol == 1 || idRol == 2) { %>
         <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
             <a href="/campanas">Campañas</a>
         </li>
+        <li class="<%= currentURI.contains("/cadenas") ? "active" : "" %>">
+            <a href="/cadenas">Cadenas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
+        </li>
+        <li class="<%= currentURI.contains("/incidencias") ? "active" : "" %>">
+            <a href="/incidencias">Incidencias</a>
+        </li>
         <% } %>
 
-        <% if (usuario.getRol().getIdRol() == 1) { %>
+        <!-- ADMINISTRADOREs -->
+        <% if (idRol == 1) { %>
         <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
             <a href="/tiendas">Tiendas</a>
+        </li>
+        <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
+            <a href="/colaboradores">Colaboradores</a>
+        </li>
+        <% } %>
+
+        <!-- COLABORADORES -->
+        <% if (idRol == 3) { %>
+        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
+            <a href="/campanas">Campañas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
         </li>
         <% } %>
     </ul>

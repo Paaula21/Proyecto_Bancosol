@@ -1,6 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -11,18 +12,22 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/voluntarios")
 public class VoluntariosController {
 
     private final VoluntariosService voluntariosService;
 
-    @GetMapping({ "/"})
+    @GetMapping("/voluntarios")
     public String doInit(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String nombre_completo,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String telefono,
             @RequestParam(required = false) String disponibilidad,
             Model model) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         List<VistaVoluntarioDTO> voluntarios =
                 voluntariosService.listarVoluntariosFiltrados(
@@ -48,10 +53,15 @@ public class VoluntariosController {
 
     @PostMapping("/filtrar")
     public String doFiltrar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String nombre_completo,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String telefono,
             @RequestParam(required = false) String disponibilidad) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         return "redirect:/voluntarios/?nombre_completo="
                 + emptyIfNull(nombre_completo)
@@ -62,8 +72,13 @@ public class VoluntariosController {
 
     @GetMapping("/editar")
     public String doEditar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam("id") Integer id,
             Model model) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         VistaVoluntarioDTO voluntario =
                 voluntariosService.obtenerVoluntario(id).orElse(null);
@@ -80,7 +95,11 @@ public class VoluntariosController {
     }
 
     @GetMapping("/nuevo")
-    public String doNuevo(Model model) {
+    public String doNuevo(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         model.addAttribute("voluntario", null);
         model.addAttribute("modoPanel", "anadir");
@@ -94,11 +113,16 @@ public class VoluntariosController {
 
     @PostMapping("/guardar")
     public String doGuardar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam("nombre") String nombre,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "telefono", required = false) String telefono,
             @RequestParam(value = "disponibilidad", required = false) String disponibilidad) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         voluntariosService.guardarVoluntario(
                 id,
@@ -112,7 +136,11 @@ public class VoluntariosController {
     }
 
     @GetMapping("/borrar")
-    public String doBorrar(@RequestParam("id") Integer id) {
+    public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user, @RequestParam("id") Integer id) {
+
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
 
         voluntariosService.eliminarVoluntarioConPersona(id);
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VistaVoluntarioDTO {
-    private String idVoluntario;
+    private Integer idVoluntario;
     private String idPersona;
     private String nombreCompleto;
     private String email;

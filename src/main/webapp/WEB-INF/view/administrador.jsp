@@ -121,7 +121,7 @@
                             }
                         } else {
                         %>
-                        <p style="color: #6b7280; font-size: 0.875rem;">No hay datos de cobertura.</p>
+                        <p>No hay datos de cobertura.</p>
                         <%
                             }
                         %>

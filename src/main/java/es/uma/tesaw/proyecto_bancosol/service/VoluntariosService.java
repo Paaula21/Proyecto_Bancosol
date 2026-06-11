@@ -81,7 +81,7 @@ public class VoluntariosService {
     public Optional<VistaVoluntarioDTO> obtenerVoluntario(Integer id) {
         // La vista usa id_voluntario como String; buscamos por Integer en la tabla real
         // y luego cruzamos con la vista para no perder datos desnormalizados
-        return vistaVoluntarioRepository.findById(String.valueOf(id))
+        return vistaVoluntarioRepository.findById(id)
                 .map(vistaVoluntarioMapper::toDTO);
     }
 

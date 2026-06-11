@@ -4,7 +4,7 @@ import es.uma.tesaw.proyecto_bancosol.entities.VistaVoluntarios;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntarios, String> {
+public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntarios, Integer> {
 
     List<VistaVoluntarios> findByNombreCompletoContainingIgnoreCase(String nombre);
 
