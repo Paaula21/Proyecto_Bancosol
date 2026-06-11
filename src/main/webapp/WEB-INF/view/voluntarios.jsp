@@ -57,11 +57,18 @@
                 </form>
 
                 <div class="list-container">
-                    <div class="list-header">
-                        <h2>Listado de Voluntarios</h2>
-                        <p id="contador-voluntarios"><%= voluntarios != null ? voluntarios.size() : 0 %> voluntarios registrados</p>
+                    <div class="list-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                        <div class="header-titles">
+                            <h2 style="margin: 0; margin-bottom: 5px;">Listado de Voluntarios</h2>
+                            <p id="contador-voluntarios" style="margin: 0; color: #6b7280; font-size: 0.9em;">
+                                <%= voluntarios != null ? voluntarios.size() : 0 %> voluntarios registrados
+                            </p>
+                        </div>
                         <button type="button" class="btn btn--primary"
-                                onclick="window.location.href='/voluntarios/nuevo'">Añadir Voluntario</button>
+                                onclick="window.location.href='/voluntarios/nuevo'"
+                                style="padding: 10px 14px; font-size: 0.85em; height: fit-content;">
+                            Añadir Voluntario
+                        </button>
                     </div>
 
                     <div class="table-wrapper">
