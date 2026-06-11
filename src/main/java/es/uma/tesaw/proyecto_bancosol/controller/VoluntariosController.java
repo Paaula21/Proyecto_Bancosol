@@ -1,15 +1,13 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO; // CAMBIADO: Importamos la vista DTO
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -22,14 +20,24 @@ public class VoluntariosController {
     @GetMapping("/")
     public String doInit(
             @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) String nombre_completo,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String telefono,
+            @RequestParam(required = false) String disponibilidad,
             Model model) {
 
         if (user == null) {
             return "redirect:/";
         }
 
-        List<VoluntarioDTO> voluntarios =
-                voluntariosService.listarVoluntarios();
+        // CAMBIADO: Ahora devuelve una lista de VistaVoluntarioDTO
+        List<VistaVoluntarioDTO> voluntarios =
+                voluntariosService.listarVoluntariosFiltrados(nombre_completo, email, telefono, disponibilidad);
+
+        model.addAttribute("nombre_completo", nombre_completo);
+        model.addAttribute("email", email);
+        model.addAttribute("telefono", telefono);
+        model.addAttribute("disponibilidad", disponibilidad);
 
         model.addAttribute("voluntarios", voluntarios);
 
@@ -38,11 +46,15 @@ public class VoluntariosController {
 
     @PostMapping("/filtrar")
     public String doFiltrar(
-            @RequestParam(value = "filtro", required = false)
+            @RequestParam(required = false) String nombre_completo,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String telefono,
+            @RequestParam(required = false) String disponibilidad,
             Model model) {
 
-        List<VoluntarioDTO> voluntarios =
-                voluntariosService.listarVoluntarios();
+        // CAMBIADO: Ahora devuelve una lista de VistaVoluntarioDTO
+        List<VistaVoluntarioDTO> voluntarios =
+                voluntariosService.listarVoluntariosFiltrados(nombre_completo, email, telefono, disponibilidad);
 
         model.addAttribute("voluntarios", voluntarios);
 
@@ -51,7 +63,8 @@ public class VoluntariosController {
 
     protected String editarCrear(Integer id, Model model) {
 
-        VoluntarioDTO voluntario = null;
+        // CAMBIADO: Usamos VistaVoluntarioDTO para que al editar también aparezcan rellenos los campos de texto
+        VistaVoluntarioDTO voluntario = null;
 
         if (id != null) {
             voluntario = voluntariosService.obtenerVoluntario(id).orElse(null);
@@ -103,21 +116,11 @@ public class VoluntariosController {
 
     @PostMapping("/guardar")
     public String doGuardar(
-
-            @RequestParam(value = "id", required = false)
-            Integer id,
-
-            @RequestParam("nombre")
-            String nombre,
-
-            @RequestParam(value = "email", required = false)
-            String email,
-
-            @RequestParam(value = "telefono", required = false)
-            String telefono,
-
-            @RequestParam(value = "disponibilidad", required = false)
-            String disponibilidad) {
+            @RequestParam(value = "id", required = false) Integer id,
+            @RequestParam("nombre") String nombre,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "telefono", required = false) String telefono,
+            @RequestParam(value = "disponibilidad", required = false) String disponibilidad) {
 
         voluntariosService.guardarVoluntario(
                 id,

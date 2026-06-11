@@ -1,5 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO" %>
+<%
+    // Recuperamos los atributos del request enviados por el controlador
+    List<VistaVoluntarioDTO> voluntarios = (List<VistaVoluntarioDTO>) request.getAttribute("voluntarios");
+    String nombre = (String) request.getAttribute("nombre");
+    String email = (String) request.getAttribute("email");
+    String telefono = (String) request.getAttribute("telefono");
+    String disponibilidad = (String) request.getAttribute("disponibilidad");
 
+    // Normalizamos valores nulos para evitar NullPointerException en la vista
+    if (nombre == null) nombre = "";
+    if (email == null) email = "";
+    if (telefono == null) telefono = "";
+    if (disponibilidad == null) disponibilidad = "";
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
