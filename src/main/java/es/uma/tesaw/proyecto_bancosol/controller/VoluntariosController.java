@@ -64,17 +64,21 @@ public class VoluntariosController {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         }
 
-        VistaVoluntarioDTO voluntario =
+        // Buscamos el voluntario (Devuelve un VistaVoluntarioDTO)
+        VistaVoluntarioDTO voluntarioActual =
                 voluntariosService.obtenerVoluntario(id).orElse(null);
 
-        model.addAttribute("voluntario", voluntario);
-        model.addAttribute("modoPanel",
-                voluntario != null ? "editar" : "anadir");
+        // Si por algún motivo no existe, volvemos a la lista
+        if (voluntarioActual == null) {
+            return "redirect:/voluntarios";
+        }
 
-        model.addAttribute("voluntarios",
-                voluntariosService.listarVoluntarios(null));
+        // Pasamos los atributos con los nombres exactos que usan tus JSPs
+        model.addAttribute("voluntarioActual", voluntarioActual);
+        model.addAttribute("editando", true);
 
-        return "voluntarios";
+        // CAMBIO CLAVE: Devolvemos el nombre de tu archivo JSP de edición
+        return "EditarVoluntario"; // Si usas el mismo de registrar, pon "RegistroVoluntarios"
     }
 
     @GetMapping("/nuevo")
