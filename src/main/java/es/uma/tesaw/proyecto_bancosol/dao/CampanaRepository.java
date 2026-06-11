@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CampanaRepository extends JpaRepository<Campana, String>{
+public interface CampanaRepository extends JpaRepository<Campana, Integer>{
     @Query("SELECT c FROM Campana c WHERE c.estado = :estado")
     public List<Campana> findByEstado (@Param("estado")String estado);
 }

@@ -13,7 +13,7 @@ public class AsignacionCoordinadorMapper extends MapperDTO<AsignacionCoordinador
 
         AsignacionCoordinadorDTO dto = new AsignacionCoordinadorDTO();
         dto.setIdAsignacionCoord(entity.getIdAsignacionCoord());
-        dto.setIdCampana(entity.getCampana() != null ? entity.getCampana().getIdCampana() : null);
+        dto.setIdCampana(String.valueOf(entity.getCampana() != null ? entity.getCampana().getIdCampana() : null));
         dto.setIdTienda(entity.getTienda() != null ? entity.getTienda().getIdEstablecimiento() : null);
         dto.setIdUsuarioCoordinador(entity.getUsuarioCoordinador() != null ? entity.getUsuarioCoordinador().getIdUsuario() : null);
 

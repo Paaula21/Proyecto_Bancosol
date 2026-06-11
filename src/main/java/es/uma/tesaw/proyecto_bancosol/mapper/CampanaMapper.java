@@ -14,14 +14,12 @@ public class CampanaMapper extends MapperDTO<CampanaDTO, Campana> {
         if (entity == null) return null;
 
         CampanaDTO dto = new CampanaDTO();
-        dto.setIdCampana(entity.getIdCampana());
+        dto.setIdCampana(String.valueOf(entity.getIdCampana()));
         dto.setNombreCampana(entity.getNombreCampana());
         dto.setFechaInicio(entity.getFechaInicio());
         dto.setFechaFin(entity.getFechaFin());
         dto.setEstado(entity.getEstado());
-        dto.setIdsCadenas(entity.getCadenas() == null ? null : entity.getCadenas().stream()
-                .map(cadena -> cadena.getIdCadena())
-                .collect(Collectors.toSet()));
+        dto.setIdsCadenas(null);
 
         return dto;
     }

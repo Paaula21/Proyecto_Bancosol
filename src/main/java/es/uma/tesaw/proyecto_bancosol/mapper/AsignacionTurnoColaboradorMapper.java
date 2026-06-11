@@ -13,7 +13,7 @@ public class AsignacionTurnoColaboradorMapper extends MapperDTO<AsignacionTurnoC
 
         AsignacionTurnoColaboradorDTO dto = new AsignacionTurnoColaboradorDTO();
         dto.setIdAsignacionTurno(entity.getIdAsignacionTurno());
-        dto.setIdCampana(entity.getCampana() != null ? entity.getCampana().getIdCampana() : null);
+        dto.setIdCampana(String.valueOf(entity.getCampana() != null ? entity.getCampana().getIdCampana() : null));
         dto.setIdTienda(entity.getTienda() != null ? entity.getTienda().getIdEstablecimiento() : null);
         dto.setIdColaborador(entity.getColaborador() != null ? entity.getColaborador().getIdColaborador() : null);
         dto.setFecha(entity.getFecha());
