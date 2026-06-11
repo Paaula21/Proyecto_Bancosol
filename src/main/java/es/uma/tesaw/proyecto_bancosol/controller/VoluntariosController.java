@@ -42,13 +42,10 @@ public class VoluntariosController {
             @RequestParam(value = "disponibilidad", required = false) String disponibilidad,
             Model model) {
 
-        // 1. Usamos listarVoluntarios en lugar de filtrarVoluntarios para obtener la lista de VistaVoluntarioDTO
         List<VistaVoluntarioDTO> voluntarioFiltrado = this.voluntariosService.listarVoluntarios(disponibilidad);
-
-        // 2. Pasamos los voluntarios filtrados a la vista
         model.addAttribute("voluntarios", voluntarioFiltrado);
 
-        // 3. ¡MUY IMPORTANTE! Pasamos la disponibilidad de vuelta para que el <select> mantenga la opción elegida
+        // Mantener la opción elegida del filtro
         model.addAttribute("disponibilidad", disponibilidad);
 
         model.addAttribute("currentSection", "voluntarios");
@@ -85,10 +82,6 @@ public class VoluntariosController {
                           @RequestParam(value = "id", required = false) Integer idVoluntario,
                           Model model) {
 
-        if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
-        }
-
         boolean isEditando = (idVoluntario != null);
 
         model.addAttribute("editando", isEditando);
@@ -102,7 +95,7 @@ public class VoluntariosController {
 
         this.cargarDesplegablesFormulario(model);
 
-        return "crear_voluntario";
+        return "RegistroVoluntarios";
     }
 
     private void cargarDesplegablesFormulario(Model model) {
@@ -120,25 +113,16 @@ public class VoluntariosController {
 
     @PostMapping("/guardar")
     public String doGuardar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam("nombre") String nombre,
-            @RequestParam(value = "email", required = false) String email,
+            @RequestParam("email") String email,
             @RequestParam(value = "telefono", required = false) String telefono,
-            @RequestParam(value = "disponibilidad", required = false) String disponibilidad) {
+            @RequestParam("disponibilidad") String disponibilidad) {
 
-        if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
-        }
+        // 1. Guardamos en la base de datos usando tu servicio
+        this.voluntariosService.guardarVoluntario(id, nombre, email, telefono, disponibilidad);
 
-        this.voluntariosService.guardarVoluntario(
-                id,
-                nombre,
-                email,
-                telefono,
-                disponibilidad
-        );
-
+        // 2. ¡CLAVE! Redirigimos al listado general mediante la URL, no el nombre del JSP
         return "redirect:/voluntarios";
     }
 

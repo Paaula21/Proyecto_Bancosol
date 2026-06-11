@@ -32,17 +32,17 @@ public class VoluntariosService {
     private final VoluntarioMapper voluntarioMapper;
     private final VistaVoluntarioMapper vistaVoluntarioMapper;
 
-    // Listado
+// Listado y filtrado
+
     public List<VistaVoluntarioDTO> listarVoluntarios(String disponibilidad) {
         List<Voluntario> lista;
 
-        // Si no hay filtro, viene vacío o es la opción de "todos", traemos todo
-        if (disponibilidad == null || disponibilidad.trim().isEmpty() || disponibilidad.equalsIgnoreCase("todos") || disponibilidad.equalsIgnoreCase("todos los turnos")) {
+        if (disponibilidad == null) {
+            // Si no hay filtros, se trae todo de la vista/tabla
             lista = this.voluntarioRepository.findAll();
         } else {
-            // Reemplazamos los guiones por espacios para que coincida con la BD
-            String busquedaLimpia = disponibilidad.replace("-", " ").trim();
-            lista = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(busquedaLimpia);
+            // Si vienen ambos parámetros
+            lista = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(disponibilidad);
         }
 
         List<VistaVoluntarioDTO> resultadoVista = new ArrayList<>();
@@ -64,19 +64,6 @@ public class VoluntariosService {
         return resultadoVista;
     }
 
-    // Filtrado
-    public List<VoluntarioDTO> filtrarVoluntarios (String disponibilidad) { // ¡Ojo! Cambiado de Integer a String
-        List<Voluntario> voluntario;
-
-        // Misma lógica para cuando se quiere ver todo
-        if (disponibilidad == null || disponibilidad.trim().isEmpty() || disponibilidad.equalsIgnoreCase("todos") || disponibilidad.equalsIgnoreCase("todos los turnos")) {
-            voluntario = this.voluntarioRepository.findAll();
-        } else {
-            voluntario = this.voluntarioRepository.findByDisponibilidadContainingIgnoreCase(disponibilidad.trim());
-        }
-
-        return this.voluntarioMapper.toDTOList(voluntario);
-    }
 
     public VoluntarioDTO buscarVoluntario(Integer id) {
         Voluntario voluntario = this.voluntarioRepository.findById(id).orElse(null);
@@ -117,7 +104,6 @@ public class VoluntariosService {
 
         persona.setNombreCompleto(nombreCompleto != null ? nombreCompleto.trim() : "");
         persona.setEmail(email != null && !email.isBlank() ? email.trim() : null);
-        persona.setTelefono(telefono != null && !telefono.isBlank() ? telefono.trim() : null);
         persona = personaRepository.save(persona);
 
         if (voluntario == null) {
