@@ -82,7 +82,10 @@
                                             if (voluntariosManana != null) {
                                                 for (VistaVoluntarioDTO v : voluntariosManana) {
                                                     // Verificamos si este voluntario en concreto ya está asignado en la BD
-                                                    boolean mSeleccionado = asignaciones != null && v.getIdVoluntario().equals(asignaciones.get(nombreSelectManana));
+                                                    boolean mSeleccionado =
+                                                            asignaciones != null &&
+                                                                    String.valueOf(v.getIdVoluntario())
+                                                                            .equals(asignaciones.get(nombreSelectManana));
                                         %>
                                         <option value="<%= v.getIdVoluntario() %>" <%= mSeleccionado ? "selected" : "" %>>
                                             <%= v.getNombreCompleto() %>
@@ -101,7 +104,10 @@
                                             if (voluntariosTarde != null) {
                                                 for (VistaVoluntarioDTO v : voluntariosTarde) {
                                                     // Verificamos si este voluntario en concreto ya está asignado en la BD
-                                                    boolean tSeleccionado = asignaciones != null && v.getIdVoluntario().equals(asignaciones.get(nombreSelectTarde));
+                                                    boolean tSeleccionado =
+                                                            asignaciones != null &&
+                                                                    String.valueOf(v.getIdVoluntario())
+                                                                            .equals(asignaciones.get(nombreSelectTarde));
                                         %>
                                         <option value="<%= v.getIdVoluntario() %>" <%= tSeleccionado ? "selected" : "" %>>
                                             <%= v.getNombreCompleto() %>

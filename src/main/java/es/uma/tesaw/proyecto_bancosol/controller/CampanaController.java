@@ -116,8 +116,8 @@ public class CampanaController {
         model.addAttribute("idTienda", idTienda);
 
         // 1. Voluntarios para los desplegables
-        model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("Mañana"));
-        model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("Tarde"));
+        model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
+        model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
 
         // 2. Cargamos las asignaciones ya guardadas en BD para preseleccionar los <select>
         Map<String, String> asignacionesGuardadas = new HashMap<>();
@@ -139,6 +139,11 @@ public class CampanaController {
             List<AsignacionTurnoColaborador> turnos =
                     asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
 
+            System.out.println(
+                    "TURNOS RECUPERADOS: "
+                            + turnos.size()
+            );
+
             for (AsignacionTurnoColaborador t : turnos) {
 
                 // Traducimos el día de inglés a español (sin tildes, igual que los name del JSP)
@@ -158,6 +163,9 @@ public class CampanaController {
                 }
             }
         }
+
+        System.out.println("=== ASIGNACIONES LEIDAS DE BD ===");
+        System.out.println(asignacionesGuardadas);
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
 
