@@ -1,10 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Cadena" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Establecimiento" %>
 <%
     String idCampana = (String) request.getAttribute("idCampana");
-    // Recuperamos la lista como lo que realmente es: una lista de Cadenas
-    List<Cadena> listaCadenas = (List<Cadena>) request.getAttribute("tiendas");
+    // Recuperamos la lista de establecimientos que viene del controlador
+    List<Establecimiento> listaEstablecimientos = (List<Establecimiento>) request.getAttribute("establecimientos");
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -61,20 +61,20 @@
                             </thead>
                             <tbody id="tabla-tiendas-campana">
                             <%
-                                if (listaCadenas != null && !listaCadenas.isEmpty()) {
-                                    for (Cadena c : listaCadenas) {
+                                if (listaEstablecimientos != null && !listaEstablecimientos.isEmpty()) {
+                                    for (Establecimiento e : listaEstablecimientos) {
                             %>
                             <tr>
-                                <td><strong><%= c.getNombreCadena() != null ? c.getNombreCadena() : "Sin nombre" %></strong></td>
+                                <td><strong><%= e.getNombreResena() != null ? e.getNombreResena() : "Establecimiento sin nombre" %></strong></td>
 
-                                <td><%= c.getNombreCadena() != null ? c.getNombreCadena() : "Sin cadena" %></td>
+                                <td><%= (e.getCadena() != null) ? e.getCadena().getNombreCadena() : "Sin cadena asignada" %></td>
 
-                                <td><%= c.getIdCadena() %></td>
+                                <td><%= e.getIdEstablecimiento() %></td>
 
                                 <td>
                                     <button type="button" class="btn btn--primary"
                                             style="padding: 4px 10px; font-size: 0.8em;"
-                                            onclick="mostrarVoluntarios('<%= c.getIdCadena() %>')">
+                                            onclick="mostrarVoluntarios('<%= e.getIdEstablecimiento() %>')">
                                         Ver Voluntarios
                                     </button>
                                 </td>
@@ -85,7 +85,7 @@
                             %>
                             <tr>
                                 <td colspan="4" style="text-align: center; padding: 20px; color: #6b7280;">
-                                    No hay ninguna cadena asignada a esta campaña actualmente.
+                                    No hay ningún establecimiento asignado a esta campaña actualmente.
                                 </td>
                             </tr>
                             <%

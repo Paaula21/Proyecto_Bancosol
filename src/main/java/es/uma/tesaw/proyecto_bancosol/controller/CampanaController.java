@@ -3,6 +3,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
 import es.uma.tesaw.proyecto_bancosol.service.HistorialService; // Importamos el nuevo servicio
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ public class CampanaController {
     private final CampanaService campanaService;
     private final HistorialService historialService; // Inyectamos el servicio de historial
     private final CadenaService cadenaService;
+    private final EstablecimientoService establecimientoService;
 
     @GetMapping("/campanas")
     public String verCampanas (@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
@@ -42,8 +44,9 @@ public class CampanaController {
         return "historial"; // Renderiza historial.jsp
     }
 
-    // 1. RECUERDA INYECTAR EL SERVICIO ARRIBA EN EL CONTROLADOR:
-    // private final TiendaService tiendaService;
+
+    // 1. RECUERDA INYECTAR EL SERVICIO ARRIBA EN TU CONTROLADOR:
+    // private final EstablecimientoService establecimientoService;
 
     @GetMapping("/campanas/turnos")
     public String verTurnosCampana(@RequestParam("id") String idCampana,
@@ -56,9 +59,8 @@ public class CampanaController {
 
         model.addAttribute("idCampana", idCampana);
 
-        // Buscamos las cadenas de la campaña y las mandamos a la vista
-        // (Asegúrate de que este método en tu cadenaService devuelva List<Cadena>)
-        model.addAttribute("tiendas", cadenaService.buscarCadenaPorCampana(idCampana));
+        // Enviamos la lista de establecimientos reales a la vista
+        model.addAttribute("establecimientos", establecimientoService.buscarEstablecimientosPorCampana(idCampana));
 
         return "listadoCampanas";
     }
