@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import es.uma.tesaw.proyecto_bancosol.entities.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,27 +35,34 @@ public class CampanaController {
     private final EstablecimientoRepository establecimientoRepository;
     private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
 
+    private static final Map<String, String> DIAS_ES = Map.of(
+            "MONDAY",    "lunes",
+            "TUESDAY",   "martes",
+            "WEDNESDAY", "miercoles",
+            "THURSDAY",  "jueves",
+            "FRIDAY",    "viernes",
+            "SATURDAY",  "sabado"
+    );
+
+    private boolean sinPermiso(Usuario user) {
+        return user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2);
+    }
+
     @GetMapping("/campanas")
-    public String verCampanas (@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
-        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            return "redirect:/dashboard";
-        }
+    public String verCampanas(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+        if (sinPermiso(user)) return "redirect:/dashboard";
+
         model.addAttribute("campanas", campanaService.listarCampanas());
         return "campanas";
     }
 
     @GetMapping("/historial")
     public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
-
-        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            return "redirect:/dashboard";
-        }
+        if (sinPermiso(user)) return "redirect:/dashboard";
 
         model.addAttribute("logs", historialService.listarHistorial());
-
         return "historial";
     }
-
 
     @GetMapping("/campanas/turnos")
     public String verTurnosCampana(@RequestParam("id") String idCampana,
@@ -65,18 +71,14 @@ public class CampanaController {
                                    @SessionAttribute(name = "user", required = false) Usuario user,
                                    Model model) {
 
-        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            return "redirect:/dashboard";
-        }
+        if (sinPermiso(user)) return "redirect:/dashboard";
 
         model.addAttribute("idCampana", idCampana);
-
         model.addAttribute("cadenaSeleccionada", nombreCadena);
         model.addAttribute("idTiendaBuscado", idTiendaStr);
 
-        // Validamos el ID de la tienda
         Integer idTienda = null;
-        if (idTiendaStr != null && !idTiendaStr.trim().isEmpty()) {
+        if (idTiendaStr != null && !idTiendaStr.isBlank()) {
             try {
                 idTienda = Integer.parseInt(idTiendaStr.trim());
             } catch (NumberFormatException e) {
@@ -84,7 +86,8 @@ public class CampanaController {
             }
         }
 
-        model.addAttribute("establecimientos", establecimientoService.buscarEstablecimientosPorCampanaConFiltros(idCampana, nombreCadena, idTienda));
+        model.addAttribute("establecimientos",
+                establecimientoService.buscarEstablecimientosPorCampanaConFiltros(idCampana, nombreCadena, idTienda));
 
         return "listadoCampanas";
     }
@@ -95,51 +98,34 @@ public class CampanaController {
                                       @SessionAttribute(name = "user", required = false) Usuario user,
                                       Model model) {
 
-        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            return "redirect:/dashboard";
-        }
+        if (sinPermiso(user)) return "redirect:/dashboard";
 
         model.addAttribute("idCampana", idCampana);
         model.addAttribute("idTienda", idTienda);
-
         model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
         model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
 
         Map<String, String> asignacionesGuardadas = new HashMap<>();
 
-        Campana campana = campanaRepository.findById(idCampana).orElse(null);
-        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda)).orElse(null);
+        campanaRepository.findById(idCampana).ifPresent(campana -> {
+            establecimientoRepository.findById(Integer.parseInt(idTienda)).ifPresent(tienda -> {
 
-        if (campana != null && tienda != null) {
+                List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
 
-            Map<String, String> traduccionDias = new HashMap<>();
-            traduccionDias.put("MONDAY",    "lunes");
-            traduccionDias.put("TUESDAY",   "martes");
-            traduccionDias.put("WEDNESDAY", "miercoles");
-            traduccionDias.put("THURSDAY",  "jueves");
-            traduccionDias.put("FRIDAY",    "viernes");
-            traduccionDias.put("SATURDAY",  "sabado");
+                for (AsignacionTurnoColaborador t : turnos) {
+                    String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
+                    if (diaEs == null) continue;
 
-            List<AsignacionTurnoColaborador> turnos =
-                    asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
+                    String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
 
-            for (AsignacionTurnoColaborador t : turnos) {
-
-                String diaEn = t.getFecha().getDayOfWeek().name();
-                String diaEs = traduccionDias.get(diaEn);
-                if (diaEs == null) continue;
-
-                String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
-                String clave = "asignacion_" + turno + "_" + diaEs;
-
-                if (t.getVoluntario() != null) {
-                    asignacionesGuardadas.put(clave, String.valueOf(t.getVoluntario().getIdVoluntario()));
+                    if (t.getVoluntario() != null) {
+                        asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
+                    }
                 }
-            }
-        }
+            });
+        });
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
-
         return "AsignacionTurnos";
     }
 
@@ -149,9 +135,7 @@ public class CampanaController {
                                 @RequestParam("idTienda") String idTienda,
                                 @SessionAttribute(name = "user", required = false) Usuario user) {
 
-        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            return "redirect:/dashboard";
-        }
+        if (sinPermiso(user)) return "redirect:/dashboard";
 
         campanaService.guardarTurnos(idCampana, idTienda, request);
 

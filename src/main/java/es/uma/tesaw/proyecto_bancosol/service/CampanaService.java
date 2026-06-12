@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -40,195 +39,54 @@ public class CampanaService {
         return campanaMapper.toDTOList(campanaRepository.findAll());
     }
 
-    public List<Campana> buscarCadenasPorCampana(String idCampana) {
-        return campanaRepository.findByEstado(idCampana);
-    }
-
     @Transactional
-    public void guardarTurnos(String idCampana,
-                              String idTienda,
-                              HttpServletRequest request) {
+    public void guardarTurnos(String idCampana, String idTienda, HttpServletRequest request) {
 
         Campana campana = campanaRepository.findById(idCampana)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Campaña no encontrada: " + idCampana));
+                .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
 
-        Establecimiento tienda = establecimientoRepository
-                .findById(Integer.parseInt(idTienda))
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Tienda no encontrada: " + idTienda));
+        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda))
+                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idTienda));
 
-        // Eliminar asignaciones anteriores
-        asignacionTurnoRepository.deleteByCampanaAndTienda(
-                campana,
-                tienda
-        );
-
+        asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
         entityManager.flush();
 
-        LocalTime iniManana = LocalTime.of(9, 0);
-        LocalTime finManana = LocalTime.of(14, 0);
-
-        LocalTime iniTarde = LocalTime.of(15, 0);
-        LocalTime finTarde = LocalTime.of(20, 0);
-
-        LocalDate fechaBase = campana.getFechaInicio();
-
-        // AQUÍ ESTÁ EL CAMBIO: Forzamos a buscar el Lunes de la semana de inicio
-        LocalDate lunesDeLaSemana = fechaBase.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-        System.out.println("===== GUARDANDO TURNOS =====");
-        System.out.println("Campaña: " + idCampana);
-        System.out.println("Tienda: " + idTienda);
-
-        request.getParameterMap().forEach((k, v) ->
-                System.out.println(
-                        k + " -> " +
-                                java.util.Arrays.toString(v)
-                )
-        );
-
-        List<AsignacionTurnoColaborador> nuevasAsignaciones =
-                new ArrayList<>();
-
-        String[] dias = {
-                "lunes",
-                "martes",
-                "miercoles",
-                "jueves",
-                "viernes",
-                "sabado"
-        };
+        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
+        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
 
         for (int i = 0; i < dias.length; i++) {
-
             String diaEs = dias[i];
-
-            // AQUÍ EL OTRO CAMBIO: Usamos 'lunesDeLaSemana' en lugar de 'fechaBase'
             LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
 
-            String idVolManana =
-                    request.getParameter(
-                            "asignacion_manana_" + diaEs
-                    );
+            String idVolManana = request.getParameter("asignacion_manana_" + diaEs);
+            String idVolTarde = request.getParameter("asignacion_tarde_" + diaEs);
 
-            String idVolTarde =
-                    request.getParameter(
-                            "asignacion_tarde_" + diaEs
-                    );
-
-            System.out.println(
-                    diaEs
-                            + " -> mañana=" + idVolManana
-                            + ", tarde=" + idVolTarde
-            );
-
-            // MAÑANA
-            if (idVolManana != null && !idVolManana.isBlank()) {
-
-                Voluntario vol =
-                        voluntarioRepository
-                                .findById(Integer.parseInt(idVolManana))
-                                .orElse(null);
-
-                if (vol == null) {
-
-                    System.out.println(
-                            "No existe voluntario mañana: "
-                                    + idVolManana
-                    );
-
-                } else {
-
-                    AsignacionTurnoColaborador t =
-                            new AsignacionTurnoColaborador();
-
-                    t.setCampana(campana);
-                    t.setTienda(tienda);
-
-                    t.setVoluntario(vol);
-
-                    // Ahora permitimos NULL
-                    t.setColaborador(null);
-
-                    t.setFecha(fechaDia);
-                    t.setHoraInicio(iniManana);
-                    t.setHoraFin(finManana);
-
-                    nuevasAsignaciones.add(t);
-                }
-            }
-
-            // TARDE
-            if (idVolTarde != null && !idVolTarde.isBlank()) {
-
-                Voluntario vol =
-                        voluntarioRepository
-                                .findById(Integer.parseInt(idVolTarde))
-                                .orElse(null);
-
-                if (vol == null) {
-
-                    System.out.println(
-                            "No existe voluntario tarde: "
-                                    + idVolTarde
-                    );
-
-                } else {
-
-                    AsignacionTurnoColaborador t =
-                            new AsignacionTurnoColaborador();
-
-                    t.setCampana(campana);
-                    t.setTienda(tienda);
-
-                    t.setVoluntario(vol);
-
-                    // Ahora permitimos NULL
-                    t.setColaborador(null);
-
-                    t.setFecha(fechaDia);
-                    t.setHoraInicio(iniTarde);
-                    t.setHoraFin(finTarde);
-
-                    nuevasAsignaciones.add(t);
-                }
-            }
+            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
+            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
         }
 
-        System.out.println(
-                "Asignaciones creadas: "
-                        + nuevasAsignaciones.size()
-        );
-
-        for (AsignacionTurnoColaborador a :
-                nuevasAsignaciones) {
-
-            System.out.println(
-                    a.getFecha()
-                            + " | "
-                            + a.getVoluntario()
-                            .getIdVoluntario()
-                            + " | "
-                            + a.getHoraInicio()
-            );
-        }
-
-        asignacionTurnoRepository.saveAll(
-                nuevasAsignaciones
-        );
-
+        asignacionTurnoRepository.saveAll(nuevasAsignaciones);
         entityManager.flush();
+    }
 
-        System.out.println(
-                "Asignaciones en BD: "
-                        + asignacionTurnoRepository
-                        .countByCampanaAndTienda(
-                                campana,
-                                tienda
-                        )
-        );
+    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
+                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
+                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
+
+        if (idVoluntario != null && !idVoluntario.isBlank()) {
+            voluntarioRepository.findById(Integer.parseInt(idVoluntario)).ifPresent(vol -> {
+                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
+                turno.setCampana(campana);
+                turno.setTienda(tienda);
+                turno.setVoluntario(vol);
+                turno.setColaborador(null);
+                turno.setFecha(fechaDia);
+                turno.setHoraInicio(inicio);
+                turno.setHoraFin(fin);
+
+                listaNuevasAsignaciones.add(turno);
+            });
+        }
     }
 }
