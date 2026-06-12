@@ -63,8 +63,8 @@
                         </div>
 
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <button type="button" class="btn-history"
-                                    onclick="abrirHistorial()">Ver historial
+                            <button type="button" class="btn-history" onclick="window.location.href='/historial'">
+                                Ver historial
                             </button>
                             <button type="button" class="btn btn--primary"
                                     onclick="window.location.href='/campanas/nueva'"

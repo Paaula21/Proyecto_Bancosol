@@ -1,10 +1,8 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-// Asegúrate de importar tu servicio y/o DTO aquí
-// import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
-
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.HistorialService; // Importamos el nuevo servicio
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,20 +13,29 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 @AllArgsConstructor
 public class CampanaController {
 
-    // 1. Declaramos el servicio. Lombok lo inyectará automáticamente gracias al @AllArgsConstructor
     private final CampanaService campanaService;
+    private final HistorialService historialService; // Inyectamos el servicio de historial
 
     @GetMapping("/campanas")
     public String verCampanas (@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
         if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
-            // Solo Administrador (1) y Coordinador (2) pueden ver campañas
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("campanas", campanaService.listarCampanas());
+        return "campanas";
+    }
+
+    // ACTUALIZAMOS ESTE MÉTODO
+    @GetMapping("/historial")
+    public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+        // Control de seguridad: solo los que pueden ver campañas ven el historial
+        if (user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2)) {
             return "redirect:/dashboard";
         }
 
-        // 2. Pedimos la lista al servicio y la guardamos en el modelo con el nombre "campanas"
-        // (Asegúrate de que el método de tu servicio se llame listarCampanas o cámbialo aquí)
-        model.addAttribute("campanas", campanaService.listarCampanas());
+        // Buscamos los logs en la BBDD y los añadimos al modelo
+        model.addAttribute("logs", historialService.listarHistorial());
 
-        return "campanas"; // Renderiza campanas.jsp
+        return "historial"; // Renderiza historial.jsp
     }
 }
