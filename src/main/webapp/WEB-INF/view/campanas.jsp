@@ -3,7 +3,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-    // Recuperamos la lista de campañas enviada por el CampanaController
     List<Campana> listaCampanas = (List<Campana>) request.getAttribute("campanas");
 %>
 
