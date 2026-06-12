@@ -1,3 +1,7 @@
+/*
+Ainhoa García Rebollo: 100%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.entities.LogCampana;
@@ -13,12 +17,7 @@ public class HistorialService {
 
     private final LogCampanaRepository logCampanaRepository;
 
-    /**
-     * Devuelve todos los logs del historial ordenados por fecha descendente (los más nuevos primero)
-     */
     public List<LogCampana> listarHistorial() {
-        // Si no tienes este método creado en el repositorio, puedes definirlo en la interfaz
-        // o usar simplemente logCampanaRepository.findAll()
         return logCampanaRepository.findAllByOrderByTimestampDesc();
     }
 }

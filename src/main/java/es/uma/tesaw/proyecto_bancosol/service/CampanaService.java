@@ -1,3 +1,8 @@
+/*
+Ainhoa García Rebollo: 80%
+IA: 20%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
