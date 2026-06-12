@@ -1,6 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Cadena;
 import es.uma.tesaw.proyecto_bancosol.entities.Campana;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,14 @@ public class CampanaMapper extends MapperDTO<CampanaDTO, Campana> {
         if (entity == null) return null;
 
         CampanaDTO dto = new CampanaDTO();
-        dto.setIdCampana(String.valueOf(entity.getIdCampana()));
+        dto.setIdCampana(entity.getIdCampana());
         dto.setNombreCampana(entity.getNombreCampana());
         dto.setFechaInicio(entity.getFechaInicio());
         dto.setFechaFin(entity.getFechaFin());
         dto.setEstado(entity.getEstado());
-        dto.setIdsCadenas(null);
+        dto.setIdsCadenas(entity.getCadenas().stream()
+                .map(Cadena::getIdCadena)
+                .collect(Collectors.toSet()));
 
         return dto;
     }

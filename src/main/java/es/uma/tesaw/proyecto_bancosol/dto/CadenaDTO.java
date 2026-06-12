@@ -1,13 +1,13 @@
 package es.uma.tesaw.proyecto_bancosol.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CadenaDTO {
     private String idCadena;
     private String nombreCadena;
+    private List<String> campanasIds;
+    private Integer numEstablecimientos;
 }

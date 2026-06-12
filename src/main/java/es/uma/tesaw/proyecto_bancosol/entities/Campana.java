@@ -3,7 +3,8 @@ package es.uma.tesaw.proyecto_bancosol.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "campana")
@@ -26,12 +27,6 @@ public class Campana {
   @Column(nullable = false)
   private String estado;
 
-  // Relación N:M que representa la tabla campana_cadena
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-          name = "campana_cadena",
-          joinColumns = @JoinColumn(name = "id_campana"),
-          inverseJoinColumns = @JoinColumn(name = "id_cadena")
-  )
-  private Set<Cadena> cadenas;
+  @ManyToMany(mappedBy = "campanas", fetch = FetchType.LAZY)
+  private List<Cadena> cadenas = new ArrayList<>();
 }

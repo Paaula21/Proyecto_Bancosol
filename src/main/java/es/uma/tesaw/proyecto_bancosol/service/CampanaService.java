@@ -4,7 +4,9 @@ import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
 import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
 import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
 import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
+import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -24,10 +26,15 @@ public class CampanaService {
     private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
     private final EstablecimientoRepository establecimientoRepository;
     private final VoluntarioRepository voluntarioRepository;
-    private final EntityManager entityManager;  // para forzar el flush entre delete e insert
+    private final EntityManager entityManager;
+    private final CampanaMapper campanaMapper;
 
     public List<Campana> listarCampanas() {
         return campanaRepository.findAll();
+    }
+
+    public List<CampanaDTO> listarCampanasDTO() {
+        return campanaMapper.toDTOList(campanaRepository.findAll());
     }
 
     public List<Campana> buscarCadenasPorCampana(String idCampana) {

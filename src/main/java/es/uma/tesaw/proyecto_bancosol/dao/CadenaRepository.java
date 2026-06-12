@@ -9,11 +9,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CadenaRepository extends JpaRepository<Cadena, Integer> {
+public interface CadenaRepository extends JpaRepository<Cadena, String> {
 
-    // Busca las Cadenas que están dentro de la lista de cadenas de una Campaña específica.
-    // Esta consulta es "a prueba de balas" porque partimos de la Campaña hacia sus cadenas.
-    @Query("SELECT c FROM Campana camp JOIN camp.cadenas c WHERE camp.idCampana = :idCampana")
-    List<Cadena> findCadenasByCampanaId(@Param("idCampana") String idCampana);
+    @Query("select c from Cadena c where c.nombreCadena like concat('%', :nombre, '%')")
+    List<Cadena> filtrarPorNombre(@Param("nombre") String nombre);
+
+    @Query("select c from Cadena c join c.campanas camp where camp.idCampana = :idCampana")
+    List<Cadena> filtrarPorCampana(@Param("idCampana") String idCampana);
+
+    @Query("select c from Cadena c join c.campanas camp where " +
+           "camp.idCampana = :idCampana and " +
+           "c.nombreCadena like concat('%', :nombre, '%')")
+    List<Cadena> filtrarPorNombreYCampana(@Param("nombre") String nombre,
+                                          @Param("idCampana") String idCampana);
 
 }
