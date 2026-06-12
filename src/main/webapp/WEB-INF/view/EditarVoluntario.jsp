@@ -19,7 +19,14 @@
 <body>
 <div class="main-container">
 
+    <jsp:include page="sidebar.jsp" />
+
     <div class="right-container">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Editar Voluntarios" />
+            <jsp:param name="subtitulo" value="Modificación de datos o disponibilidad del voluntario" />
+        </jsp:include>
 
         <div class="form-container">
             <form action="/voluntarios/guardar" method="POST" id="form-edit-voluntario">

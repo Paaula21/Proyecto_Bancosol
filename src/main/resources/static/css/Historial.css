@@ -10,20 +10,20 @@
     overflow: visible;
 }
 
-/* Contenedor INTERIOR */
+/* Contenedor INTERIOR (El cuadro blanco) */
 .historial-container {
-
     background-color: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
-    /* ALTURA FIJA */
-    height: calc(100vh - 120px);
-
     display: flex;
     flex-direction: column;
+
+    /* Le decimos que ocupe el 80% del main y se centre a los lados */
+    width: 80%;
+    margin: 0 auto;
 }
 
 /* Cabecera */

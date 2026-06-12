@@ -1,7 +1,6 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
 import es.uma.tesaw.proyecto_bancosol.service.HistorialService; // Importamos el nuevo servicio
@@ -17,8 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 public class CampanaController {
 
     private final CampanaService campanaService;
-    private final HistorialService historialService; // Inyectamos el servicio de historial
-    private final CadenaService cadenaService;
+    private final HistorialService historialService;
     private final EstablecimientoService establecimientoService;
 
     @GetMapping("/campanas")
@@ -50,6 +48,8 @@ public class CampanaController {
 
     @GetMapping("/campanas/turnos")
     public String verTurnosCampana(@RequestParam("id") String idCampana,
+                                   @RequestParam(value = "cadena", required = false) String nombreCadena,
+                                   @RequestParam(value = "idTienda", required = false) String idTiendaStr,
                                    @SessionAttribute(name = "user", required = false) Usuario user,
                                    Model model) {
 
@@ -59,8 +59,22 @@ public class CampanaController {
 
         model.addAttribute("idCampana", idCampana);
 
-        // Enviamos la lista de establecimientos reales a la vista
-        model.addAttribute("establecimientos", establecimientoService.buscarEstablecimientosPorCampana(idCampana));
+        // Enviamos los filtros de vuelta para mantener el texto escrito en la pantalla
+        model.addAttribute("cadenaSeleccionada", nombreCadena);
+        model.addAttribute("idTiendaBuscado", idTiendaStr);
+
+        // Validamos el ID de la tienda de forma segura (por si llega vacío o con letras)
+        Integer idTienda = null;
+        if (idTiendaStr != null && !idTiendaStr.trim().isEmpty()) {
+            try {
+                idTienda = Integer.parseInt(idTiendaStr.trim());
+            } catch (NumberFormatException e) {
+                idTienda = -1; // Valor bandera en caso de error de formato para que no devuelva resultados
+            }
+        }
+
+        // Buscamos los establecimientos aplicando los filtros correspondientes
+        model.addAttribute("establecimientos", establecimientoService.buscarEstablecimientosPorCampanaConFiltros(idCampana, nombreCadena, idTienda));
 
         return "listadoCampanas";
     }

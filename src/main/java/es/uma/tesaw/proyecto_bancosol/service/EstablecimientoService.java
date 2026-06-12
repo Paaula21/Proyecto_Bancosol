@@ -16,4 +16,11 @@ public class EstablecimientoService {
     public List<Establecimiento> buscarEstablecimientosPorCampana(String idCampana) {
         return establecimientoRepository.findByCampanaId(idCampana);
     }
+
+    public List<Establecimiento> buscarEstablecimientosPorCampanaConFiltros(String idCampana, String nombreCadena, Integer idTienda) {
+        String cadenaFiltro = (nombreCadena != null) ? nombreCadena.trim() : null;
+
+        // Actualizado con el nuevo nombre de método del repositorio
+        return establecimientoRepository.buscarEstablecimientosFiltrados(idCampana, cadenaFiltro, idTienda);
+    }
 }

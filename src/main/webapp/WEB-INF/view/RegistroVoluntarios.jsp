@@ -17,7 +17,14 @@
 
 <div class="app-container">
 
+    <jsp:include page="sidebar.jsp" />
+
     <div class="right-content">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Registro de Voluntarios" />
+            <jsp:param name="subtitulo" value="Introduzca la información del voluntario para hacer su registro" />
+        </jsp:include>
 
         <div class="main-layout">
 

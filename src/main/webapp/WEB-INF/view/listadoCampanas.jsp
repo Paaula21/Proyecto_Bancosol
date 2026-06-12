@@ -20,7 +20,15 @@
 <body>
 
 <div class="app-container">
+    <jsp:include page="sidebar.jsp" />
+
     <div class="right-content">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Listado de Campañas" />
+            <jsp:param name="subtitulo" value="Gestion y planificacion de campañas activas" />
+        </jsp:include>
+
         <div class="main-layout">
             <main>
                 <div class="list-container" id="panel-tiendas" style="margin-bottom: 24px;">
@@ -31,23 +39,38 @@
                         </div>
                     </div>
 
-                    <section class="filters" style="display: flex; align-items: flex-end; gap: 16px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; width: 100%;">
-                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
-                            <label for="filter-cadena" style="font-size: 0.875rem; font-weight: 700; color: #111827;">Cadena</label>
-                            <select id="filter-cadena" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #d1d5db; background-color: #fff; font-size: 0.875rem; color: #374151; height: 42px;">
-                                <option value="">Todas las cadenas</option>
-                            </select>
+                    <%
+                        // Recuperamos las variables de los filtros actuales enviados desde el controlador
+                        String cadenaSeleccionada = (String) request.getAttribute("cadenaSeleccionada");
+                        String idTiendaBuscado = (String) request.getAttribute("idTiendaBuscado");
+                    %>
+
+                    <form class="filters" method="GET" action="/campanas/turnos"
+                          style="display: flex; flex-direction: row; align-items: flex-end; gap: 20px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; width: 100%; box-sizing: border-box;">
+
+                        <input type="hidden" name="id" value="<%= idCampana %>">
+
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 8px; flex: 2;">
+                            <label for="filter-cadena" style="font-size: 0.875rem; font-weight: 600; color: #374151;">Nombre de Cadena</label>
+                            <input type="text" name="cadena" id="filter-cadena" placeholder="Ej: Mercadona"
+                                   value="<%= cadenaSeleccionada != null ? cadenaSeleccionada : "" %>"
+                                   style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 0.875rem; color: #111827; height: 42px; box-sizing: border-box; background-color: #f9fafb;">
                         </div>
 
-                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
-                            <label for="filter-id-tienda" style="font-size: 0.875rem; font-weight: 700; color: #111827;">Buscar por ID Tienda</label>
-                            <input type="text" id="filter-id-tienda" placeholder="Ej: 32" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 0.875rem; color: #374151; height: 42px;">
+                        <div class="filter-group" style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                            <label for="filter-id-tienda" style="font-size: 0.875rem; font-weight: 600; color: #374151;">Buscar por ID Tienda</label>
+                            <input type="text" name="idTienda" id="filter-id-tienda" placeholder="Ej: 32"
+                                   value="<%= idTiendaBuscado != null ? idTiendaBuscado : "" %>"
+                                   style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 0.875rem; color: #111827; height: 42px; box-sizing: border-box; background-color: #f9fafb;">
                         </div>
 
                         <div class="filter-button" style="margin-bottom: 0;">
-                            <button type="button" id="btn-filter" class="btn btn--primary" style="height: 42px; padding: 0 24px; font-size: 0.875rem; font-weight: 600;">Filtrar</button>
+                            <button type="submit" id="btn-filter" class="btn btn--primary"
+                                    style="height: 42px; padding: 0 32px; font-size: 0.875rem; font-weight: 600; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                Filtrar
+                            </button>
                         </div>
-                    </section>
+                    </form>
 
                     <div class="table-wrapper">
                         <table class="data-table">

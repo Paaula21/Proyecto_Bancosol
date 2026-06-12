@@ -27,7 +27,16 @@
 
 <body>
 <div class="main-container">
+
+    <jsp:include page="sidebar.jsp" />
+
     <div class="right-container">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Campañas" />
+            <jsp:param name="subtitulo" value="Gestion y planificacion de campañas activas" />
+        </jsp:include>
+
         <main class="campana-container">
             <section class="filters">
                 <div class="filter-group" id="estado">
