@@ -97,8 +97,8 @@
                                 <td>
                                     <button type="button" class="btn btn--primary"
                                             style="padding: 4px 10px; font-size: 0.8em;"
-                                            onclick="mostrarVoluntarios('<%= e.getIdEstablecimiento() %>')">
-                                        Ver Voluntarios
+                                            onclick="window.location.href='/campanas/asignacion?idCampana=<%= idCampana %>&idTienda=<%= e.getIdEstablecimiento() %>'">
+                                        Asignar Turnos
                                     </button>
                                 </td>
                             </tr>
