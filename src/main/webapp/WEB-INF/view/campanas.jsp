@@ -94,13 +94,21 @@
                             <td><%= c.getFechaInicio() != null ? c.getFechaInicio() : "-" %></td>
                             <td><%= c.getFechaFin() != null ? c.getFechaFin() : "-" %></td>
                             <td>
-                                    <span class="badge <%= "Activa".equalsIgnoreCase(c.getEstado()) ? "badge--success" : "badge--secondary" %>">
-                                        <%= c.getEstado() != null ? c.getEstado() : "Sin estado" %>
-                                    </span>
+            <span class="badge <%= "Activa".equalsIgnoreCase(c.getEstado()) ? "badge--success" : "badge--secondary" %>">
+                <%= c.getEstado() != null ? c.getEstado() : "Sin estado" %>
+            </span>
                             </td>
                             <td>
-                                <button class="btn-action edit" onclick="window.location.href='/campanas/editar?id=<%= c.getIdCampana() %>'">✏️</button>
-                                <button class="btn-action delete" onclick="document.getElementById('overlay-delete').style.display='flex'">🗑️</button>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <button type="button" class="btn-action turnos"
+                                            onclick="window.location.href='/campanas/turnos?id=<%= c.getIdCampana() %>'"
+                                            style="padding: 2px 8px; font-size: 0.8em; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        Ver turnos
+                                    </button>
+
+                                    <button class="btn-action edit" onclick="window.location.href='/campanas/editar?id=<%= c.getIdCampana() %>'">✏️</button>
+                                    <button class="btn-action delete" onclick="document.getElementById('overlay-delete').style.display='flex'">🗑️</button>
+                                </div>
                             </td>
                         </tr>
                         <%
