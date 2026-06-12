@@ -13,18 +13,9 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
             "GROUP BY z.nombreZona ORDER BY COUNT(e) DESC")
     List<Object[]> countEstablecimientosPorZona();
 
-    /*
-     * Para la consulta necesito tanto la zona como el número total de tiendas para calcular luego el porcentaje,
-     * por ello necesito un array de objetos donde en la primera posición tendremos un String y en la segunda un Long
-     */
-
-    // Consulta original que te funcionó para listar todas las tiendas de una campaña
     @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana")
     List<Establecimiento> findByCampanaId(@Param("idCampana") String idCampana);
 
-
-    // --- NUEVA CONSULTA CON FILTROS SOLUCIONADA ---
-    // Usamos el "MEMBER OF" que te funcionó arriba y añadimos las condiciones opcionales de filtrado
     @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp " +
             "WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana " +
             "AND (:nombreCadena IS NULL OR :nombreCadena = '' OR LOWER(c.nombreCadena) LIKE LOWER(CONCAT('%', :nombreCadena, '%'))) " +

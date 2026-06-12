@@ -9,8 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.List;
 
-public interface AsignacionTurnoColaboradorRepository
-        extends JpaRepository<AsignacionTurnoColaborador, Integer>,
+public interface AsignacionTurnoColaboradorRepository extends JpaRepository<AsignacionTurnoColaborador, Integer>,
         JpaSpecificationExecutor<AsignacionTurnoColaborador> {
 
     List<AsignacionTurnoColaborador> findByCampanaAndTienda(Campana campana, Establecimiento tienda);
