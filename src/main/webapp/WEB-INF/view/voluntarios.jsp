@@ -122,36 +122,5 @@ IA: 20% -> Dudas al implementar el pop-up
     </div>
 </div>
 
-<div id="overlay-eliminar" class="overlay" style="display: none;"></div>
-<div id="popup-eliminar" class="popup-confirmacion" style="display: none;">
-    <h3>¿Estás seguro de que deseas eliminar este voluntario?</h3>
-    <p>Esta acción eliminará de forma permanente al voluntario y a la persona vinculada en la base de datos.</p>
-
-    <form id="form-borrar-voluntario" action="/voluntarios/borrar" method="GET">
-        <input type="hidden" name="id" id="input-id-borrar" value="">
-        <div class="popup-actions">
-            <button type="button" id="btn-cancelar-eliminar" class="btn-cancelar" onclick="cerrarModalEliminar()">Cancelar</button>
-            <button type="submit" id="btn-confirmar-eliminar" class="btn-confirmar">Eliminar definitivamente</button>
-        </div>
-    </form>
-</div>
-
-<script>
-    function abrirModalEliminar(id) {
-        document.getElementById('input-id-borrar').value = id;
-        document.getElementById('overlay-eliminar').style.display = 'block';
-        document.getElementById('popup-eliminar').style.display = 'block';
-        document.getElementById('overlay-eliminar').classList.add('active');
-        document.getElementById('popup-eliminar').classList.add('active');
-    }
-
-    function cerrarModalEliminar() {
-        document.getElementById('overlay-eliminar').style.display = 'none';
-        document.getElementById('popup-eliminar').style.display = 'none';
-        document.getElementById('overlay-eliminar').classList.remove('active');
-        document.getElementById('popup-eliminar').classList.remove('active');
-    }
-</script>
-
 </body>
 </html>
