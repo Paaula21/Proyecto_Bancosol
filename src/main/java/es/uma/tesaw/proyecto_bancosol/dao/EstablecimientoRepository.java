@@ -13,18 +13,9 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
             "GROUP BY z.nombreZona ORDER BY COUNT(e) DESC")
     List<Object[]> countEstablecimientosPorZona();
 
-    /*
-     * Para la consulta necesito tanto la zona como el número total de tiendas para calcular luego el porcentaje,
-     * por ello necesito un array de objetos donde en la primera posición tendremos un String y en la segunda un Long
-     */
-
-    // Consulta original que te funcionó para listar todas las tiendas de una campaña
     @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana")
     List<Establecimiento> findByCampanaId(@Param("idCampana") String idCampana);
 
-
-    // --- NUEVA CONSULTA CON FILTROS SOLUCIONADA ---
-    // Usamos el "MEMBER OF" que te funcionó arriba y añadimos las condiciones opcionales de filtrado
     @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp " +
             "WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana " +
             "AND (:nombreCadena IS NULL OR :nombreCadena = '' OR LOWER(c.nombreCadena) LIKE LOWER(CONCAT('%', :nombreCadena, '%'))) " +
@@ -33,5 +24,35 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
             @Param("idCampana") String idCampana,
             @Param("nombreCadena") String nombreCadena,
             @Param("idEstablecimiento") Integer idEstablecimiento
+    );
+
+    @Query("SELECT COALESCE(MAX(e.idEstablecimiento), 0) FROM Establecimiento e")
+    Integer findMaxId();
+
+    @Query("SELECT DISTINCT e FROM Establecimiento e " +
+            "LEFT JOIN e.direccion d " +
+            "LEFT JOIN d.cp cp " +
+            "LEFT JOIN cp.division div " +
+            "LEFT JOIN div.zona z " +
+            "LEFT JOIN e.cadena c " +
+            "LEFT JOIN c.campanas camp " +
+            "WHERE " +
+            "(:idCadena IS NULL OR :idCadena = '' OR c.idCadena = :idCadena) AND " +
+            "(:nombre IS NULL OR :nombre = '' OR LOWER(e.nombreResena) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
+            "(:idCampana IS NULL OR :idCampana = '' OR camp.idCampana = :idCampana) AND " +
+            "(:tipoVia IS NULL OR :tipoVia = '' OR d.tipoVia = :tipoVia) AND " +
+            "(:nombreVia IS NULL OR :nombreVia = '' OR LOWER(d.nombreVia) LIKE LOWER(CONCAT('%', :nombreVia, '%'))) AND " +
+            "(:codigo IS NULL OR :codigo = '' OR cp.codigo = :codigo) AND " +
+            "(:localidad IS NULL OR :localidad = '' OR LOWER(div.nombreDivision) LIKE LOWER(CONCAT('%', :localidad, '%'))) AND " +
+            "(:idZona IS NULL OR z.idZona = :idZona)")
+    List<Establecimiento> findAllFiltrados(
+            @Param("idCadena") String idCadena,
+            @Param("nombre") String nombre,
+            @Param("idCampana") String idCampana,
+            @Param("tipoVia") String tipoVia,
+            @Param("nombreVia") String nombreVia,
+            @Param("codigo") String codigo,
+            @Param("localidad") String localidad,
+            @Param("idZona") Integer idZona
     );
 }

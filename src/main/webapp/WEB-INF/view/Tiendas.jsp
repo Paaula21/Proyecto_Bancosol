@@ -1,0 +1,233 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
+<%
+    List<EstablecimientoDTO> tiendas = (List<EstablecimientoDTO>) request.getAttribute("tiendas");
+    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
+    List<CampanaDTO> campanas = (List<CampanaDTO>) request.getAttribute("campanas");
+    List<ZonaGeografica> zonas = (List<ZonaGeografica>) request.getAttribute("zonas");
+    List<Usuario> coordinadores = (List<Usuario>) request.getAttribute("coordinadores");
+    EstablecimientoDTO tiendaSeleccionada = (EstablecimientoDTO) request.getAttribute("tiendaSeleccionada");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    String idCadena = (String) request.getAttribute("idCadena");
+    String nombre = (String) request.getAttribute("nombre");
+    String idCampana = (String) request.getAttribute("idCampana");
+    String tipoVia = (String) request.getAttribute("tipoVia");
+    String nombreVia = (String) request.getAttribute("nombreVia");
+    String codigo = (String) request.getAttribute("codigo");
+    String localidad = (String) request.getAttribute("localidad");
+    Integer idZona = (Integer) request.getAttribute("idZona");
+    String coordinador = (String) request.getAttribute("coordinador");
+
+    if (modoPanel == null) modoPanel = "ninguno";
+    if (idCadena == null) idCadena = "";
+    if (nombre == null) nombre = "";
+    if (idCampana == null) idCampana = "";
+    if (tipoVia == null) tipoVia = "";
+    if (nombreVia == null) nombreVia = "";
+    if (codigo == null) codigo = "";
+    if (localidad == null) localidad = "";
+    if (coordinador == null) coordinador = "";
+%>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tiendas</title>
+        <link rel="stylesheet" href="../css/InformacionTienda.css">
+        <link rel="stylesheet" href="../css/TablaEstilos.css">
+        <link rel="stylesheet" href="../css/Common.css">
+        <link rel="stylesheet" href="../css/Sidebar.css">
+        <link rel="stylesheet" href="../css/popUpRegistro.css">
+        <link rel="stylesheet" href="../css/Header.css">
+        <link rel="stylesheet" href="../css/DetalleColaborador.css">
+        <link rel="stylesheet" href="../css/EditarAnadirColaborador.css">
+    </head>
+    <body>
+    <div class="app-container">
+        <jsp:include page="sidebar.jsp" />
+        <div class="right-content">
+            <jsp:include page="header.jsp">
+                <jsp:param name="titulo" value="Tiendas" />
+                <jsp:param name="subtitulo" value="Gestion de establecimientos" />
+            </jsp:include>
+
+            <div class="main-layout">
+                <main>
+                    <!--FILTROS-->
+                    <form action="/tiendas" method="GET">
+                        <section class="filters">
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-chain">Cadena</label>
+                                    <select id="filter-chain" name="idCadena">
+                                        <option value="">Todas las cadenas</option>
+                                        <% if (todasCadenas != null) {
+                                            for (CadenaDTO c : todasCadenas) { %>
+                                                <option value="<%= c.getIdCadena() %>" <%= idCadena.equals(c.getIdCadena()) ? "selected" : "" %>>
+                                                    <%= c.getNombreCadena() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-name">Nombre</label>
+                                    <input type="text" id="filter-name" name="nombre" value="<%= nombre %>" placeholder="Nombre de tienda">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-coordinator">Coordinador</label>
+                                    <select id="filter-coordinator" name="coordinador">
+                                        <option value="">Todos los coordinadores</option>
+                                        <% if (coordinadores != null) {
+                                            for (Usuario u : coordinadores) { %>
+                                                <option value="<%= u.getPersona().getNombreCompleto() %>" <%= coordinador.equals(u.getPersona().getNombreCompleto()) ? "selected" : "" %>>
+                                                    <%= u.getPersona().getNombreCompleto() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-campaign">Campaña</label>
+                                    <select id="filter-campaign" name="idCampana">
+                                        <option value="">Todas las campañas</option>
+                                        <% if (campanas != null) {
+                                            for (CampanaDTO camp : campanas) { %>
+                                                <option value="<%= camp.getIdCampana() %>" <%= idCampana.equals(camp.getIdCampana()) ? "selected" : "" %>>
+                                                    <%= camp.getNombreCampana() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-type">Tipo Vía</label>
+                                    <input type="text" id="filter-type" name="tipoVia" value="<%= tipoVia %>" placeholder="Calle, Avda...">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-street">Calle</label>
+                                    <input type="text" id="filter-street" name="nombreVia" value="<%= nombreVia %>" placeholder="Nombre de la vía">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-code">Código Postal</label>
+                                    <input type="text" id="filter-code" name="codigo" value="<%= codigo %>" placeholder="C.P.">
+                                </div>
+                            </div>
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-city">Localidad</label>
+                                    <input type="text" id="filter-city" name="localidad" value="<%= localidad %>" placeholder="Localidad">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-zone">Zona</label>
+                                    <select id="filter-zone" name="idZona">
+                                        <option value="">Todas las zonas</option>
+                                        <% if (zonas != null) {
+                                            for (ZonaGeografica z : zonas) { %>
+                                                <option value="<%= z.getIdZona() %>" <%= idZona != null && idZona.equals(z.getIdZona()) ? "selected" : "" %>>
+                                                    <%= z.getNombreZona() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group filter-group--btn">
+                                    <button type="submit" class="btn btn--primary">Filtrar</button>
+                                </div>
+                            </div>
+                        </section>
+                    </form>
+
+                    <div class="content-wrapper">
+                        <div class="list-container">
+                            <div class="list-header">
+                                <h2>Listado de Tiendas</h2>
+                                <form method="POST" action="/tiendas/anadir">
+                                    <button type="submit" class="btn btn--primary">Añadir Tienda</button>
+                                </form>
+                                <p><%= tiendas != null ? tiendas.size() : 0 %> tiendas encontradas</p>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table id="establishments-table" class="data-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Cadena</th>
+                                        <th>Dirección</th>
+                                        <th>Localidad</th>
+                                        <th>C.P.</th>
+                                        <th>Zona</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <%
+                                        if (tiendas != null && !tiendas.isEmpty()) {
+                                            for (EstablecimientoDTO t : tiendas) {
+                                        %>
+                                        <tr<%= "detalle".equals(modoPanel) && tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null && tiendaSeleccionada.getIdEstablecimiento().equals(t.getIdEstablecimiento()) ? " class=\"selected\"" : "" %>>
+                                            <td>
+                                                <a href="/tiendas?idTienda=<%= t.getIdEstablecimiento() %><%= !idCadena.isEmpty() ? "&idCadena=" + java.net.URLEncoder.encode(idCadena, "UTF-8") : "" %><%= !nombre.isEmpty() ? "&nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8") : "" %><%= !idCampana.isEmpty() ? "&idCampana=" + idCampana : "" %><%= !tipoVia.isEmpty() ? "&tipoVia=" + java.net.URLEncoder.encode(tipoVia, "UTF-8") : "" %><%= !nombreVia.isEmpty() ? "&nombreVia=" + java.net.URLEncoder.encode(nombreVia, "UTF-8") : "" %><%= !codigo.isEmpty() ? "&codigo=" + java.net.URLEncoder.encode(codigo, "UTF-8") : "" %><%= !localidad.isEmpty() ? "&localidad=" + java.net.URLEncoder.encode(localidad, "UTF-8") : "" %><%= idZona != null ? "&idZona=" + idZona : "" %><%= !coordinador.isEmpty() ? "&coordinador=" + java.net.URLEncoder.encode(coordinador, "UTF-8") : "" %>">
+                                                    <%= t.getNombreResena() %>
+                                                </a>
+                                            </td>
+                                            <td><%= t.getNombreCadena() %></td>
+                                            <td><%= t.getTipoVia() != null ? t.getTipoVia() + " " + t.getNombreVia() : "" %></td>
+                                            <td><%= t.getLocalidad() != null ? t.getLocalidad() : "" %></td>
+                                            <td><%= t.getCodigo() != null ? t.getCodigo() : "" %></td>
+                                            <td><%= t.getNombreZona() != null ? t.getNombreZona() : "" %></td>
+                                        </tr>
+                                    <%      }
+                                        } else { %>
+                                        <tr>
+                                            <td colspan="6" class="empty-state">No se encontraron tiendas.</td>
+                                        </tr>
+                                    <%  } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <aside class="detail-panel">
+                            <div class="detail-content">
+                                <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                                    <jsp:include page="DetalleTienda.jsp" />
+                                <% } else if ("editar".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                                    <jsp:include page="EditarTienda.jsp" />
+                                <% } else if ("anadir".equals(modoPanel)) { %>
+                                    <jsp:include page="EditarTienda.jsp" />
+                                <% } else { %>
+                                    <div class="estado-vacio">
+                                        <h3>Detalle de Tienda</h3>
+                                        <p>Haga clic en una tienda de la lista para ver sus detalles.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                            <div class="detail-actions-sticky">
+                                <a href="/tiendas/editar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--primary">Editar</a>
+                                <a href="/tiendas/borrar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--delete">Eliminar</a>
+                            </div>
+                            <% } %>
+                            <% if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) { %>
+                            <div class="detail-actions-sticky">
+                                <button type="submit" form="tienda-form" class="btn btn--primary">Guardar</button>
+                                <a href="/tiendas<%= tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null ? "?idTienda=" + tiendaSeleccionada.getIdEstablecimiento() : "" %>" class="btn btn--cancel">Cancelar</a>
+                            </div>
+                            <% } %>
+                        </aside>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    </body>
+</html>

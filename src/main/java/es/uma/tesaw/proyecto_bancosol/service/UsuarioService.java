@@ -6,11 +6,19 @@ import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarCoordinadores() {
+        return usuarioRepository.findByRolId(2);
+    }
 
     @Transactional
     public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {

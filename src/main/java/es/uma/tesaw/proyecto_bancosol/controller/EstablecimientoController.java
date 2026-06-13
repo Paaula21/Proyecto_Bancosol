@@ -1,0 +1,136 @@
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
+import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
+import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
+import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Controller
+@AllArgsConstructor
+@RequestMapping("/tiendas")
+public class EstablecimientoController {
+
+    private final EstablecimientoService establecimientoService;
+    private final CadenaService cadenaService;
+    private final CampanaService campanaService;
+    private final ZonaGeograficaService zonaGeograficaService;
+    private final UsuarioService usuarioService;
+
+    @GetMapping("")
+    public String doInit(
+            @RequestParam(required = false) String idCadena,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String idCampana,
+            @RequestParam(required = false) String tipoVia,
+            @RequestParam(required = false) String nombreVia,
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) String localidad,
+            @RequestParam(required = false) Integer idZona,
+            @RequestParam(required = false) String coordinador,
+            @RequestParam(required = false) Integer idTienda,
+            Model model) {
+
+        List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
+                idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
+        model.addAttribute("tiendas", tiendas);
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+
+        String modoPanel = "ninguno";
+        EstablecimientoDTO tiendaSeleccionada = null;
+
+        if (idTienda != null) {
+            tiendaSeleccionada = establecimientoService.buscarTienda(idTienda);
+            if (tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null) {
+                modoPanel = "detalle";
+            }
+        }
+
+        model.addAttribute("tiendaSeleccionada", tiendaSeleccionada);
+        model.addAttribute("modoPanel", modoPanel);
+
+        if (idCadena == null) idCadena = "";
+        if (nombre == null) nombre = "";
+        if (idCampana == null) idCampana = "";
+        if (tipoVia == null) tipoVia = "";
+        if (nombreVia == null) nombreVia = "";
+        if (codigo == null) codigo = "";
+        if (localidad == null) localidad = "";
+        if (coordinador == null) coordinador = "";
+        model.addAttribute("idCadena", idCadena);
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("tipoVia", tipoVia);
+        model.addAttribute("nombreVia", nombreVia);
+        model.addAttribute("codigo", codigo);
+        model.addAttribute("localidad", localidad);
+        model.addAttribute("idZona", idZona);
+        model.addAttribute("coordinador", coordinador);
+
+        return "tiendas";
+    }
+
+    protected String editarCrear(Integer idTienda, Model model) {
+        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
+        model.addAttribute("tiendas", establecimientoService.listarTiendas());
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+        model.addAttribute("tiendaSeleccionada", tienda);
+        model.addAttribute("modoPanel", idTienda == null ? "anadir" : "editar");
+        model.addAttribute("idCadena", "");
+        model.addAttribute("nombre", "");
+        model.addAttribute("idCampana", "");
+        model.addAttribute("tipoVia", "");
+        model.addAttribute("nombreVia", "");
+        model.addAttribute("codigo", "");
+        model.addAttribute("localidad", "");
+        model.addAttribute("idZona", null);
+        model.addAttribute("coordinador", "");
+        return "tiendas";
+    }
+
+    @PostMapping("/anadir")
+    public String doAnadir(Model model) {
+        return editarCrear(null, model);
+    }
+
+    @GetMapping("/editar")
+    public String doEditar(@RequestParam("idTienda") Integer idTienda, Model model) {
+        return editarCrear(idTienda, model);
+    }
+
+    @PostMapping("/guardar")
+    public String doGuardar(
+            @RequestParam(required = false) Integer idEstablecimiento,
+            @RequestParam String idCadena,
+            @RequestParam String nombreResena,
+            @RequestParam(required = false) Integer lineales,
+            @RequestParam String tipoVia,
+            @RequestParam String nombreVia,
+            @RequestParam(required = false) String numero,
+            @RequestParam String codigo,
+            @RequestParam String localidad,
+            @RequestParam Integer idZona) {
+        establecimientoService.guardarTienda(idEstablecimiento, idCadena, nombreResena,
+                lineales, tipoVia, nombreVia, numero, codigo, localidad, idZona);
+        return "redirect:/tiendas";
+    }
+
+    @GetMapping("/borrar")
+    public String doBorrar(@RequestParam("idTienda") Integer idTienda) {
+        establecimientoService.borrarTienda(idTienda);
+        return "redirect:/tiendas";
+    }
+}
