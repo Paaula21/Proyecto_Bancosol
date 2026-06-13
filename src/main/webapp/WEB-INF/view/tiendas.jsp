@@ -198,11 +198,11 @@
                         <aside class="detail-panel">
                             <div class="detail-content">
                                 <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
-                                    <jsp:include page="DetalleTienda.jsp" />
+                                    <jsp:include page="detalleTienda.jsp" />
                                 <% } else if ("editar".equals(modoPanel) && tiendaSeleccionada != null) { %>
-                                    <jsp:include page="EditarTienda.jsp" />
+                                    <jsp:include page="editarTienda.jsp" />
                                 <% } else if ("anadir".equals(modoPanel)) { %>
-                                    <jsp:include page="EditarTienda.jsp" />
+                                    <jsp:include page="editarTienda.jsp" />
                                 <% } else { %>
                                     <div class="estado-vacio">
                                         <h3>Detalle de Tienda</h3>

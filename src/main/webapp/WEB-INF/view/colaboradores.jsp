@@ -121,11 +121,11 @@
                 <aside class="detail-panel">
                     <div class="detail-content">
                         <% if ("detalle".equals(modoPanel) && seleccionado != null) { %>
-                        <jsp:include page="DetalleColaborador.jsp" />
+                        <jsp:include page="detalleColaborador.jsp" />
                         <% } else if ("editar".equals(modoPanel) && seleccionado != null) { %>
-                        <jsp:include page="EditarColaboradores.jsp" />
+                        <jsp:include page="editarColaboradores.jsp" />
                         <% } else if ("anadir".equals(modoPanel)) { %>
-                        <jsp:include page="AnadirColaboradores.jsp" />
+                        <jsp:include page="anadirColaboradores.jsp" />
                         <% } else { %>
                         <div style="text-align: center; padding: 40px; color: #888;">Selecciona un colaborador para ver sus detalles.</div>
                         <% } %>

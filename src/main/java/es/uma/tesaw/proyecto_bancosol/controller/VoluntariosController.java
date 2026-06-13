@@ -4,9 +4,9 @@ Ainhoa García Rebollo: 100%
 
 package es.uma.tesaw.proyecto_bancosol.controller;
 
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class VoluntariosController {
 
     @GetMapping({"", "/"})
     public String doInit(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             Model model) {
 
         if (user == null) {
@@ -56,7 +56,7 @@ public class VoluntariosController {
 
     @GetMapping("/editar")
     public String doEditar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("id") Integer id,
             Model model) {
 
@@ -77,7 +77,7 @@ public class VoluntariosController {
     }
 
     @GetMapping("/nuevo")
-    public String doNuevo(@SessionAttribute(name = "user", required = false) Usuario user,
+    public String doNuevo(@SessionAttribute(name = "user", required = false) UsuarioDTO user,
                           @RequestParam(value = "id", required = false) Integer idVoluntario,
                           Model model) {
 
@@ -116,7 +116,7 @@ public class VoluntariosController {
 
 
     @GetMapping("/borrar")
-    public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user,
+    public String doBorrar(@SessionAttribute(name = "user", required = false) UsuarioDTO user,
                            @RequestParam("id") Integer id) {
 
         if (user == null) {

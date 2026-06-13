@@ -8,12 +8,12 @@ import java.util.List;
 
 import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
 import es.uma.tesaw.proyecto_bancosol.service.ColaboradoresService;
 import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -31,7 +31,7 @@ public class ColaboradorController {
 
     @GetMapping("/colaboradores")
     public String listarYGestionarColaboradores(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String busqueda,
             @RequestParam(required = false) String zona,
             @RequestParam(required = false) String id,
@@ -79,7 +79,7 @@ public class ColaboradorController {
 
     @PostMapping("/colaboradores/guardar")
     public String guardarColaborador(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             FormularioColaboradorDTO nuevoColaborador) {
         if (user == null) {
             return "redirect:/";
@@ -91,7 +91,7 @@ public class ColaboradorController {
     // Actualizar colaborador
     @PostMapping("/colaboradores/actualizar")
     public String actualizarColaborador(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             FormularioColaboradorDTO colaboradorEditado) {
         if (user == null) {
             return "redirect:/";
@@ -103,7 +103,7 @@ public class ColaboradorController {
     // Eliminar colaborador
     @PostMapping("/colaboradores/eliminar")
     public String eliminarColaboradorCompleto(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam String id) {
         if (user == null) {
             return "redirect:/";

@@ -1,8 +1,8 @@
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-    Usuario usuario = (Usuario) session.getAttribute("user");
+    UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("user");
     String currentURI = request.getRequestURI();
 %>
 
@@ -18,7 +18,7 @@
             <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
             <div class="user-info">
                 <p class="user-name"><%= usuario.getUsuario() %></p>
-                <p class="user-role"><%= usuario.getRol().getNombreRol() %></p>
+                <p class="user-role"><%= usuario.getNombreRol() %></p>
             </div>
         </div>
     </a>
@@ -29,7 +29,7 @@
             <a href="/dashboard">Dashboard</a>
         </li>
 
-        <% int idRol = usuario.getRol().getIdRol(); %>
+        <% int idRol = usuario.getIdRol(); %>
 
         <!-- ADMINISTRADORES Y COORDINADORES -->
         <% if (idRol == 1 || idRol == 2) { %>

@@ -120,11 +120,11 @@
                         <aside class="detail-panel">
                             <div class="detail-content">
                                 <% if ("detalle".equals(modoPanel) && cadenaSeleccionada != null) { %>
-                                    <jsp:include page="DetalleCadena.jsp" />
+                                    <jsp:include page="detalleCadena.jsp" />
                                 <% } else if ("editar".equals(modoPanel) && cadenaSeleccionada != null) { %>
-                                    <jsp:include page="EditarCadena.jsp" />
+                                    <jsp:include page="editarCadena.jsp" />
                                 <% } else if ("anadir".equals(modoPanel)) { %>
-                                    <jsp:include page="EditarCadena.jsp" />
+                                    <jsp:include page="editarCadena.jsp" />
                                 <% } else { %>
                                     <div id="empty-state-panel" class="estado-vacio">
                                         <h3>Detalle de Cadena</h3>

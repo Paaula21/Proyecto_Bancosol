@@ -5,6 +5,7 @@ Paula Fernández Jiménez: 100%
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
@@ -24,7 +25,7 @@ public class PerfilController {
 
     @GetMapping("/perfil")
     public String mostrarPerfil(HttpSession session, Model model) {
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
+        UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
 
         // Redirección de seguridad si no hay sesión activa
         if (usuarioLogueado == null) {
@@ -41,7 +42,7 @@ public class PerfilController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
+        UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
         if (usuarioLogueado == null) {
             return "redirect:/";
         }

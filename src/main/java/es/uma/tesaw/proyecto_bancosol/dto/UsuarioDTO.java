@@ -11,5 +11,6 @@ public class UsuarioDTO {
     private Integer idUsuario;
     private Integer idPersona;
     private Integer idRol;
+    private String nombreRol;
     private String usuario;
 }

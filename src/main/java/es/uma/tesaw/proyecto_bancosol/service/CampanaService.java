@@ -20,7 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -34,6 +36,41 @@ public class CampanaService {
     private final CampanaMapper campanaMapper;
     private final CadenaRepository cadenaRepository;
 
+
+    private static final Map<String, String> DIAS_ES = Map.of(
+            "MONDAY",    "lunes",
+            "TUESDAY",   "martes",
+            "WEDNESDAY", "miercoles",
+            "THURSDAY",  "jueves",
+            "FRIDAY",    "viernes",
+            "SATURDAY",  "sabado"
+    );
+
+
+    @Transactional(readOnly = true)
+    public Map<String, String> obtenerAsignaciones(String idCampana, Integer idTienda) {
+        Map<String, String> asignacionesGuardadas = new HashMap<>();
+
+        Campana campana = campanaRepository.findById(idCampana).orElse(null);
+        Establecimiento tienda = establecimientoRepository.findById(idTienda).orElse(null);
+
+        if (campana != null && tienda != null) {
+            List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
+
+            for (AsignacionTurnoColaborador t : turnos) {
+                String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
+                if (diaEs == null) continue;
+
+                String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
+
+                if (t.getVoluntario() != null) {
+                    asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
+                }
+            }
+        }
+        return asignacionesGuardadas;
+    }
+
     public List<Campana> listarCampanas() {
         return campanaRepository.findAll();
     }
@@ -43,7 +80,7 @@ public class CampanaService {
     }
 
     @Transactional
-    public void guardarTurnos(String idCampana, String idTienda, HttpServletRequest request) {
+    public void guardarTurnos(String idCampana, String idTienda, Map<String, String> formData) { // <-- Cambia la firma
 
         Campana campana = campanaRepository.findById(idCampana)
                 .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
@@ -62,8 +99,9 @@ public class CampanaService {
             String diaEs = dias[i];
             LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
 
-            String idVolManana = request.getParameter("asignacion_manana_" + diaEs);
-            String idVolTarde = request.getParameter("asignacion_tarde_" + diaEs);
+            // Cambiamos request.getParameter por formData.get()
+            String idVolManana = formData.get("asignacion_manana_" + diaEs);
+            String idVolTarde = formData.get("asignacion_tarde_" + diaEs);
 
             procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
             procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
@@ -125,7 +163,7 @@ public class CampanaService {
         campana.setEstado(estado);
         campanaRepository.save(campana);
 
-        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
+        // Asignar cadenas a la campaña
         if (cadenasIds != null) {
             List<Cadena> todasLasCadenas = cadenaRepository.findAll();
             for (Cadena c : todasLasCadenas) {
