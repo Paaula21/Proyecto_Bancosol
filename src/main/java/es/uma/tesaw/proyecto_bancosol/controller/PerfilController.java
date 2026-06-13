@@ -6,7 +6,6 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
@@ -33,7 +32,7 @@ public class PerfilController {
         }
 
         // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
-        return "Perfil";
+        return "perfil";
     }
 
     @PostMapping("/perfil/cambiar_contrasena")

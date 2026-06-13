@@ -4,7 +4,6 @@ import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Campana;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

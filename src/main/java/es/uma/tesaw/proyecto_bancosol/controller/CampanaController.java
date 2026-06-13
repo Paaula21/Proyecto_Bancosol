@@ -171,7 +171,7 @@ public class CampanaController {
         Map<String, String> asignacionesGuardadas = campanaService.obtenerAsignaciones(idCampana, Integer.parseInt(idTienda));
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
-        return "AsignacionTurnos";
+        return "asignacionTurnos";
     }
 
     @PostMapping("/campanas/turnos/guardar")

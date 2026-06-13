@@ -1,7 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class CadenaController {
 
     @GetMapping("")
     public String doInit(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String idCampana,
             @RequestParam(required = false) String idCadena,
@@ -51,7 +51,7 @@ public class CadenaController {
         model.addAttribute("nombre", nombre);
         model.addAttribute("idCampana", idCampana);
 
-        return "Cadenas";
+        return "cadenas";
     }
 
     protected String editarCrear(String idCadena, Model model) {
@@ -63,12 +63,12 @@ public class CadenaController {
         model.addAttribute("modoPanel", idCadena == null ? "anadir" : "editar");
         model.addAttribute("nombre", "");
         model.addAttribute("idCampana", "");
-        return "Cadenas";
+        return "cadenas";
     }
 
     @PostMapping("/anadir")
     public String doAnadir(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             Model model) {
         if (user == null) return "redirect:/";
         return editarCrear(null, model);
@@ -76,7 +76,7 @@ public class CadenaController {
 
     @GetMapping("/editar")
     public String doEditar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("idCadena") String idCadena,
             Model model) {
         if (user == null) return "redirect:/";
@@ -85,7 +85,7 @@ public class CadenaController {
 
     @PostMapping("/guardar")
     public String doGuardar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String idCadena,
             @RequestParam String nombreCadena,
             @RequestParam(required = false) List<String> campanasIds) {
@@ -96,7 +96,7 @@ public class CadenaController {
 
     @GetMapping("/borrar")
     public String doBorrar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("idCadena") String idCadena) {
         if (user == null) return "redirect:/";
         cadenaService.borrarCadena(idCadena);

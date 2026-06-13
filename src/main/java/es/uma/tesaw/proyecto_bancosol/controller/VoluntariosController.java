@@ -73,7 +73,7 @@ public class VoluntariosController {
         model.addAttribute("voluntarioActual", voluntarioActual);
         model.addAttribute("editando", true);
 
-        return "EditarVoluntario";
+        return "editarVoluntario";
     }
 
     @GetMapping("/nuevo")
@@ -94,7 +94,7 @@ public class VoluntariosController {
 
         this.cargarDesplegablesFormulario(model);
 
-        return "RegistroVoluntarios";
+        return "registroVoluntarios";
     }
 
     private void cargarDesplegablesFormulario(Model model) {

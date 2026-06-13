@@ -1,7 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
@@ -27,7 +27,7 @@ public class EstablecimientoController {
 
     @GetMapping("")
     public String doInit(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String idCadena,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String idCampana,
@@ -80,7 +80,7 @@ public class EstablecimientoController {
         model.addAttribute("idZona", idZona);
         model.addAttribute("coordinador", coordinador);
 
-        return "Tienda";
+        return "tienda";
     }
 
     protected String editarCrear(Integer idTienda, Model model) {
@@ -101,12 +101,12 @@ public class EstablecimientoController {
         model.addAttribute("localidad", "");
         model.addAttribute("idZona", null);
         model.addAttribute("coordinador", "");
-        return "Tienda";
+        return "tienda";
     }
 
     @PostMapping("/anadir")
     public String doAnadir(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             Model model) {
         if (user == null) return "redirect:/";
         return editarCrear(null, model);
@@ -114,7 +114,7 @@ public class EstablecimientoController {
 
     @GetMapping("/editar")
     public String doEditar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("idTienda") Integer idTienda,
             Model model) {
         if (user == null) return "redirect:/";
@@ -123,7 +123,7 @@ public class EstablecimientoController {
 
     @PostMapping("/guardar")
     public String doGuardar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) Integer idEstablecimiento,
             @RequestParam String idCadena,
             @RequestParam String nombreResena,
@@ -142,7 +142,7 @@ public class EstablecimientoController {
 
     @GetMapping("/borrar")
     public String doBorrar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("idTienda") Integer idTienda) {
         if (user == null) return "redirect:/";
         establecimientoService.borrarTienda(idTienda);

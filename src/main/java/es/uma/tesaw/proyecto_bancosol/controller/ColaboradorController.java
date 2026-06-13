@@ -74,7 +74,7 @@ public class ColaboradorController {
         model.addAttribute("busqueda", busqueda);
         model.addAttribute("zona", zona);
 
-        return "Colaboradores";
+        return "colaboradores";
     }
 
     @PostMapping("/colaboradores/guardar")
