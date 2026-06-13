@@ -51,6 +51,7 @@ src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CampanaController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/ColaboradorController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/DashboardController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/EstablecimientoController.java
+src/main/java/es/uma/tesaw/proyecto_bancosol/controller/IncidenciaController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/PerfilController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/VoluntariosController.java
@@ -157,6 +158,7 @@ src/main/resources/static/css/EditarVoluntario.css
 src/main/resources/static/css/Header.css
 src/main/resources/static/css/Historial.css
 src/main/resources/static/css/InformacionCadena.css
+src/main/resources/static/css/InformacionIncidencia.css
 src/main/resources/static/css/InformacionTienda.css
 src/main/resources/static/css/Login.css
 src/main/resources/static/css/PerfilUsuario.css
@@ -166,28 +168,28 @@ src/main/resources/static/css/Sidebar.css
 src/main/resources/static/css/TablaEstilos.css
 src/main/resources/static/images/icono.png
 src/main/webapp/WEB-INF/view/administrador.jsp
-src/main/webapp/WEB-INF/view/AnadirColaboradores.jsp
-src/main/webapp/WEB-INF/view/AsignacionTurnos.jsp
-src/main/webapp/WEB-INF/view/Cadenas.jsp
+src/main/webapp/WEB-INF/view/anadirColaboradores.jsp
+src/main/webapp/WEB-INF/view/asignacionTurnos.jsp
+src/main/webapp/WEB-INF/view/cadenas.jsp
 src/main/webapp/WEB-INF/view/campanas.jsp
-src/main/webapp/WEB-INF/view/Colaboradores.jsp
-src/main/webapp/WEB-INF/view/DetalleCadena.jsp
+src/main/webapp/WEB-INF/view/colaboradores.jsp
+src/main/webapp/WEB-INF/view/detalleCadena.jsp
 src/main/webapp/WEB-INF/view/detalleCampana.jsp
-src/main/webapp/WEB-INF/view/DetalleColaborador.jsp
-src/main/webapp/WEB-INF/view/DetalleTienda.jsp
-src/main/webapp/WEB-INF/view/EditarCadena.jsp
+src/main/webapp/WEB-INF/view/detalleColaborador.jsp
+src/main/webapp/WEB-INF/view/detalleTienda.jsp
+src/main/webapp/WEB-INF/view/editarCadena.jsp
 src/main/webapp/WEB-INF/view/editarCampana.jsp
-src/main/webapp/WEB-INF/view/EditarColaboradores.jsp
-src/main/webapp/WEB-INF/view/EditarTienda.jsp
-src/main/webapp/WEB-INF/view/EditarVoluntario.jsp
+src/main/webapp/WEB-INF/view/editarColaboradores.jsp
+src/main/webapp/WEB-INF/view/editarTienda.jsp
+src/main/webapp/WEB-INF/view/editarVoluntario.jsp
 src/main/webapp/WEB-INF/view/header.jsp
 src/main/webapp/WEB-INF/view/historial.jsp
+src/main/webapp/WEB-INF/view/Incidencias.jsp
 src/main/webapp/WEB-INF/view/listadoCampanas.jsp
 src/main/webapp/WEB-INF/view/login.jsp
-src/main/webapp/WEB-INF/view/Perfil.jsp
-src/main/webapp/WEB-INF/view/RegistroVoluntarios.jsp
+src/main/webapp/WEB-INF/view/perfil.jsp
+src/main/webapp/WEB-INF/view/registroVoluntarios.jsp
 src/main/webapp/WEB-INF/view/sidebar.jsp
-src/main/webapp/WEB-INF/view/Tiendas.jsp
 src/main/webapp/WEB-INF/view/voluntarios.jsp
 src/main/webapp/WEB-INF/web.xml
 src/test/java/es/uma/tesaw/proyecto_bancosol/ProyectoBancosolApplicationTests.java
@@ -733,234 +735,121 @@ try {
 Write-Output "MVN_CMD=$MAVEN_HOME/bin/$MVN_CMD"
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CadenaController.java">
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/IncidenciaController.java">
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO;
+import es.uma.tesaw.proyecto_bancosol.dao.NotificacionRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.PersonaRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.TipoNotificacionRepository;
+import es.uma.tesaw.proyecto_bancosol.entities.Notificacion;
+import es.uma.tesaw.proyecto_bancosol.entities.Persona;
+import es.uma.tesaw.proyecto_bancosol.entities.TipoNotificacion;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@Controller
-@AllArgsConstructor
-@RequestMapping("/cadenas")
-public class CadenaController {
-
-    private final CadenaService cadenaService;
-    private final CampanaService campanaService;
-
-    @GetMapping("")
-    public String doInit(
-            @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String idCampana,
-            @RequestParam(required = false) String idCadena,
-            Model model) {
-
-        List<CadenaDTO> cadenas = cadenaService.listarCadenas(nombre, idCampana);
-        model.addAttribute("cadenas", cadenas);
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        model.addAttribute("campanas", campanaService.listarCampanasDTO());
-
-        String modoPanel = "ninguno";
-        CadenaDTO cadenaSeleccionada = null;
-
-        if (idCadena != null && !idCadena.isEmpty()) {
-            cadenaSeleccionada = cadenaService.buscarCadena(idCadena);
-            if (cadenaSeleccionada != null) {
-                modoPanel = "detalle";
-            }
-        }
-
-        model.addAttribute("cadenaSeleccionada", cadenaSeleccionada);
-        model.addAttribute("modoPanel", modoPanel);
-
-        if (nombre == null) nombre = "";
-        if (idCampana == null) idCampana = "";
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("idCampana", idCampana);
-
-        return "cadenas";
-    }
-
-    protected String editarCrear(String idCadena, Model model) {
-        CadenaDTO cadena = cadenaService.buscarCadena(idCadena);
-        model.addAttribute("cadenas", cadenaService.listarCadenas());
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        model.addAttribute("campanas", campanaService.listarCampanasDTO());
-        model.addAttribute("cadenaSeleccionada", cadena);
-        model.addAttribute("modoPanel", idCadena == null ? "anadir" : "editar");
-        model.addAttribute("nombre", "");
-        model.addAttribute("idCampana", "");
-        return "cadenas";
-    }
-
-    @PostMapping("/anadir")
-    public String doAnadir(Model model) {
-        return editarCrear(null, model);
-    }
-
-    @GetMapping("/editar")
-    public String doEditar(@RequestParam("idCadena") String idCadena, Model model) {
-        return editarCrear(idCadena, model);
-    }
-
-    @PostMapping("/guardar")
-    public String doGuardar(
-            @RequestParam(required = false) String idCadena,
-            @RequestParam String nombreCadena,
-            @RequestParam(required = false) List<String> campanasIds) {
-        cadenaService.guardarCadena(idCadena, nombreCadena, campanasIds);
-        return "redirect:/cadenas";
-    }
-
-    @GetMapping("/borrar")
-    public String doBorrar(@RequestParam("idCadena") String idCadena) {
-        cadenaService.borrarCadena(idCadena);
-        return "redirect:/cadenas";
-    }
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/EstablecimientoController.java">
-package es.uma.tesaw.proyecto_bancosol.controller;
-
-import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
-import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
-import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
-import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
-import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
-import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/tiendas")
-public class EstablecimientoController {
+public class IncidenciaController {
 
-    private final EstablecimientoService establecimientoService;
-    private final CadenaService cadenaService;
     private final CampanaService campanaService;
-    private final ZonaGeograficaService zonaGeograficaService;
-    private final UsuarioService usuarioService;
+    private final CadenaService cadenaService;
+    private final NotificacionRepository notificacionRepository;
+    private final TipoNotificacionRepository tipoNotificacionRepository;
+    private final PersonaRepository personaRepository;
 
-    @GetMapping("")
-    public String doInit(
-            @RequestParam(required = false) String idCadena,
-            @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String idCampana,
-            @RequestParam(required = false) String tipoVia,
-            @RequestParam(required = false) String nombreVia,
-            @RequestParam(required = false) String codigo,
-            @RequestParam(required = false) String localidad,
-            @RequestParam(required = false) Integer idZona,
-            @RequestParam(required = false) String coordinador,
-            @RequestParam(required = false) Integer idTienda,
+    @PostConstruct
+    public void garantizarTipoIncidencia() {
+        if (tipoNotificacionRepository.findById("INCIDENCIA").isEmpty()) {
+            TipoNotificacion tipo = new TipoNotificacion();
+            tipo.setIdTipo("INCIDENCIA");
+            tipo.setDescripcion("Incidencia");
+            tipoNotificacionRepository.save(tipo);
+        }
+    }
+
+    @GetMapping("/incidencias")
+    public String mostrarFormulario(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             Model model) {
-
-        List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
-                idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
-        model.addAttribute("tiendas", tiendas);
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        if (user == null) {
+            return "redirect:/";
+        }
         model.addAttribute("campanas", campanaService.listarCampanasDTO());
-        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
-        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        return "Incidencias";
+    }
 
-        String modoPanel = "ninguno";
-        EstablecimientoDTO tiendaSeleccionada = null;
-
-        if (idTienda != null) {
-            tiendaSeleccionada = establecimientoService.buscarTienda(idTienda);
-            if (tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null) {
-                modoPanel = "detalle";
-            }
+    @PostMapping("/incidencias/guardar")
+    public String guardarIncidencia(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam String rol,
+            @RequestParam String nombre_persona,
+            @RequestParam String id_campana,
+            @RequestParam(required = false) String id_cadena,
+            @RequestParam(required = false) String tienda,
+            @RequestParam(defaultValue = "Lunes") String turno_dia,
+            @RequestParam(defaultValue = "Mañana") String turno_franja,
+            @RequestParam String urgencia,
+            @RequestParam String descripcion) {
+        if (user == null) {
+            return "redirect:/";
         }
 
-        model.addAttribute("tiendaSeleccionada", tiendaSeleccionada);
-        model.addAttribute("modoPanel", modoPanel);
+        String nombreCampana = campanaService.listarCampanasDTO().stream()
+                .filter(c -> c.getIdCampana().equals(id_campana))
+                .findFirst()
+                .map(c -> c.getNombreCampana())
+                .orElse("");
 
-        if (idCadena == null) idCadena = "";
-        if (nombre == null) nombre = "";
-        if (idCampana == null) idCampana = "";
-        if (tipoVia == null) tipoVia = "";
-        if (nombreVia == null) nombreVia = "";
-        if (codigo == null) codigo = "";
-        if (localidad == null) localidad = "";
-        if (coordinador == null) coordinador = "";
-        model.addAttribute("idCadena", idCadena);
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("idCampana", idCampana);
-        model.addAttribute("tipoVia", tipoVia);
-        model.addAttribute("nombreVia", nombreVia);
-        model.addAttribute("codigo", codigo);
-        model.addAttribute("localidad", localidad);
-        model.addAttribute("idZona", idZona);
-        model.addAttribute("coordinador", coordinador);
+        String nombreCadena = "";
+        if (id_cadena != null && !id_cadena.isEmpty()) {
+            String finalIdCadena = id_cadena;
+            nombreCadena = cadenaService.listarCadenas().stream()
+                    .filter(c -> c.getIdCadena().equals(finalIdCadena))
+                    .findFirst()
+                    .map(c -> c.getNombreCadena())
+                    .orElse("");
+        }
 
-        return "tiendas";
-    }
+        String tiendaTexto = (tienda != null && !tienda.trim().isEmpty()) ? tienda.trim() : "No especificada";
 
-    protected String editarCrear(Integer idTienda, Model model) {
-        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
-        model.addAttribute("tiendas", establecimientoService.listarTiendas());
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        model.addAttribute("campanas", campanaService.listarCampanasDTO());
-        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
-        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
-        model.addAttribute("tiendaSeleccionada", tienda);
-        model.addAttribute("modoPanel", idTienda == null ? "anadir" : "editar");
-        model.addAttribute("idCadena", "");
-        model.addAttribute("nombre", "");
-        model.addAttribute("idCampana", "");
-        model.addAttribute("tipoVia", "");
-        model.addAttribute("nombreVia", "");
-        model.addAttribute("codigo", "");
-        model.addAttribute("localidad", "");
-        model.addAttribute("idZona", null);
-        model.addAttribute("coordinador", "");
-        return "tiendas";
-    }
+        String mensaje = String.format(
+                "Cadena: %s\nTienda: %s\nTurno: %s %s\nUrgencia: %s\nDescripción: %s\nPersona: %s\nRol: %s",
+                nombreCadena.isEmpty() ? "-" : nombreCadena,
+                tiendaTexto,
+                turno_dia, turno_franja,
+                urgencia,
+                descripcion,
+                nombre_persona,
+                rol
+        );
 
-    @PostMapping("/anadir")
-    public String doAnadir(Model model) {
-        return editarCrear(null, model);
-    }
+        String titulo = nombreCampana.isEmpty() ? "Incidencia" : "Incidencia en " + nombreCampana;
 
-    @GetMapping("/editar")
-    public String doEditar(@RequestParam("idTienda") Integer idTienda, Model model) {
-        return editarCrear(idTienda, model);
-    }
+        TipoNotificacion tipo = tipoNotificacionRepository.findById("INCIDENCIA")
+                .orElseThrow(() -> new RuntimeException("Tipo de notificación INCIDENCIA no encontrado"));
 
-    @PostMapping("/guardar")
-    public String doGuardar(
-            @RequestParam(required = false) Integer idEstablecimiento,
-            @RequestParam String idCadena,
-            @RequestParam String nombreResena,
-            @RequestParam(required = false) Integer lineales,
-            @RequestParam String tipoVia,
-            @RequestParam String nombreVia,
-            @RequestParam(required = false) String numero,
-            @RequestParam String codigo,
-            @RequestParam String localidad,
-            @RequestParam Integer idZona) {
-        establecimientoService.guardarTienda(idEstablecimiento, idCadena, nombreResena,
-                lineales, tipoVia, nombreVia, numero, codigo, localidad, idZona);
-        return "redirect:/tiendas";
-    }
+        Persona persona = personaRepository.findById(user.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada para el usuario"));
+        Notificacion notificacion = new Notificacion();
+        notificacion.setPersonaDestino(persona);
+        notificacion.setTipo(tipo);
+        notificacion.setTitulo(titulo);
+        notificacion.setMensaje(mensaje);
+        notificacion.setLeida(false);
 
-    @GetMapping("/borrar")
-    public String doBorrar(@RequestParam("idTienda") Integer idTienda) {
-        establecimientoService.borrarTienda(idTienda);
-        return "redirect:/tiendas";
+        notificacionRepository.save(notificacion);
+
+        return "redirect:/dashboard";
     }
 }
 </file>
@@ -3433,6 +3322,59 @@ legend {
 }
 </file>
 
+<file path="src/main/resources/static/css/InformacionIncidencia.css">
+.asterisco-rojo {
+    color: #e74c3c;
+}
+
+.turno-row {
+    display: flex;
+    gap: 12px;
+}
+
+.turno-column {
+    flex: 1;
+}
+
+.detail-actions-sticky {
+    position: sticky;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-page-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.form-card-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.form-card-scroll .datos-colaborador {
+    padding: 24px;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.875rem;
+}
+</file>
+
 <file path="src/main/resources/static/css/InformacionTienda.css">
 .filters {
     background-color: #ffffff;
@@ -4076,7 +4018,7 @@ form {
 }
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/AnadirColaboradores.jsp">
+<file path="src/main/webapp/WEB-INF/view/anadirColaboradores.jsp">
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -4193,7 +4135,124 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/Cadenas.jsp">
+<file path="src/main/webapp/WEB-INF/view/asignacionTurnos.jsp">
+<!--
+Ainhoa García Rebollo: 80%
+IA: 20% -> Dudas con guardar valores en la asignación de horarios
+-->
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO" %>
+<%
+    List<VistaVoluntarioDTO> voluntariosManana = (List<VistaVoluntarioDTO>) request.getAttribute("voluntariosManana");
+    List<VistaVoluntarioDTO> voluntariosTarde = (List<VistaVoluntarioDTO>) request.getAttribute("voluntariosTarde");
+    Map<String, String> asignaciones = (Map<String, String>) request.getAttribute("asignaciones");
+
+    String[] diasSemana = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
+    String[] idsDia     = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
+%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación de Turnos</title>
+    <link rel="stylesheet" href="../css/Sidebar.css">
+    <link rel="stylesheet" href="../css/Header.css">
+    <link rel="stylesheet" href="../css/Common.css">
+</head>
+<body>
+
+<div class="app-container">
+    <jsp:include page="sidebar.jsp" />
+
+    <div class="right-content">
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Listado de Campañas" />
+            <jsp:param name="subtitulo" value="Gestión y planificación de campañas activas" />
+        </jsp:include>
+
+        <div class="main-layout">
+            <main style="padding: 24px; box-sizing: border-box; width: 85%; margin: 20px auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow-y: auto;">
+
+                <form action="/campanas/turnos/guardar" method="POST">
+                    <input type="hidden" name="idCampana" value="${idCampana}">
+                    <input type="hidden" name="idTienda" value="${idTienda}">
+
+                    <div class="list-header" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+                        <h2 style="margin: 0; color: #111827;">Planificación de Turnos</h2>
+                        <p style="margin: 8px 0 0 0; color: #4b5563; font-size: 0.9rem;">
+                            Campaña: <strong style="color: #111827;">${idCampana}</strong> | ID Tienda: <strong style="color: #111827;">${idTienda}</strong>
+                        </p>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                            <tr>
+                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Día</th>
+                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Turno Mañana</th>
+                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Turno Tarde</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <%
+                                for (int i = 0; i < diasSemana.length; i++) {
+                                    String nombreSelectManana = "asignacion_manana_" + idsDia[i];
+                                    String nombreSelectTarde  = "asignacion_tarde_"  + idsDia[i];
+                            %>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 12px; font-weight: 600; color: #111827;"><%= diasSemana[i] %></td>
+
+                                <td style="padding: 12px;">
+                                    <select name="<%= nombreSelectManana %>" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; background-color: #f9fafb;">
+                                        <option value="">Sin asignar</option>
+                                        <% if (voluntariosManana != null) {
+                                            for (VistaVoluntarioDTO v : voluntariosManana) {
+                                                boolean seleccionado = asignaciones != null && String.valueOf(v.getIdVoluntario()).equals(asignaciones.get(nombreSelectManana));
+                                        %>
+                                        <option value="<%= v.getIdVoluntario() %>" <%= seleccionado ? "selected" : "" %>><%= v.getNombreCompleto() %></option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </td>
+
+                                <td style="padding: 12px;">
+                                    <select name="<%= nombreSelectTarde %>" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; background-color: #f9fafb;">
+                                        <option value="">Sin asignar</option>
+                                        <% if (voluntariosTarde != null) {
+                                            for (VistaVoluntarioDTO v : voluntariosTarde) {
+                                                boolean seleccionado = asignaciones != null && String.valueOf(v.getIdVoluntario()).equals(asignaciones.get(nombreSelectTarde));
+                                        %>
+                                        <option value="<%= v.getIdVoluntario() %>" <%= seleccionado ? "selected" : "" %>><%= v.getNombreCompleto() %></option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="popup-actions" style="display: flex; flex-direction: row; justify-content: flex-end; gap: 12px; margin-top: 30px;">
+                        <button type="button" class="btn btn--cancel" onclick="window.history.back()">Cancelar</button>
+                        <button type="submit" class="btn btn--primary">Guardar Cambios</button>
+                    </div>
+                </form>
+
+            </main>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/cadenas.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
@@ -4316,11 +4375,11 @@ form {
                         <aside class="detail-panel">
                             <div class="detail-content">
                                 <% if ("detalle".equals(modoPanel) && cadenaSeleccionada != null) { %>
-                                    <jsp:include page="DetalleCadena.jsp" />
+                                    <jsp:include page="detalleCadena.jsp" />
                                 <% } else if ("editar".equals(modoPanel) && cadenaSeleccionada != null) { %>
-                                    <jsp:include page="EditarCadena.jsp" />
+                                    <jsp:include page="editarCadena.jsp" />
                                 <% } else if ("anadir".equals(modoPanel)) { %>
-                                    <jsp:include page="EditarCadena.jsp" />
+                                    <jsp:include page="editarCadena.jsp" />
                                 <% } else { %>
                                     <div id="empty-state-panel" class="estado-vacio">
                                         <h3>Detalle de Cadena</h3>
@@ -4351,7 +4410,195 @@ form {
 </html>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/DetalleCadena.jsp">
+<file path="src/main/webapp/WEB-INF/view/colaboradores.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
+<%
+    List<ColaboradorDTO> colaboradores = (List<ColaboradorDTO>) request.getAttribute("colaboradores");
+    List<ContactoColaborador> contacto = (List<ContactoColaborador>) request.getAttribute("ContactoColaborador");
+    List<ZonaGeografica> zonasDisponibles = (List<ZonaGeografica>) request.getAttribute("zonasDisponibles");
+    Colaborador seleccionado = (Colaborador) request.getAttribute("colaboradorSeleccionado");
+    ContactoColaborador contactoSeleccionado = (ContactoColaborador) request.getAttribute("contactoSeleccionado");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    String busqueda = (String) request.getAttribute("busqueda");
+    String zona = (String) request.getAttribute("zona");
+
+    if (modoPanel == null) modoPanel = "ninguno";
+    if (busqueda == null) busqueda = "";
+    if (zona == null) zona = "Todas";
+%>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Colaboradores</title>
+    <link rel="stylesheet" href="/css/Common.css">
+    <link rel="stylesheet" href="/css/Colaboradores.css">
+    <link rel="stylesheet" href="/css/Sidebar.css">
+    <link rel="stylesheet" href="/css/DetalleColaborador.css">
+    <link rel="stylesheet" href="/css/EditarAnadirColaborador.css">
+    <link rel="stylesheet" href="/css/Header.css">
+</head>
+
+<body>
+<div class="main-layout">
+        <jsp:include page="sidebar.jsp" />
+    <div class="right-content">
+            <jsp:include page="header.jsp" />
+        <main>
+            <form action="/colaboradores" method="GET" style="margin: 0; padding: 0; display: contents;">
+                <section class="filters">
+                    <div class="filter-group">
+                        <label>Zona Geográfica</label>
+                        <select id="filter-zona" name="zona">
+                            <option value="Todas" <%= zona.equals("Todas") ? "selected" : "" %>>Todas</option>
+                            <%
+                                if (zonasDisponibles != null) {
+                                    for (ZonaGeografica z : zonasDisponibles) {
+                            %>
+                            <option value="<%= z.getNombreZona() %>" <%= zona.equals(z.getNombreZona()) ? "selected" : "" %>>
+                                <%= z.getNombreZona() %>
+                            </option>
+                            <%
+                                    }
+                                }
+                            %>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Buscar</label>
+                        <input type="text" id="input-search" name="busqueda" value="<%= busqueda %>" placeholder="Nombre o código del colaborador...">
+                    </div>
+                    <div class="filter-button">
+                        <button type="submit" class="btn btn--primary" id="btn-filter">Filtrar</button>
+                    </div>
+                </section>
+            </form>
+
+            <hr>
+            <div class="content-wrapper">
+                <section class="list-container">
+                    <header class="list-header">
+                        <h2>Listado de Colaboradores</h2>
+                        <p id="contador-colaboradores"><%= colaboradores != null ? colaboradores.size() : 0 %> colaboradores encontrados</p>
+                        <button type="button" class="btn btn--primary" id="btn-abrir-registro" onclick="window.location.href='/colaboradores?accion=nuevo'">
+                            Añadir Colaborador
+                        </button>
+                    </header>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Localidad</th>
+                                <th>Zona</th>
+                                <th>Contacto</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tabla-colaboradores">
+                            <%
+                                if (colaboradores != null && !colaboradores.isEmpty()) {
+                                    for (ColaboradorDTO c : colaboradores) {
+                                        // Al venir del DTO, simplemente comprobamos si son nulos para dar un valor por defecto
+                                        String localidad = c.getNombreDivision() != null ? c.getNombreDivision() : "Sin asignar";
+                                        String zonaCol = c.getNombreZona() != null ? c.getNombreZona() : "Sin asignar";
+                                        String contactoStr = c.getNombreContacto() != null ? c.getNombreContacto() : "Sin contacto";
+                            %>
+                            <tr>
+                                <td>
+                                    <a href="/colaboradores?id=<%= c.getIdColaborador() %>" style="color: inherit; text-decoration: none; font-weight: bold;">
+                                        <%= c.getNombreColaborador() %>
+                                    </a>
+                                </td>
+                                <td><%= localidad %></td>
+                                <td><%= zonaCol %></td>
+                                <td><%= contactoStr %></td>
+                            </tr>
+                            <%      }
+                            } else {
+                            %>
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px;">No se encontraron colaboradores.</td>
+                            </tr>
+                            <%  } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <aside class="detail-panel">
+                    <div class="detail-content">
+                        <% if ("detalle".equals(modoPanel) && seleccionado != null) { %>
+                        <jsp:include page="detalleColaborador.jsp" />
+                        <% } else if ("editar".equals(modoPanel) && seleccionado != null) { %>
+                        <jsp:include page="editarColaboradores.jsp" />
+                        <% } else if ("anadir".equals(modoPanel)) { %>
+                        <jsp:include page="anadirColaboradores.jsp" />
+                        <% } else { %>
+                        <div style="text-align: center; padding: 40px; color: #888;">Selecciona un colaborador para ver sus detalles.</div>
+                        <% } %>
+                    </div>
+
+                    <div class="detail-actions-sticky" id="acciones-detalle-colaborador" style="<%= "detalle".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
+                        <button type="button" id="btn-editar-colaborador" class="btn btn--primary" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>&accion=editar'">
+                            Editar Colaborador
+                        </button>
+                        <form action="/colaboradores/eliminar" method="POST" style="display: contents;">
+                            <input type="hidden" name="id" value="<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>">
+                            <button type="submit" id="btn-eliminar-colaborador" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar este colaborador?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="detail-actions-sticky" id="acciones-edicion-colaborador" style="<%= "editar".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
+                        <button type="submit" form="form-edicion-colaborador" id="btn-guardar-cambios" class="btn btn--primary">
+                            Guardar Cambios
+                        </button>
+                        <button type="button" id="btn-cancelar-edicion" class="btn btn--cancel" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>'">
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <div class="detail-actions-sticky" id="acciones-anadir-colaborador" style="<%= "anadir".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
+                        <button type="submit" form="form-nuevo-colaborador-lateral" id="btn-guardar-nuevo" class="btn btn--primary">
+                            Guardar Colaborador
+                        </button>
+                        <button type="button" id="btn-cancelar-nuevo" class="btn btn--cancel" onclick="window.location.href='/colaboradores'">
+                            Cancelar
+                        </button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="overlay" id="overlay-eliminar">
+    <div class="popup" id="popup-eliminar">
+        <h3>¿Eliminar Colaborador?</h3>
+        <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar a este colaborador de la base de
+            datos?</p>
+
+        <div class="popup-actions">
+            <form action="">
+                <button class="btn-add btn-rojo" id="btn-confirmar-eliminar">Eliminar</button>
+                <button class="btn-cerrar-popup" id="btn-cancelar-eliminar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/detalleCadena.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
@@ -4436,7 +4683,7 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/DetalleColaborador.jsp">
+<file path="src/main/webapp/WEB-INF/view/detalleColaborador.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
@@ -4525,7 +4772,7 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/DetalleTienda.jsp">
+<file path="src/main/webapp/WEB-INF/view/detalleTienda.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
 <%
@@ -4561,7 +4808,7 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/EditarCadena.jsp">
+<file path="src/main/webapp/WEB-INF/view/editarCadena.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
@@ -4676,7 +4923,7 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/EditarColaboradores.jsp">
+<file path="src/main/webapp/WEB-INF/view/editarColaboradores.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
@@ -4837,7 +5084,7 @@ form {
 </div>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/EditarTienda.jsp">
+<file path="src/main/webapp/WEB-INF/view/editarTienda.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
@@ -4931,6 +5178,112 @@ form {
 </div>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/editarVoluntario.jsp">
+<!--
+Ainhoa García Rebollo: 100%
+-->
+
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Administrador.css">
+    <link rel="stylesheet" href="../css/EditarVoluntario.css">
+    <link rel="stylesheet" href="../css/popUpRegistro.css">
+    <link rel="stylesheet" href="../css/RegistroVoluntarios.css">
+    <link rel="stylesheet" href="../css/Header.css">
+    <link rel="stylesheet" href="../css/Sidebar.css">
+    <link rel="stylesheet" href="../css/Common.css">
+
+    <title>Editar Voluntario</title>
+</head>
+
+<body>
+<div class="main-container">
+
+    <jsp:include page="sidebar.jsp" />
+
+    <div class="right-container">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Editar Voluntarios" />
+            <jsp:param name="subtitulo" value="Modificación de datos o disponibilidad del voluntario" />
+        </jsp:include>
+
+        <div class="form-container">
+            <form action="/voluntarios/guardar" method="POST" id="form-edit-voluntario">
+
+                <input type="hidden" name="id" value="${voluntarioActual != null ? voluntarioActual.idVoluntario : ''}">
+
+                <div class="list-container">
+                    <div class="list-header">
+                        <h2>Datos Personales</h2>
+                        <br>
+                        <p>Modifique la información del voluntario</p>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="nombre">Nombre Completo</label>
+                        <input type="text" id="nombre" name="nombre"
+                               value="${voluntarioActual != null ? voluntarioActual.nombreCompleto : ''}" required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email"
+                               value="${voluntarioActual != null ? voluntarioActual.email : ''}" required>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="number" id="telefono" name="telefono"
+                               value="${voluntarioActual != null ? voluntarioActual.telefono : ''}">
+                    </div>
+                </div>
+
+                <div class="list-container">
+                    <div class="list-header">
+                        <h2>Disponibilidad en la campaña</h2>
+                        <br>
+                        <p>Especifique la disponibilidad del voluntario para la campaña</p>
+                    </div>
+
+                    <div class="field-group" style="padding: 10px 0;">
+                        <select id="disponibilidad-select" name="disponibilidad" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <option value="" disabled ${voluntarioActual == null ? 'selected' : ''}>-- Seleccione un turno --</option>
+                            <option value="mañana" ${voluntarioActual != null && voluntarioActual.disponibilidad == 'mañana' ? 'selected' : ''}>Turno de Mañana</option>
+                            <option value="tarde" ${voluntarioActual != null && voluntarioActual.disponibilidad == 'tarde' ? 'selected' : ''}>Turno de Tarde</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="contenedor" style="display: flex; gap: 15px;">
+                    <article>
+                        <button type="submit" class="btn btn--primary" id="btn-guardar">
+                            Guardar
+                        </button>
+                    </article>
+                    <article>
+                        <button type="button" class="btn btn--cancel" id="btn-descartar" onclick="window.location.href='/voluntarios'">
+                            Cancelar
+                        </button>
+                    </article>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+</file>
+
 <file path="src/main/webapp/WEB-INF/view/header.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
@@ -4966,239 +5319,385 @@ form {
 </header>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/Tiendas.jsp">
+<file path="src/main/webapp/WEB-INF/view/Incidencias.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
 <%
-    List<EstablecimientoDTO> tiendas = (List<EstablecimientoDTO>) request.getAttribute("tiendas");
-    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
     List<CampanaDTO> campanas = (List<CampanaDTO>) request.getAttribute("campanas");
-    List<ZonaGeografica> zonas = (List<ZonaGeografica>) request.getAttribute("zonas");
-    List<Usuario> coordinadores = (List<Usuario>) request.getAttribute("coordinadores");
-    EstablecimientoDTO tiendaSeleccionada = (EstablecimientoDTO) request.getAttribute("tiendaSeleccionada");
-    String modoPanel = (String) request.getAttribute("modoPanel");
-    String idCadena = (String) request.getAttribute("idCadena");
-    String nombre = (String) request.getAttribute("nombre");
-    String idCampana = (String) request.getAttribute("idCampana");
-    String tipoVia = (String) request.getAttribute("tipoVia");
-    String nombreVia = (String) request.getAttribute("nombreVia");
-    String codigo = (String) request.getAttribute("codigo");
-    String localidad = (String) request.getAttribute("localidad");
-    Integer idZona = (Integer) request.getAttribute("idZona");
-    String coordinador = (String) request.getAttribute("coordinador");
-
-    if (modoPanel == null) modoPanel = "ninguno";
-    if (idCadena == null) idCadena = "";
-    if (nombre == null) nombre = "";
-    if (idCampana == null) idCampana = "";
-    if (tipoVia == null) tipoVia = "";
-    if (nombreVia == null) nombreVia = "";
-    if (codigo == null) codigo = "";
-    if (localidad == null) localidad = "";
-    if (coordinador == null) coordinador = "";
+    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
 %>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Tiendas</title>
-        <link rel="stylesheet" href="../css/InformacionTienda.css">
-        <link rel="stylesheet" href="../css/TablaEstilos.css">
-        <link rel="stylesheet" href="../css/Common.css">
-        <link rel="stylesheet" href="../css/Sidebar.css">
-        <link rel="stylesheet" href="../css/popUpRegistro.css">
-        <link rel="stylesheet" href="../css/Header.css">
-        <link rel="stylesheet" href="../css/DetalleColaborador.css">
-        <link rel="stylesheet" href="../css/EditarAnadirColaborador.css">
-    </head>
-    <body>
-    <div class="app-container">
-        <jsp:include page="sidebar.jsp" />
-        <div class="right-content">
-            <jsp:include page="header.jsp">
-                <jsp:param name="titulo" value="Tiendas" />
-                <jsp:param name="subtitulo" value="Gestion de establecimientos" />
-            </jsp:include>
+<head>
+    <meta charset="UTF-8">
+    <title>Incidencias</title>
+    <link rel="stylesheet" href="../css/Common.css">
+    <link rel="stylesheet" href="../css/Sidebar.css">
+    <link rel="stylesheet" href="../css/Header.css">
+    <link rel="stylesheet" href="../css/EditarAnadirColaborador.css">
+    <link rel="stylesheet" href="../css/InformacionIncidencia.css">
+</head>
+<body>
+<div class="app-container">
+    <jsp:include page="sidebar.jsp" />
+    <div class="right-content">
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Incidencias" />
+            <jsp:param name="subtitulo" value="Registro de incidencias" />
+        </jsp:include>
 
-            <div class="main-layout">
-                <main>
-                    <!--FILTROS-->
-                    <form action="/tiendas" method="GET">
-                        <section class="filters">
-                            <div class="filter-row">
-                                <div class="filter-group">
-                                    <label for="filter-chain">Cadena</label>
-                                    <select id="filter-chain" name="idCadena">
-                                        <option value="">Todas las cadenas</option>
+        <div class="main-layout">
+            <main>
+                <div class="form-page-card">
+                    <div class="form-card-scroll">
+                        <div class="datos-colaborador">
+                        <h3 class="ficha-titulo-principal">Registro de Incidencias</h3>
+                        <form id="form-incidencias" action="/incidencias/guardar" method="POST">
+                            <div class="ficha-tarjeta-info">
+                                <h5>Rol del usuario <span class="asterisco-rojo">*</span></h5>
+                                <div class="campo-formulario-ficha">
+                                    <select name="rol" class="select-ficha-lateral" required>
+                                        <option value="Coordinador">Coordinador</option>
+                                        <option value="Voluntario">Voluntario</option>
+                                        <option value="Responsable de tienda">Responsable de tienda</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Nombre de la persona <span class="asterisco-rojo">*</span></h5>
+                                <div class="campo-formulario-ficha">
+                                    <input type="text" name="nombre_persona" class="input-ficha-lateral"
+                                           required minlength="2" placeholder="Nombre y apellidos" />
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Campaña <span class="asterisco-rojo">*</span></h5>
+                                <div class="campo-formulario-ficha">
+                                    <select name="id_campana" class="select-ficha-lateral" required>
+                                        <option value="">Seleccionar campaña</option>
+                                        <% if (campanas != null) {
+                                            for (CampanaDTO c : campanas) { %>
+                                                <option value="<%= c.getIdCampana() %>"><%= c.getNombreCampana() %></option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Cadena</h5>
+                                <div class="campo-formulario-ficha">
+                                    <select name="id_cadena" class="select-ficha-lateral">
+                                        <option value="">Seleccionar cadena</option>
                                         <% if (todasCadenas != null) {
                                             for (CadenaDTO c : todasCadenas) { %>
-                                                <option value="<%= c.getIdCadena() %>" <%= idCadena.equals(c.getIdCadena()) ? "selected" : "" %>>
-                                                    <%= c.getNombreCadena() %>
-                                                </option>
+                                                <option value="<%= c.getIdCadena() %>"><%= c.getNombreCadena() %></option>
                                         <%  }
                                         } %>
                                     </select>
                                 </div>
-                                <div class="filter-group">
-                                    <label for="filter-name">Nombre</label>
-                                    <input type="text" id="filter-name" name="nombre" value="<%= nombre %>" placeholder="Nombre de tienda">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="filter-coordinator">Coordinador</label>
-                                    <select id="filter-coordinator" name="coordinador">
-                                        <option value="">Todos los coordinadores</option>
-                                        <% if (coordinadores != null) {
-                                            for (Usuario u : coordinadores) { %>
-                                                <option value="<%= u.getPersona().getNombreCompleto() %>" <%= coordinador.equals(u.getPersona().getNombreCompleto()) ? "selected" : "" %>>
-                                                    <%= u.getPersona().getNombreCompleto() %>
-                                                </option>
-                                        <%  }
-                                        } %>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="filter-campaign">Campaña</label>
-                                    <select id="filter-campaign" name="idCampana">
-                                        <option value="">Todas las campañas</option>
-                                        <% if (campanas != null) {
-                                            for (CampanaDTO camp : campanas) { %>
-                                                <option value="<%= camp.getIdCampana() %>" <%= idCampana.equals(camp.getIdCampana()) ? "selected" : "" %>>
-                                                    <%= camp.getNombreCampana() %>
-                                                </option>
-                                        <%  }
-                                        } %>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="filter-row">
-                                <div class="filter-group">
-                                    <label for="filter-type">Tipo Vía</label>
-                                    <input type="text" id="filter-type" name="tipoVia" value="<%= tipoVia %>" placeholder="Calle, Avda...">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="filter-street">Calle</label>
-                                    <input type="text" id="filter-street" name="nombreVia" value="<%= nombreVia %>" placeholder="Nombre de la vía">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="filter-code">Código Postal</label>
-                                    <input type="text" id="filter-code" name="codigo" value="<%= codigo %>" placeholder="C.P.">
-                                </div>
-                            </div>
-                            <div class="filter-row">
-                                <div class="filter-group">
-                                    <label for="filter-city">Localidad</label>
-                                    <input type="text" id="filter-city" name="localidad" value="<%= localidad %>" placeholder="Localidad">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="filter-zone">Zona</label>
-                                    <select id="filter-zone" name="idZona">
-                                        <option value="">Todas las zonas</option>
-                                        <% if (zonas != null) {
-                                            for (ZonaGeografica z : zonas) { %>
-                                                <option value="<%= z.getIdZona() %>" <%= idZona != null && idZona.equals(z.getIdZona()) ? "selected" : "" %>>
-                                                    <%= z.getNombreZona() %>
-                                                </option>
-                                        <%  }
-                                        } %>
-                                    </select>
-                                </div>
-                                <div class="filter-group filter-group--btn">
-                                    <button type="submit" class="btn btn--primary">Filtrar</button>
-                                </div>
-                            </div>
-                        </section>
-                    </form>
-
-                    <div class="content-wrapper">
-                        <div class="list-container">
-                            <div class="list-header">
-                                <h2>Listado de Tiendas</h2>
-                                <form method="POST" action="/tiendas/anadir">
-                                    <button type="submit" class="btn btn--primary">Añadir Tienda</button>
-                                </form>
-                                <p><%= tiendas != null ? tiendas.size() : 0 %> tiendas encontradas</p>
                             </div>
 
-                            <div class="table-wrapper">
-                                <table id="establishments-table" class="data-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Cadena</th>
-                                        <th>Dirección</th>
-                                        <th>Localidad</th>
-                                        <th>C.P.</th>
-                                        <th>Zona</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <%
-                                        if (tiendas != null && !tiendas.isEmpty()) {
-                                            for (EstablecimientoDTO t : tiendas) {
-                                        %>
-                                        <tr<%= "detalle".equals(modoPanel) && tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null && tiendaSeleccionada.getIdEstablecimiento().equals(t.getIdEstablecimiento()) ? " class=\"selected\"" : "" %>>
-                                            <td>
-                                                <a href="/tiendas?idTienda=<%= t.getIdEstablecimiento() %><%= !idCadena.isEmpty() ? "&idCadena=" + java.net.URLEncoder.encode(idCadena, "UTF-8") : "" %><%= !nombre.isEmpty() ? "&nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8") : "" %><%= !idCampana.isEmpty() ? "&idCampana=" + idCampana : "" %><%= !tipoVia.isEmpty() ? "&tipoVia=" + java.net.URLEncoder.encode(tipoVia, "UTF-8") : "" %><%= !nombreVia.isEmpty() ? "&nombreVia=" + java.net.URLEncoder.encode(nombreVia, "UTF-8") : "" %><%= !codigo.isEmpty() ? "&codigo=" + java.net.URLEncoder.encode(codigo, "UTF-8") : "" %><%= !localidad.isEmpty() ? "&localidad=" + java.net.URLEncoder.encode(localidad, "UTF-8") : "" %><%= idZona != null ? "&idZona=" + idZona : "" %><%= !coordinador.isEmpty() ? "&coordinador=" + java.net.URLEncoder.encode(coordinador, "UTF-8") : "" %>">
-                                                    <%= t.getNombreResena() %>
-                                                </a>
-                                            </td>
-                                            <td><%= t.getNombreCadena() %></td>
-                                            <td><%= t.getTipoVia() != null ? t.getTipoVia() + " " + t.getNombreVia() : "" %></td>
-                                            <td><%= t.getLocalidad() != null ? t.getLocalidad() : "" %></td>
-                                            <td><%= t.getCodigo() != null ? t.getCodigo() : "" %></td>
-                                            <td><%= t.getNombreZona() != null ? t.getNombreZona() : "" %></td>
-                                        </tr>
-                                    <%      }
-                                        } else { %>
-                                        <tr>
-                                            <td colspan="6" class="empty-state">No se encontraron tiendas.</td>
-                                        </tr>
-                                    <%  } %>
-                                    </tbody>
-                                </table>
+                            <div class="ficha-tarjeta-info">
+                                <h5>Tienda</h5>
+                                <div class="campo-formulario-ficha">
+                                    <input type="text" name="tienda" class="input-ficha-lateral"
+                                           placeholder="Nombre o ubicación de la tienda" />
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Turno</h5>
+                                <div class="turno-row">
+                                    <div class="campo-formulario-ficha turno-column">
+                                        <label for="turno-dia"><strong>Día:</strong></label>
+                                        <select id="turno-dia" name="turno_dia" class="select-ficha-lateral">
+                                            <option value="Lunes">Lunes</option>
+                                            <option value="Martes">Martes</option>
+                                            <option value="Miércoles">Miércoles</option>
+                                            <option value="Jueves">Jueves</option>
+                                            <option value="Viernes">Viernes</option>
+                                            <option value="Sábado">Sábado</option>
+                                            <option value="Domingo">Domingo</option>
+                                        </select>
+                                    </div>
+                                    <div class="campo-formulario-ficha turno-column">
+                                        <label for="turno-franja"><strong>Franja:</strong></label>
+                                        <select id="turno-franja" name="turno_franja" class="select-ficha-lateral">
+                                            <option value="Mañana">Mañana</option>
+                                            <option value="Tarde">Tarde</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Nivel de urgencia <span class="asterisco-rojo">*</span></h5>
+                                <div class="campo-formulario-ficha">
+                                    <select name="urgencia" class="select-ficha-lateral" required>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="ficha-tarjeta-info">
+                                <h5>Descripción <span class="asterisco-rojo">*</span></h5>
+                                <div class="campo-formulario-ficha">
+                                    <textarea name="descripcion" class="input-ficha-lateral" required
+                                              rows="4" placeholder="Describe la incidencia..."></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                    <div class="detail-actions-sticky">
+                        <button type="submit" form="form-incidencias" class="btn btn--primary">Registrar incidencia</button>
+                        <a href="/dashboard" class="btn btn--cancel">Cancelar</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/perfil.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
+<%
+    UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
+    String mensajeTexto = (String) request.getAttribute("mensajeTexto");
+    String mensajeTipo = (String) request.getAttribute("mensajeTipo");
+
+    //Como recibimos el id del rol, dependiendo del valor, lo asociamos a su valor correpsondiente
+    java.util.Map<String, String> rolesTexto = java.util.Map.of(
+            "1", "Administrador",
+            "2", "Coordinador",
+            "3", "Colaborador"
+    );
+    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getIdRol()), "Invitado");
+%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Usuario - BancoSol</title>
+    <link rel="stylesheet" href="/css/Common.css">
+    <link rel="stylesheet" href="/css/Sidebar.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/PerfilUsuario.css">
+</head>
+<body>
+<div class="main-layout">
+
+
+        <jsp:include page="sidebar.jsp" />
+
+
+    <div class="right-content">
+
+
+            <jsp:include page="header.jsp" />
+
+
+        <main class="content-wrapper">
+            <div class="content">
+                <h3 class="title">Información del Perfil</h3>
+
+                <div class="data-perfil">
+                    <div class="data-item">
+                        <label class="label-name">Nombre</label>
+                        <input type="text" readonly value="<%= usuarioLogueado.getUsuario() %>" class="input" />
+                    </div>
+                    <div class="data-item">
+                        <label class="label-name">Rol en el sistema</label>
+                        <input type="text" readonly value="<%= rolTexto %>" class="input" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-union">
+                <div class="content content-double">
+                    <h3 class="title">Contraseña</h3>
+
+                    <form action="/perfil/cambiar-contrasena" method="POST" class="form">
+                        <div class="table-data">
+                            <div class="data-item">
+                                <label class="label-name">Contraseña actual</label>
+                                <input class="input" type="password" name="actual" required />
+                            </div>
+                            <div class="data-item">
+                                <label class="label-name">Nueva contraseña</label>
+                                <input class="input" type="password" name="nueva" required />
+                            </div>
+                            <div class="data-item">
+                                <label class="label-name">Confirmar nueva contraseña</label>
+                                <input class="input" type="password" name="confirmacion" required />
                             </div>
                         </div>
 
-                        <aside class="detail-panel">
-                            <div class="detail-content">
-                                <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
-                                    <jsp:include page="DetalleTienda.jsp" />
-                                <% } else if ("editar".equals(modoPanel) && tiendaSeleccionada != null) { %>
-                                    <jsp:include page="EditarTienda.jsp" />
-                                <% } else if ("anadir".equals(modoPanel)) { %>
-                                    <jsp:include page="EditarTienda.jsp" />
-                                <% } else { %>
-                                    <div class="estado-vacio">
-                                        <h3>Detalle de Tienda</h3>
-                                        <p>Haga clic en una tienda de la lista para ver sus detalles.</p>
-                                    </div>
-                                <% } %>
+                        <div>
+                            <% if (mensajeTexto != null) { %>
+                            <div style="color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>; marginBottom: 15px; fontWeight: bold;">
+                                <%= mensajeTexto %>
                             </div>
+                            <% } %>
+                            <button type="submit" class="btn btn--primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
 
-                            <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
-                            <div class="detail-actions-sticky">
-                                <a href="/tiendas/editar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--primary">Editar</a>
-                                <a href="/tiendas/borrar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--delete">Eliminar</a>
+                <% if ("1".equals(String.valueOf(usuarioLogueado.getRol())) || "2".equals(String.valueOf(usuarioLogueado.getRol()))) { %>
+                <div class="content content-double">
+                    <h3 class="title">Exportar Datos del Sistema</h3>
+
+                    <form action="/perfil/exportar" method="POST">
+                        <div class="data-item">
+                            <label class="label-name">Tablas a exportar:</label>
+                            <div class="selection-content" style="display: flex; flex-direction: column; gap: 10px; padding: 5px;">
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="campana" class="selection" /> Campañas
+                                </label>
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="cadena" class="selection" /> Cadenas Comerciales
+                                </label>
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="establecimiento" class="selection" /> Tiendas
+                                </label>
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="colaborador" class="selection" /> Colaboradores
+                                </label>
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="voluntario" class="selection" /> Voluntarios
+                                </label>
                             </div>
-                            <% } %>
-                            <% if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) { %>
-                            <div class="detail-actions-sticky">
-                                <button type="submit" form="tienda-form" class="btn btn--primary">Guardar</button>
-                                <a href="/tiendas<%= tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null ? "?idTienda=" + tiendaSeleccionada.getIdEstablecimiento() : "" %>" class="btn btn--cancel">Cancelar</a>
-                            </div>
-                            <% } %>
-                        </aside>
-                    </div>
-                </main>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary">Descargar datos</button>
+                    </form>
+                </div>
+                <% } %>
             </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/registroVoluntarios.jsp">
+<!--
+Ainhoa García Rebollo: 100%
+-->
+
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de voluntarios</title>
+
+    <link rel="stylesheet" href="../css/RegistroVoluntarios.css">
+    <link rel="stylesheet" href="../css/popUpRegistro.css">
+    <link rel="stylesheet" href="../css/Sidebar.css">
+    <link rel="stylesheet" href="../css/Header.css">
+    <link rel="stylesheet" href="../css/EditarVoluntario.css">
+    <link rel="stylesheet" href="../css/Common.css">
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <jsp:include page="sidebar.jsp" />
+
+    <div class="right-content">
+
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Registro de Voluntarios" />
+            <jsp:param name="subtitulo" value="Introduzca la información del voluntario para hacer su registro" />
+        </jsp:include>
+
+        <div class="main-layout">
+
+            <main>
+                <form id="form-voluntario" action="/voluntarios/guardar" method="POST">
+
+                    <input type="hidden" name="id" value="${voluntarioActual != null ? voluntarioActual.idVoluntario : ''}">
+
+                    <div class="list-container">
+                        <div class="list-header">
+                            <h2>Información del Voluntario</h2>
+                            <br>
+                            <p>${editando ? 'Editar los datos del voluntario' : 'Añadir un nuevo voluntario a la base de datos'}</p>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="volunt-name">Nombre</label>
+                            <input type="text" id="volunt-name" name="nombre"
+                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.nombreCompleto : ''}" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="volunt-email">Email</label>
+                            <input type="email" id="volunt-email" name="email"
+                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.email : ''}" required>
+                        </div>
+
+                        <div class="field-group">
+                            <label for="volunt-tel">Teléfono (opcional)</label>
+                            <input type="number" id="volunt-tel" name="telefono"
+                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.telefono : ''}">
+                        </div>
+                    </div>
+
+                    <div class="list-container">
+                        <div class="list-header">
+                            <h2>Disponibilidad en la campaña</h2>
+                            <br>
+                            <p>Especifique la preferencia horaria del voluntario</p>
+                        </div>
+
+                        <div class="field-group" style="padding: 10px 0;">
+                            <label for="disponibilidad-select">Turno preferente</label>
+                            <select id="disponibilidad-select" name="disponibilidad" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+                                <option value="" disabled ${voluntarioActual == null ? 'selected' : ''}>-- Seleccione un turno --</option>
+                                <option value="mañana" ${voluntarioActual != null && voluntarioActual.preferenciaHorario == 'mañana' ? 'selected' : ''}>Turno de Mañana</option>
+                                <option value="tarde" ${voluntarioActual != null && voluntarioActual.preferenciaHorario == 'tarde' ? 'selected' : ''}>Turno de Tarde</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="contenedor" style="display: flex; gap: 15px;">
+                        <article>
+                            <button type="submit" class="btn btn--primary" id="btn-guardar">
+                                Guardar
+                            </button>
+                        </article>
+                        <article>
+                            <button type="button" class="btn btn--cancel" id="btn-descartar" onclick="window.location.href='/voluntarios'">
+                                Cancelar
+                            </button>
+                        </article>
+                    </div>
+                </form>
+            </main>
         </div>
     </div>
-    </body>
+</div>
+
+</body>
 </html>
 </file>
 
@@ -5211,178 +5710,264 @@ form {
 </web-app>
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/DashboardController.java">
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CadenaController.java">
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.*;
-import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Campana;
+import es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
+import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @AllArgsConstructor
-public class DashboardController {
+@RequestMapping("/cadenas")
+public class CadenaController {
 
-    private final CampanaRepository campanaRepository;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final ColaboradorRepository colaboradorRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final ZonaGeograficaRepository zonaRepository;
+    private final CadenaService cadenaService;
+    private final CampanaService campanaService;
 
-    @GetMapping("/dashboard")
-    public String verDashboard (@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
-        if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
-        }
+    @GetMapping("")
+    public String doInit(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String idCampana,
+            @RequestParam(required = false) String idCadena,
+            Model model) {
+        if (user == null) return "redirect:/";
 
-        List<Campana> campanasActivas = campanaRepository.findByEstado("Activa");
-        model.addAttribute("campanasActivasCount", campanasActivas.size());
-        model.addAttribute("tiendasTotales", establecimientoRepository.count());
-        model.addAttribute("zonasTotales", zonaRepository.count());
-        model.addAttribute("colaboradoresTotales", colaboradorRepository.count());
-        model.addAttribute("coordinadoresTotales", usuarioRepository.countByIdRol(2).size());
-        List<Campana> proximasCampanas = campanaRepository.findAll();
-        model.addAttribute("proximasCampanas", proximasCampanas);
+        List<CadenaDTO> cadenas = cadenaService.listarCadenas(nombre, idCampana);
+        model.addAttribute("cadenas", cadenas);
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
 
-        List<Object[]> conteoPorZona = establecimientoRepository.countEstablecimientosPorZona();
-        List<CoberturaZonaDTO> coberturas = new ArrayList<>();
+        String modoPanel = "ninguno";
+        CadenaDTO cadenaSeleccionada = null;
 
-        if (!conteoPorZona.isEmpty()) {
-            // Como viene ordenado DESC, el primer elemento es el máximo
-            Long maxTiendas = (Long) conteoPorZona.get(0)[1];
-
-            for (Object[] fila : conteoPorZona) {
-                String nombreZona = (String) fila[0];
-                Long tiendas = (Long) fila[1];
-                // Calculamos el porcentaje
-                int porcentaje = (int) Math.round((tiendas.doubleValue() / maxTiendas) * 100);
-
-                coberturas.add(new CoberturaZonaDTO(nombreZona, tiendas, porcentaje));
+        if (idCadena != null && !idCadena.isEmpty()) {
+            cadenaSeleccionada = cadenaService.buscarCadena(idCadena);
+            if (cadenaSeleccionada != null) {
+                modoPanel = "detalle";
             }
         }
-        model.addAttribute("coberturasZona", coberturas);
 
-        return "administrador";
+        model.addAttribute("cadenaSeleccionada", cadenaSeleccionada);
+        model.addAttribute("modoPanel", modoPanel);
+
+        if (nombre == null) nombre = "";
+        if (idCampana == null) idCampana = "";
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("idCampana", idCampana);
+
+        return "Cadenas";
+    }
+
+    protected String editarCrear(String idCadena, Model model) {
+        CadenaDTO cadena = cadenaService.buscarCadena(idCadena);
+        model.addAttribute("cadenas", cadenaService.listarCadenas());
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("cadenaSeleccionada", cadena);
+        model.addAttribute("modoPanel", idCadena == null ? "anadir" : "editar");
+        model.addAttribute("nombre", "");
+        model.addAttribute("idCampana", "");
+        return "Cadenas";
+    }
+
+    @PostMapping("/anadir")
+    public String doAnadir(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            Model model) {
+        if (user == null) return "redirect:/";
+        return editarCrear(null, model);
+    }
+
+    @GetMapping("/editar")
+    public String doEditar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idCadena") String idCadena,
+            Model model) {
+        if (user == null) return "redirect:/";
+        return editarCrear(idCadena, model);
+    }
+
+    @PostMapping("/guardar")
+    public String doGuardar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) String idCadena,
+            @RequestParam String nombreCadena,
+            @RequestParam(required = false) List<String> campanasIds) {
+        if (user == null) return "redirect:/";
+        cadenaService.guardarCadena(idCadena, nombreCadena, campanasIds);
+        return "redirect:/cadenas";
+    }
+
+    @GetMapping("/borrar")
+    public String doBorrar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idCadena") String idCadena) {
+        if (user == null) return "redirect:/";
+        cadenaService.borrarCadena(idCadena);
+        return "redirect:/cadenas";
     }
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java">
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/EstablecimientoController.java">
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import jakarta.servlet.http.HttpSession;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-@Controller
-@AllArgsConstructor
-public class LoginController {
-
-    // pasar a service
-    private final UsuarioRepository usuarioRepository;
-
-    @GetMapping("/")
-    public String doLogin() { return "login"; }
-
-    @PostMapping("/autentica")
-    public String doAutentica (@RequestParam("username") String username,
-                               @RequestParam("password") String password,
-                               HttpSession session,
-                               Model model) {
-
-        Usuario user = this.usuarioRepository.autenticar(username, password);
-        if (user == null ) {
-            model.addAttribute("error", "Usuario no encontrado o error de autenticación");
-            return "login";
-        } else {
-            session.setAttribute("user", user);
-            session.setAttribute("id_user", user.getIdUsuario());
-            return "redirect:/dashboard";
-        }
-    }
-
-    // cerrar sesión
-    @GetMapping("/salir")
-    public String doSalir (HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
-    }
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/PerfilController.java">
-/*
-Paula Fernández Jiménez: 100%
-*/
-
-package es.uma.tesaw.proyecto_bancosol.controller;
-
-import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
+import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
 import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
-import jakarta.servlet.http.HttpSession;
+import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
-public class PerfilController {
+@RequestMapping("/tiendas")
+public class EstablecimientoController {
 
+    private final EstablecimientoService establecimientoService;
+    private final CadenaService cadenaService;
+    private final CampanaService campanaService;
+    private final ZonaGeograficaService zonaGeograficaService;
     private final UsuarioService usuarioService;
 
-    @GetMapping("/perfil")
-    public String mostrarPerfil(HttpSession session, Model model) {
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
+    @GetMapping("")
+    public String doInit(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) String idCadena,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String idCampana,
+            @RequestParam(required = false) String tipoVia,
+            @RequestParam(required = false) String nombreVia,
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) String localidad,
+            @RequestParam(required = false) Integer idZona,
+            @RequestParam(required = false) String coordinador,
+            @RequestParam(required = false) Integer idTienda,
+            Model model) {
+        if (user == null) return "redirect:/";
 
-        // Redirección de seguridad si no hay sesión activa
-        if (usuarioLogueado == null) {
-            return "redirect:/";
+        List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
+                idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
+        model.addAttribute("tiendas", tiendas);
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+
+        String modoPanel = "ninguno";
+        EstablecimientoDTO tiendaSeleccionada = null;
+
+        if (idTienda != null) {
+            tiendaSeleccionada = establecimientoService.buscarTienda(idTienda);
+            if (tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null) {
+                modoPanel = "detalle";
+            }
         }
 
-        // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
-        return "Perfil";
+        model.addAttribute("tiendaSeleccionada", tiendaSeleccionada);
+        model.addAttribute("modoPanel", modoPanel);
+
+        if (idCadena == null) idCadena = "";
+        if (nombre == null) nombre = "";
+        if (idCampana == null) idCampana = "";
+        if (tipoVia == null) tipoVia = "";
+        if (nombreVia == null) nombreVia = "";
+        if (codigo == null) codigo = "";
+        if (localidad == null) localidad = "";
+        if (coordinador == null) coordinador = "";
+        model.addAttribute("idCadena", idCadena);
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("tipoVia", tipoVia);
+        model.addAttribute("nombreVia", nombreVia);
+        model.addAttribute("codigo", codigo);
+        model.addAttribute("localidad", localidad);
+        model.addAttribute("idZona", idZona);
+        model.addAttribute("coordinador", coordinador);
+
+        return "Tienda";
     }
 
-    @PostMapping("/perfil/cambiar_contrasena")
-    public String procesarCambioContrasena(
-            @ModelAttribute CambioContrasenaDTO cambioContrasenaDTO,
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
+    protected String editarCrear(Integer idTienda, Model model) {
+        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
+        model.addAttribute("tiendas", establecimientoService.listarTiendas());
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+        model.addAttribute("tiendaSeleccionada", tienda);
+        model.addAttribute("modoPanel", idTienda == null ? "anadir" : "editar");
+        model.addAttribute("idCadena", "");
+        model.addAttribute("nombre", "");
+        model.addAttribute("idCampana", "");
+        model.addAttribute("tipoVia", "");
+        model.addAttribute("nombreVia", "");
+        model.addAttribute("codigo", "");
+        model.addAttribute("localidad", "");
+        model.addAttribute("idZona", null);
+        model.addAttribute("coordinador", "");
+        return "Tienda";
+    }
 
-        Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
-        if (usuarioLogueado == null) {
-            return "redirect:/";
-        }
+    @PostMapping("/anadir")
+    public String doAnadir(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            Model model) {
+        if (user == null) return "redirect:/";
+        return editarCrear(null, model);
+    }
 
-        try {
-            this.usuarioService.cambiarContrasena(usuarioLogueado.getIdUsuario(), cambioContrasenaDTO);
-            redirectAttributes.addFlashAttribute("mensajeTexto", "¡Contraseña actualizada con éxito!");
-            redirectAttributes.addFlashAttribute("mensajeTipo", "exito");
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("mensajeTexto", e.getMessage());
-            redirectAttributes.addFlashAttribute("mensajeTipo", "error");
-        }
+    @GetMapping("/editar")
+    public String doEditar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idTienda") Integer idTienda,
+            Model model) {
+        if (user == null) return "redirect:/";
+        return editarCrear(idTienda, model);
+    }
 
-        return "redirect:/perfil";
+    @PostMapping("/guardar")
+    public String doGuardar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) Integer idEstablecimiento,
+            @RequestParam String idCadena,
+            @RequestParam String nombreResena,
+            @RequestParam(required = false) Integer lineales,
+            @RequestParam String tipoVia,
+            @RequestParam String nombreVia,
+            @RequestParam(required = false) String numero,
+            @RequestParam String codigo,
+            @RequestParam String localidad,
+            @RequestParam Integer idZona) {
+        if (user == null) return "redirect:/";
+        establecimientoService.guardarTienda(idEstablecimiento, idCadena, nombreResena,
+                lineales, tipoVia, nombreVia, numero, codigo, localidad, idZona);
+        return "redirect:/tiendas";
+    }
+
+    @GetMapping("/borrar")
+    public String doBorrar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idTienda") Integer idTienda) {
+        if (user == null) return "redirect:/";
+        establecimientoService.borrarTienda(idTienda);
+        return "redirect:/tiendas";
     }
 }
 </file>
@@ -5554,24 +6139,6 @@ public class FormularioColaboradorDTO {
     private String codigoPostal;
     private String nombreDivision;
     private String observaciones;
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dto/UsuarioDTO.java">
-package es.uma.tesaw.proyecto_bancosol.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UsuarioDTO {
-    private Integer idUsuario;
-    private Integer idPersona;
-    private Integer idRol;
-    private String usuario;
 }
 </file>
 
@@ -5955,31 +6522,6 @@ public class EstablecimientoMapper extends MapperDTO<EstablecimientoDTO, Estable
         if (dto != null) {
             dto.setCoordinadorNombre(obtenerCoordinador(asignaciones));
         }
-        return dto;
-    }
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/mapper/UsuarioMapper.java">
-package es.uma.tesaw.proyecto_bancosol.mapper;
-
-import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import org.springframework.stereotype.Component;
-
-@Component
-public class UsuarioMapper extends MapperDTO<UsuarioDTO, Usuario> {
-
-    @Override
-    public UsuarioDTO toDTO(Usuario entity) {
-        if (entity == null) return null;
-
-        UsuarioDTO dto = new UsuarioDTO();
-        dto.setIdUsuario(entity.getIdUsuario());
-        dto.setIdPersona(entity.getPersona() != null ? entity.getPersona().getIdPersona() : null);
-        dto.setIdRol(entity.getRol() != null ? entity.getRol().getIdRol() : null);
-        dto.setUsuario(entity.getUsuario());
-
         return dto;
     }
 }
@@ -6563,130 +7105,6 @@ public class HistorialService {
 </html>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/Perfil.jsp">
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
-<%
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
-    String mensajeTexto = (String) request.getAttribute("mensajeTexto");
-    String mensajeTipo = (String) request.getAttribute("mensajeTipo");
-
-    //Como recibimos el id del rol, dependiendo del valor, lo asociamos a su valor correpsondiente
-    java.util.Map<String, String> rolesTexto = java.util.Map.of(
-            "1", "Administrador",
-            "2", "Coordinador",
-            "3", "Colaborador"
-    );
-    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getRol().getIdRol()), "Invitado");
-%>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil de Usuario - BancoSol</title>
-    <link rel="stylesheet" href="/css/Common.css">
-    <link rel="stylesheet" href="/css/Sidebar.css">
-    <link rel="stylesheet" href="/css/Header.css">
-    <link rel="stylesheet" href="/css/PerfilUsuario.css">
-</head>
-<body>
-<div class="main-layout">
-
-
-        <jsp:include page="sidebar.jsp" />
-
-
-    <div class="right-content">
-
-
-            <jsp:include page="header.jsp" />
-
-
-        <main class="content-wrapper">
-            <div class="content">
-                <h3 class="title">Información del Perfil</h3>
-
-                <div class="data-perfil">
-                    <div class="data-item">
-                        <label class="label-name">Nombre</label>
-                        <input type="text" readonly value="<%= usuarioLogueado.getUsuario() %>" class="input" />
-                    </div>
-                    <div class="data-item">
-                        <label class="label-name">Rol en el sistema</label>
-                        <input type="text" readonly value="<%= rolTexto %>" class="input" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-union">
-                <div class="content content-double">
-                    <h3 class="title">Contraseña</h3>
-
-                    <form action="/perfil/cambiar-contrasena" method="POST" class="form">
-                        <div class="table-data">
-                            <div class="data-item">
-                                <label class="label-name">Contraseña actual</label>
-                                <input class="input" type="password" name="actual" required />
-                            </div>
-                            <div class="data-item">
-                                <label class="label-name">Nueva contraseña</label>
-                                <input class="input" type="password" name="nueva" required />
-                            </div>
-                            <div class="data-item">
-                                <label class="label-name">Confirmar nueva contraseña</label>
-                                <input class="input" type="password" name="confirmacion" required />
-                            </div>
-                        </div>
-
-                        <div>
-                            <% if (mensajeTexto != null) { %>
-                            <div style="color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>; marginBottom: 15px; fontWeight: bold;">
-                                <%= mensajeTexto %>
-                            </div>
-                            <% } %>
-                            <button type="submit" class="btn btn--primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
-
-                <% if ("1".equals(String.valueOf(usuarioLogueado.getRol())) || "2".equals(String.valueOf(usuarioLogueado.getRol()))) { %>
-                <div class="content content-double">
-                    <h3 class="title">Exportar Datos del Sistema</h3>
-
-                    <form action="/perfil/exportar" method="POST">
-                        <div class="data-item">
-                            <label class="label-name">Tablas a exportar:</label>
-                            <div class="selection-content" style="display: flex; flex-direction: column; gap: 10px; padding: 5px;">
-                                <label class="label-selection">
-                                    <input type="checkbox" name="tablas" value="campana" class="selection" /> Campañas
-                                </label>
-                                <label class="label-selection">
-                                    <input type="checkbox" name="tablas" value="cadena" class="selection" /> Cadenas Comerciales
-                                </label>
-                                <label class="label-selection">
-                                    <input type="checkbox" name="tablas" value="establecimiento" class="selection" /> Tiendas
-                                </label>
-                                <label class="label-selection">
-                                    <input type="checkbox" name="tablas" value="colaborador" class="selection" /> Colaboradores
-                                </label>
-                                <label class="label-selection">
-                                    <input type="checkbox" name="tablas" value="voluntario" class="selection" /> Voluntarios
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn--primary">Descargar datos</button>
-                    </form>
-                </div>
-                <% } %>
-            </div>
-        </main>
-    </div>
-</div>
-</body>
-</html>
-</file>
-
 <file path="src/test/java/es/uma/tesaw/proyecto_bancosol/ProyectoBancosolApplicationTests.java">
 package es.uma.tesaw.proyecto_bancosol;
 
@@ -6700,6 +7118,185 @@ class ProyectoBancosolApplicationTests {
     void contextLoads() {
     }
 
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/DashboardController.java">
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Campana;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+@AllArgsConstructor
+public class DashboardController {
+
+    private final CampanaRepository campanaRepository;
+    private final EstablecimientoRepository establecimientoRepository;
+    private final ColaboradorRepository colaboradorRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ZonaGeograficaRepository zonaRepository;
+
+    @GetMapping("/dashboard")
+    public String verDashboard (@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {
+        if (user == null) {
+            return "redirect:/"; // Protegemos la ruta si no hay sesión
+        }
+
+        List<Campana> campanasActivas = campanaRepository.findByEstado("Activa");
+        model.addAttribute("campanasActivasCount", campanasActivas.size());
+        model.addAttribute("tiendasTotales", establecimientoRepository.count());
+        model.addAttribute("zonasTotales", zonaRepository.count());
+        model.addAttribute("colaboradoresTotales", colaboradorRepository.count());
+        model.addAttribute("coordinadoresTotales", usuarioRepository.countByIdRol(2).size());
+        List<Campana> proximasCampanas = campanaRepository.findAll();
+        model.addAttribute("proximasCampanas", proximasCampanas);
+
+        List<Object[]> conteoPorZona = establecimientoRepository.countEstablecimientosPorZona();
+        List<CoberturaZonaDTO> coberturas = new ArrayList<>();
+
+        if (!conteoPorZona.isEmpty()) {
+            // Como viene ordenado DESC, el primer elemento es el máximo
+            Long maxTiendas = (Long) conteoPorZona.get(0)[1];
+
+            for (Object[] fila : conteoPorZona) {
+                String nombreZona = (String) fila[0];
+                Long tiendas = (Long) fila[1];
+                // Calculamos el porcentaje
+                int porcentaje = (int) Math.round((tiendas.doubleValue() / maxTiendas) * 100);
+
+                coberturas.add(new CoberturaZonaDTO(nombreZona, tiendas, porcentaje));
+            }
+        }
+        model.addAttribute("coberturasZona", coberturas);
+
+        return "administrador";
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java">
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@AllArgsConstructor
+public class LoginController {
+
+    private final UsuarioService usuarioService;
+
+    @GetMapping("/")
+    public String doLogin() {
+        return "login";
+    }
+
+    @PostMapping("/autentica")
+    public String doAutentica (@RequestParam("username") String username,
+                               @RequestParam("password") String password,
+                               HttpSession session,
+                               Model model) {
+
+        UsuarioDTO user = this.usuarioService.autenticar(username, password);
+
+        if (user == null ) {
+            model.addAttribute("error", "Usuario no encontrado o error de autenticación");
+            return "login";
+        } else {
+            session.setAttribute("user", user);
+            session.setAttribute("id_user", user.getIdUsuario());
+            return "redirect:/dashboard";
+        }
+    }
+
+    @GetMapping("/salir")
+    public String doSalir (HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/PerfilController.java">
+/*
+Paula Fernández Jiménez: 100%
+*/
+
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@AllArgsConstructor
+public class PerfilController {
+
+    private final UsuarioService usuarioService;
+
+    @GetMapping("/perfil")
+    public String mostrarPerfil(HttpSession session, Model model) {
+        UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
+
+        // Redirección de seguridad si no hay sesión activa
+        if (usuarioLogueado == null) {
+            return "redirect:/";
+        }
+
+        // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
+        return "Perfil";
+    }
+
+    @PostMapping("/perfil/cambiar_contrasena")
+    public String procesarCambioContrasena(
+            @ModelAttribute CambioContrasenaDTO cambioContrasenaDTO,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
+        if (usuarioLogueado == null) {
+            return "redirect:/";
+        }
+
+        try {
+            this.usuarioService.cambiarContrasena(usuarioLogueado.getIdUsuario(), cambioContrasenaDTO);
+            redirectAttributes.addFlashAttribute("mensajeTexto", "¡Contraseña actualizada con éxito!");
+            redirectAttributes.addFlashAttribute("mensajeTipo", "exito");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensajeTexto", e.getMessage());
+            redirectAttributes.addFlashAttribute("mensajeTipo", "error");
+        }
+
+        return "redirect:/perfil";
+    }
 }
 </file>
 
@@ -6791,6 +7388,25 @@ import java.util.List;
 public interface VoluntarioRepository extends JpaRepository<Voluntario, Integer>{
 
     List<Voluntario> findByDisponibilidadContainingIgnoreCase(String disponibilidad);
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dto/UsuarioDTO.java">
+package es.uma.tesaw.proyecto_bancosol.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UsuarioDTO {
+    private Integer idUsuario;
+    private Integer idPersona;
+    private Integer idRol;
+    private String nombreRol;
+    private String usuario;
 }
 </file>
 
@@ -7080,6 +7696,32 @@ public class CampanaMapper extends MapperDTO<CampanaDTO, Campana> {
         dto.setIdsCadenas(entity.getCadenas().stream()
                 .map(Cadena::getIdCadena)
                 .collect(Collectors.toSet()));
+
+        return dto;
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/mapper/UsuarioMapper.java">
+package es.uma.tesaw.proyecto_bancosol.mapper;
+
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import org.springframework.stereotype.Component;
+
+@Component
+public class UsuarioMapper extends MapperDTO<UsuarioDTO, Usuario> {
+
+    @Override
+    public UsuarioDTO toDTO(Usuario entity) {
+        if (entity == null) return null;
+
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setIdUsuario(entity.getIdUsuario());
+        dto.setIdPersona(entity.getPersona() != null ? entity.getPersona().getIdPersona() : null);
+        dto.setIdRol(entity.getRol() != null ? entity.getRol().getIdRol() : null);
+        dto.setNombreRol(entity.getRol().getNombreRol());
+        dto.setUsuario(entity.getUsuario());
 
         return dto;
     }
@@ -7745,229 +8387,6 @@ h1 {
 }
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/AsignacionTurnos.jsp">
-<!--
-Ainhoa García Rebollo: 80%
-IA: 20% -> Dudas con guardar valores en la asignación de horarios
--->
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO" %>
-<%
-    List<VistaVoluntarioDTO> voluntariosManana = (List<VistaVoluntarioDTO>) request.getAttribute("voluntariosManana");
-    List<VistaVoluntarioDTO> voluntariosTarde = (List<VistaVoluntarioDTO>) request.getAttribute("voluntariosTarde");
-    Map<String, String> asignaciones = (Map<String, String>) request.getAttribute("asignaciones");
-
-    String[] diasSemana = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
-    String[] idsDia     = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
-%>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificación de Turnos</title>
-    <link rel="stylesheet" href="../css/Sidebar.css">
-    <link rel="stylesheet" href="../css/Header.css">
-    <link rel="stylesheet" href="../css/Common.css">
-</head>
-<body>
-
-<div class="app-container">
-    <jsp:include page="sidebar.jsp" />
-
-    <div class="right-content">
-        <jsp:include page="header.jsp">
-            <jsp:param name="titulo" value="Listado de Campañas" />
-            <jsp:param name="subtitulo" value="Gestión y planificación de campañas activas" />
-        </jsp:include>
-
-        <div class="main-layout">
-            <main style="padding: 24px; box-sizing: border-box; width: 85%; margin: 20px auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow-y: auto;">
-
-                <form action="/campanas/turnos/guardar" method="POST">
-                    <input type="hidden" name="idCampana" value="${idCampana}">
-                    <input type="hidden" name="idTienda" value="${idTienda}">
-
-                    <div class="list-header" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
-                        <h2 style="margin: 0; color: #111827;">Planificación de Turnos</h2>
-                        <p style="margin: 8px 0 0 0; color: #4b5563; font-size: 0.9rem;">
-                            Campaña: <strong style="color: #111827;">${idCampana}</strong> | ID Tienda: <strong style="color: #111827;">${idTienda}</strong>
-                        </p>
-                    </div>
-
-                    <div class="table-wrapper">
-                        <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-                            <thead>
-                            <tr>
-                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Día</th>
-                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Turno Mañana</th>
-                                <th style="padding: 12px; background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; color: #374151;">Turno Tarde</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <%
-                                for (int i = 0; i < diasSemana.length; i++) {
-                                    String nombreSelectManana = "asignacion_manana_" + idsDia[i];
-                                    String nombreSelectTarde  = "asignacion_tarde_"  + idsDia[i];
-                            %>
-                            <tr style="border-bottom: 1px solid #e5e7eb;">
-                                <td style="padding: 12px; font-weight: 600; color: #111827;"><%= diasSemana[i] %></td>
-
-                                <td style="padding: 12px;">
-                                    <select name="<%= nombreSelectManana %>" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; background-color: #f9fafb;">
-                                        <option value="">Sin asignar</option>
-                                        <% if (voluntariosManana != null) {
-                                            for (VistaVoluntarioDTO v : voluntariosManana) {
-                                                boolean seleccionado = asignaciones != null && String.valueOf(v.getIdVoluntario()).equals(asignaciones.get(nombreSelectManana));
-                                        %>
-                                        <option value="<%= v.getIdVoluntario() %>" <%= seleccionado ? "selected" : "" %>><%= v.getNombreCompleto() %></option>
-                                        <%  }
-                                        } %>
-                                    </select>
-                                </td>
-
-                                <td style="padding: 12px;">
-                                    <select name="<%= nombreSelectTarde %>" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; background-color: #f9fafb;">
-                                        <option value="">Sin asignar</option>
-                                        <% if (voluntariosTarde != null) {
-                                            for (VistaVoluntarioDTO v : voluntariosTarde) {
-                                                boolean seleccionado = asignaciones != null && String.valueOf(v.getIdVoluntario()).equals(asignaciones.get(nombreSelectTarde));
-                                        %>
-                                        <option value="<%= v.getIdVoluntario() %>" <%= seleccionado ? "selected" : "" %>><%= v.getNombreCompleto() %></option>
-                                        <%  }
-                                        } %>
-                                    </select>
-                                </td>
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="popup-actions" style="display: flex; flex-direction: row; justify-content: flex-end; gap: 12px; margin-top: 30px;">
-                        <button type="button" class="btn btn--cancel" onclick="window.history.back()">Cancelar</button>
-                        <button type="submit" class="btn btn--primary">Guardar Cambios</button>
-                    </div>
-                </form>
-
-            </main>
-        </div>
-    </div>
-</div>
-
-</body>
-</html>
-</file>
-
-<file path="src/main/webapp/WEB-INF/view/EditarVoluntario.jsp">
-<!--
-Ainhoa García Rebollo: 100%
--->
-
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Administrador.css">
-    <link rel="stylesheet" href="../css/EditarVoluntario.css">
-    <link rel="stylesheet" href="../css/popUpRegistro.css">
-    <link rel="stylesheet" href="../css/RegistroVoluntarios.css">
-    <link rel="stylesheet" href="../css/Header.css">
-    <link rel="stylesheet" href="../css/Sidebar.css">
-    <link rel="stylesheet" href="../css/Common.css">
-
-    <title>Editar Voluntario</title>
-</head>
-
-<body>
-<div class="main-container">
-
-    <jsp:include page="sidebar.jsp" />
-
-    <div class="right-container">
-
-        <jsp:include page="header.jsp">
-            <jsp:param name="titulo" value="Editar Voluntarios" />
-            <jsp:param name="subtitulo" value="Modificación de datos o disponibilidad del voluntario" />
-        </jsp:include>
-
-        <div class="form-container">
-            <form action="/voluntarios/guardar" method="POST" id="form-edit-voluntario">
-
-                <input type="hidden" name="id" value="${voluntarioActual != null ? voluntarioActual.idVoluntario : ''}">
-
-                <div class="list-container">
-                    <div class="list-header">
-                        <h2>Datos Personales</h2>
-                        <br>
-                        <p>Modifique la información del voluntario</p>
-                    </div>
-
-                    <div class="field-group">
-                        <label for="nombre">Nombre Completo</label>
-                        <input type="text" id="nombre" name="nombre"
-                               value="${voluntarioActual != null ? voluntarioActual.nombreCompleto : ''}" required>
-                    </div>
-
-                    <div class="field-group">
-                        <label for="email">Correo Electrónico</label>
-                        <input type="email" id="email" name="email"
-                               value="${voluntarioActual != null ? voluntarioActual.email : ''}" required>
-                    </div>
-
-                    <div class="field-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="number" id="telefono" name="telefono"
-                               value="${voluntarioActual != null ? voluntarioActual.telefono : ''}">
-                    </div>
-                </div>
-
-                <div class="list-container">
-                    <div class="list-header">
-                        <h2>Disponibilidad en la campaña</h2>
-                        <br>
-                        <p>Especifique la disponibilidad del voluntario para la campaña</p>
-                    </div>
-
-                    <div class="field-group" style="padding: 10px 0;">
-                        <select id="disponibilidad-select" name="disponibilidad" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
-                            <option value="" disabled ${voluntarioActual == null ? 'selected' : ''}>-- Seleccione un turno --</option>
-                            <option value="mañana" ${voluntarioActual != null && voluntarioActual.disponibilidad == 'mañana' ? 'selected' : ''}>Turno de Mañana</option>
-                            <option value="tarde" ${voluntarioActual != null && voluntarioActual.disponibilidad == 'tarde' ? 'selected' : ''}>Turno de Tarde</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="contenedor" style="display: flex; gap: 15px;">
-                    <article>
-                        <button type="submit" class="btn btn--primary" id="btn-guardar">
-                            Guardar
-                        </button>
-                    </article>
-                    <article>
-                        <button type="button" class="btn btn--cancel" id="btn-descartar" onclick="window.location.href='/voluntarios'">
-                            Cancelar
-                        </button>
-                    </article>
-                </div>
-
-            </form>
-        </div>
-    </div>
-</div>
-
-</body>
-</html>
-</file>
-
 <file path="src/main/webapp/WEB-INF/view/historial.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -8042,232 +8461,6 @@ Ainhoa García Rebollo: 100%
 
 </body>
 </html>
-</file>
-
-<file path="src/main/webapp/WEB-INF/view/RegistroVoluntarios.jsp">
-<!--
-Ainhoa García Rebollo: 100%
--->
-
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro de voluntarios</title>
-
-    <link rel="stylesheet" href="../css/RegistroVoluntarios.css">
-    <link rel="stylesheet" href="../css/popUpRegistro.css">
-    <link rel="stylesheet" href="../css/Sidebar.css">
-    <link rel="stylesheet" href="../css/Header.css">
-    <link rel="stylesheet" href="../css/EditarVoluntario.css">
-    <link rel="stylesheet" href="../css/Common.css">
-</head>
-
-<body>
-
-<div class="app-container">
-
-    <jsp:include page="sidebar.jsp" />
-
-    <div class="right-content">
-
-        <jsp:include page="header.jsp">
-            <jsp:param name="titulo" value="Registro de Voluntarios" />
-            <jsp:param name="subtitulo" value="Introduzca la información del voluntario para hacer su registro" />
-        </jsp:include>
-
-        <div class="main-layout">
-
-            <main>
-                <form id="form-voluntario" action="/voluntarios/guardar" method="POST">
-
-                    <input type="hidden" name="id" value="${voluntarioActual != null ? voluntarioActual.idVoluntario : ''}">
-
-                    <div class="list-container">
-                        <div class="list-header">
-                            <h2>Información del Voluntario</h2>
-                            <br>
-                            <p>${editando ? 'Editar los datos del voluntario' : 'Añadir un nuevo voluntario a la base de datos'}</p>
-                        </div>
-
-                        <div class="field-group">
-                            <label for="volunt-name">Nombre</label>
-                            <input type="text" id="volunt-name" name="nombre"
-                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.nombreCompleto : ''}" required>
-                        </div>
-
-                        <div class="field-group">
-                            <label for="volunt-email">Email</label>
-                            <input type="email" id="volunt-email" name="email"
-                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.email : ''}" required>
-                        </div>
-
-                        <div class="field-group">
-                            <label for="volunt-tel">Teléfono (opcional)</label>
-                            <input type="number" id="volunt-tel" name="telefono"
-                                   value="${(voluntarioActual != null && voluntarioActual.persona != null) ? voluntarioActual.persona.telefono : ''}">
-                        </div>
-                    </div>
-
-                    <div class="list-container">
-                        <div class="list-header">
-                            <h2>Disponibilidad en la campaña</h2>
-                            <br>
-                            <p>Especifique la preferencia horaria del voluntario</p>
-                        </div>
-
-                        <div class="field-group" style="padding: 10px 0;">
-                            <label for="disponibilidad-select">Turno preferente</label>
-                            <select id="disponibilidad-select" name="disponibilidad" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
-                                <option value="" disabled ${voluntarioActual == null ? 'selected' : ''}>-- Seleccione un turno --</option>
-                                <option value="mañana" ${voluntarioActual != null && voluntarioActual.preferenciaHorario == 'mañana' ? 'selected' : ''}>Turno de Mañana</option>
-                                <option value="tarde" ${voluntarioActual != null && voluntarioActual.preferenciaHorario == 'tarde' ? 'selected' : ''}>Turno de Tarde</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="contenedor" style="display: flex; gap: 15px;">
-                        <article>
-                            <button type="submit" class="btn btn--primary" id="btn-guardar">
-                                Guardar
-                            </button>
-                        </article>
-                        <article>
-                            <button type="button" class="btn btn--cancel" id="btn-descartar" onclick="window.location.href='/voluntarios'">
-                                Cancelar
-                            </button>
-                        </article>
-                    </div>
-                </form>
-            </main>
-        </div>
-    </div>
-</div>
-
-</body>
-</html>
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/ColaboradorController.java">
-/*
-Paula Fernández Jiménez: 100%
-*/
-
-package es.uma.tesaw.proyecto_bancosol.controller;
-
-import java.util.List;
-
-import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
-import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
-import es.uma.tesaw.proyecto_bancosol.service.ColaboradoresService;
-import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-@Controller
-@AllArgsConstructor
-public class ColaboradorController {
-
-    private final ColaboradoresService colaboradoresService;
-    private final ZonaGeograficaService zonaGeograficaService;
-
-    @GetMapping("/colaboradores")
-    public String listarYGestionarColaboradores(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            @RequestParam(required = false) String busqueda,
-            @RequestParam(required = false) String zona,
-            @RequestParam(required = false) String id,
-            @RequestParam(required = false) String accion,
-            Model model) {
-        if (user == null) {
-            return "redirect:/";
-        }
-        List<ColaboradorDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
-        List<ZonaGeografica> zonasDisponibles = this.zonaGeograficaService.obtenerTodasLasZonas();
-
-        if (busqueda == null) busqueda = "";
-        if (zona == null) zona = "Todas";
-
-        // Gestión de la tabla lateral de información
-        String modoPanel = "ninguno";
-        Colaborador colaboradorSeleccionado = null;
-        ContactoColaborador contactoSeleccionado = null;
-
-        if (id != null && !id.isEmpty()) {
-            colaboradorSeleccionado = this.colaboradoresService.obtenerColaboradorEntidad(id).orElse(null);
-            if (colaboradorSeleccionado != null) {
-                contactoSeleccionado = this.colaboradoresService.obtenerContactoPorColaborador(colaboradorSeleccionado).orElse(null);
-                if ("editar".equals(accion)) {
-                    modoPanel = "editar";
-                } else {
-                    modoPanel = "detalle";
-                }
-            }
-        } else if ("nuevo".equals(accion)) {
-            modoPanel = "anadir";
-        }
-
-        // Pasar todos los datos a la vista .jsp
-        model.addAttribute("colaboradores", colaboradores);
-        model.addAttribute("zonasDisponibles", zonasDisponibles);
-        model.addAttribute("colaboradorSeleccionado", colaboradorSeleccionado);
-        model.addAttribute("contactoSeleccionado", contactoSeleccionado);
-        model.addAttribute("modoPanel", modoPanel);
-        model.addAttribute("busqueda", busqueda);
-        model.addAttribute("zona", zona);
-
-        return "Colaboradores";
-    }
-
-    @PostMapping("/colaboradores/guardar")
-    public String guardarColaborador(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            FormularioColaboradorDTO nuevoColaborador) {
-        if (user == null) {
-            return "redirect:/";
-        }
-        this.colaboradoresService.guardarColaborador(nuevoColaborador);
-        return "redirect:/colaboradores";
-    }
-
-    // Actualizar colaborador
-    @PostMapping("/colaboradores/actualizar")
-    public String actualizarColaborador(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            FormularioColaboradorDTO colaboradorEditado) {
-        if (user == null) {
-            return "redirect:/";
-        }
-        this.colaboradoresService.guardarColaborador(colaboradorEditado);
-        return "redirect:/colaboradores?id=" + colaboradorEditado.getIdColaborador();
-    }
-
-    // Eliminar colaborador
-    @PostMapping("/colaboradores/eliminar")
-    public String eliminarColaboradorCompleto(
-            @SessionAttribute(name = "user", required = false) Usuario user,
-            @RequestParam String id) {
-        if (user == null) {
-            return "redirect:/";
-        }
-        this.colaboradoresService.eliminarColaboradorCompleto(id);
-        return "redirect:/colaboradores";
-    }
-
-
-}
 </file>
 
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/AsignacionTurnoColaboradorRepository.java">
@@ -8558,84 +8751,6 @@ public class EstablecimientoService {
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/UsuarioService.java">
-package es.uma.tesaw.proyecto_bancosol.service;
-
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-@Service
-@AllArgsConstructor
-public class UsuarioService {
-
-    private final UsuarioRepository usuarioRepository;
-
-    @Transactional(readOnly = true)
-    public List<Usuario> listarCoordinadores() {
-        return usuarioRepository.findByRolId(2);
-    }
-
-    @Transactional
-    public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
-
-        // 1. Validaciones básicas (Las mismas que tenías en React)
-        if (!dto.getNueva().equals(dto.getConfirmacion())) {
-            throw new IllegalArgumentException("Las contraseñas nuevas no coinciden.");
-        }
-
-        if (dto.getNueva().length() < 8) {
-            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
-        }
-
-        // 2. Buscar al usuario
-        Usuario usuario = this.usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        // 3. Comprobar que la contraseña actual es correcta
-        // Nota: Si en el futuro usas BCrypt o encriptación, aquí usarías passwordEncoder.matches()
-        if (!usuario.getContrasenia().equals(dto.getActual())) {
-            throw new IllegalArgumentException("La contraseña actual no es correcta.");
-        }
-
-        // 4. Guardar la nueva contraseña
-        usuario.setContrasenia(dto.getNueva());
-        this.usuarioRepository.save(usuario);
-    }
-}
-</file>
-
-<file path="src/main/resources/application.properties">
-spring.application.name=Proyecto_Bancosol
-spring.mvc.view.prefix=/WEB-INF/view/
-spring.mvc.view.suffix=.jsp
-
-# 1. Conexion Supabase (PostgreSQL)
-spring.datasource.url=jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:5432/postgres
-spring.datasource.username=postgres.rlomuwrvboawpmnecupr
-spring.datasource.password=ProyectoBancosol
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-# 2. Configuracion de Hibernate / JPA
-spring.jpa.hibernate.ddl-auto=update
-# Muestra las consultas SQL en la consola
-spring.jpa.show-sql=true
-# Le dice a Hibernate que estamos usando PostgreSQL
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-
-spring.jpa.properties.hibernate.default_batch_fetch_size=100
-
-# 3. Codificación UTF-8
-server.servlet.encoding.charset=UTF-8
-server.servlet.encoding.enabled=true
-server.servlet.encoding.force=true
-</file>
-
 <file path="src/main/webapp/WEB-INF/view/listadoCampanas.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
@@ -8815,85 +8930,6 @@ server.servlet.encoding.force=true
 </html>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/sidebar.jsp">
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<%
-    Usuario usuario = (Usuario) session.getAttribute("user");
-    String currentURI = request.getRequestURI();
-%>
-
-<head>
-    <link rel="stylesheet" href="/css/Sidebar.css">
-</head>
-
-<aside class="sidebar">
-    <!-- BLOQUE DEL USUARIO / PERFIL -->
-    <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
-        <div class="user-block">
-            <!-- Primera letra del usuario para el Avatar -->
-            <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
-            <div class="user-info">
-                <p class="user-name"><%= usuario.getUsuario() %></p>
-                <p class="user-role"><%= usuario.getRol().getNombreRol() %></p>
-            </div>
-        </div>
-    </a>
-
-    <h2 class="menu-heading">MENÚ PRINCIPAL</h2>
-    <ul id="menu">
-        <li class="<%= currentURI.contains("administrador") ? "active" : "" %>">
-            <a href="/dashboard">Dashboard</a>
-        </li>
-
-        <% int idRol = usuario.getRol().getIdRol(); %>
-
-        <!-- ADMINISTRADORES Y COORDINADORES -->
-        <% if (idRol == 1 || idRol == 2) { %>
-        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
-            <a href="/campanas">Campañas</a>
-        </li>
-        <li class="<%= currentURI.contains("/cadenas") ? "active" : "" %>">
-            <a href="/cadenas">Cadenas</a>
-        </li>
-        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
-            <a href="/voluntarios">Voluntarios</a>
-        </li>
-        <li class="<%= currentURI.contains("/incidencias") ? "active" : "" %>">
-            <a href="/incidencias">Incidencias</a>
-        </li>
-        <% } %>
-
-        <!-- ADMINISTRADOREs -->
-        <% if (idRol == 1) { %>
-        <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
-            <a href="/tiendas">Tiendas</a>
-        </li>
-        <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
-            <a href="/colaboradores">Colaboradores</a>
-        </li>
-        <% } %>
-
-        <!-- COLABORADORES -->
-        <% if (idRol == 3) { %>
-        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
-            <a href="/campanas">Campañas</a>
-        </li>
-        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
-            <a href="/voluntarios">Voluntarios</a>
-        </li>
-        <% } %>
-    </ul>
-
-    <div class="bottom-menu">
-        <ul>
-            <li><a href="/salir">Cerrar Sesión</a></li>
-        </ul>
-    </div>
-</aside>
-</file>
-
 <file path="pom.xml">
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9003,6 +9039,125 @@ server.servlet.encoding.force=true
 </project>
 </file>
 
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/ColaboradorController.java">
+/*
+Paula Fernández Jiménez: 100%
+*/
+
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import java.util.List;
+
+import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
+import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
+import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
+import es.uma.tesaw.proyecto_bancosol.service.ColaboradoresService;
+import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@AllArgsConstructor
+public class ColaboradorController {
+
+    private final ColaboradoresService colaboradoresService;
+    private final ZonaGeograficaService zonaGeograficaService;
+
+    @GetMapping("/colaboradores")
+    public String listarYGestionarColaboradores(
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
+            @RequestParam(required = false) String busqueda,
+            @RequestParam(required = false) String zona,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String accion,
+            Model model) {
+        if (user == null) {
+            return "redirect:/";
+        }
+        List<ColaboradorDTO> colaboradores = this.colaboradoresService.listarColaboradoresDTO(busqueda, zona);
+        List<ZonaGeografica> zonasDisponibles = this.zonaGeograficaService.obtenerTodasLasZonas();
+
+        if (busqueda == null) busqueda = "";
+        if (zona == null) zona = "Todas";
+
+        // Gestión de la tabla lateral de información
+        String modoPanel = "ninguno";
+        Colaborador colaboradorSeleccionado = null;
+        ContactoColaborador contactoSeleccionado = null;
+
+        if (id != null && !id.isEmpty()) {
+            colaboradorSeleccionado = this.colaboradoresService.obtenerColaboradorEntidad(id).orElse(null);
+            if (colaboradorSeleccionado != null) {
+                contactoSeleccionado = this.colaboradoresService.obtenerContactoPorColaborador(colaboradorSeleccionado).orElse(null);
+                if ("editar".equals(accion)) {
+                    modoPanel = "editar";
+                } else {
+                    modoPanel = "detalle";
+                }
+            }
+        } else if ("nuevo".equals(accion)) {
+            modoPanel = "anadir";
+        }
+
+        // Pasar todos los datos a la vista .jsp
+        model.addAttribute("colaboradores", colaboradores);
+        model.addAttribute("zonasDisponibles", zonasDisponibles);
+        model.addAttribute("colaboradorSeleccionado", colaboradorSeleccionado);
+        model.addAttribute("contactoSeleccionado", contactoSeleccionado);
+        model.addAttribute("modoPanel", modoPanel);
+        model.addAttribute("busqueda", busqueda);
+        model.addAttribute("zona", zona);
+
+        return "Colaboradores";
+    }
+
+    @PostMapping("/colaboradores/guardar")
+    public String guardarColaborador(
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
+            FormularioColaboradorDTO nuevoColaborador) {
+        if (user == null) {
+            return "redirect:/";
+        }
+        this.colaboradoresService.guardarColaborador(nuevoColaborador);
+        return "redirect:/colaboradores";
+    }
+
+    // Actualizar colaborador
+    @PostMapping("/colaboradores/actualizar")
+    public String actualizarColaborador(
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
+            FormularioColaboradorDTO colaboradorEditado) {
+        if (user == null) {
+            return "redirect:/";
+        }
+        this.colaboradoresService.guardarColaborador(colaboradorEditado);
+        return "redirect:/colaboradores?id=" + colaboradorEditado.getIdColaborador();
+    }
+
+    // Eliminar colaborador
+    @PostMapping("/colaboradores/eliminar")
+    public String eliminarColaboradorCompleto(
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
+            @RequestParam String id) {
+        if (user == null) {
+            return "redirect:/";
+        }
+        this.colaboradoresService.eliminarColaboradorCompleto(id);
+        return "redirect:/colaboradores";
+    }
+
+
+}
+</file>
+
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/CampanaRepository.java">
 package es.uma.tesaw.proyecto_bancosol.dao;
 
@@ -9022,6 +9177,74 @@ public interface CampanaRepository extends JpaRepository<Campana, String> {  // 
             "LOWER(c.nombreCampana) LIKE LOWER(CONCAT('%', :busqueda, '%'))")
     List<Campana> filtrarCampanas(@Param("estado") String estado, @Param("busqueda") String busqueda);
 }
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/UsuarioService.java">
+package es.uma.tesaw.proyecto_bancosol.service;
+
+import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.mapper.UsuarioMapper;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class UsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarCoordinadores() {
+        return usuarioRepository.findByRolId(2);
+    }
+
+    @Transactional
+    public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
+
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioDTO autenticar(String username, String password) {
+        Usuario usuario = this.usuarioRepository.autenticar(username, password);
+        if (usuario == null) {
+            return null;
+        }
+        return usuarioMapper.toDTO(usuario);
+    }
+}
+</file>
+
+<file path="src/main/resources/application.properties">
+spring.application.name=Proyecto_Bancosol
+spring.mvc.view.prefix=/WEB-INF/view/
+spring.mvc.view.suffix=.jsp
+
+# 1. Conexion Supabase (PostgreSQL)
+spring.datasource.url=jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+spring.datasource.username=postgres.rlomuwrvboawpmnecupr
+spring.datasource.password=ProyectoBancosol
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# 2. Configuracion de Hibernate / JPA
+spring.jpa.hibernate.ddl-auto=update
+# Muestra las consultas SQL en la consola
+spring.jpa.show-sql=true
+# Le dice a Hibernate que estamos usando PostgreSQL
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+spring.jpa.properties.hibernate.default_batch_fetch_size=100
+
+# 3. Codificación UTF-8
+server.servlet.encoding.charset=UTF-8
+server.servlet.encoding.enabled=true
+server.servlet.encoding.force=true
 </file>
 
 <file path="src/main/webapp/WEB-INF/view/administrador.jsp">
@@ -9178,194 +9401,6 @@ public interface CampanaRepository extends JpaRepository<Campana, String> {  // 
 </script>
 
 </body>
-</html>
-</file>
-
-<file path="src/main/webapp/WEB-INF/view/Colaboradores.jsp">
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
-<%
-    List<ColaboradorDTO> colaboradores = (List<ColaboradorDTO>) request.getAttribute("colaboradores");
-    List<ContactoColaborador> contacto = (List<ContactoColaborador>) request.getAttribute("ContactoColaborador");
-    List<ZonaGeografica> zonasDisponibles = (List<ZonaGeografica>) request.getAttribute("zonasDisponibles");
-    Colaborador seleccionado = (Colaborador) request.getAttribute("colaboradorSeleccionado");
-    ContactoColaborador contactoSeleccionado = (ContactoColaborador) request.getAttribute("contactoSeleccionado");
-    String modoPanel = (String) request.getAttribute("modoPanel");
-    String busqueda = (String) request.getAttribute("busqueda");
-    String zona = (String) request.getAttribute("zona");
-
-    if (modoPanel == null) modoPanel = "ninguno";
-    if (busqueda == null) busqueda = "";
-    if (zona == null) zona = "Todas";
-%>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Colaboradores</title>
-    <link rel="stylesheet" href="/css/Common.css">
-    <link rel="stylesheet" href="/css/Colaboradores.css">
-    <link rel="stylesheet" href="/css/Sidebar.css">
-    <link rel="stylesheet" href="/css/DetalleColaborador.css">
-    <link rel="stylesheet" href="/css/EditarAnadirColaborador.css">
-    <link rel="stylesheet" href="/css/Header.css">
-</head>
-
-<body>
-<div class="main-layout">
-        <jsp:include page="sidebar.jsp" />
-    <div class="right-content">
-            <jsp:include page="header.jsp" />
-        <main>
-            <form action="/colaboradores" method="GET" style="margin: 0; padding: 0; display: contents;">
-                <section class="filters">
-                    <div class="filter-group">
-                        <label>Zona Geográfica</label>
-                        <select id="filter-zona" name="zona">
-                            <option value="Todas" <%= zona.equals("Todas") ? "selected" : "" %>>Todas</option>
-                            <%
-                                if (zonasDisponibles != null) {
-                                    for (ZonaGeografica z : zonasDisponibles) {
-                            %>
-                            <option value="<%= z.getNombreZona() %>" <%= zona.equals(z.getNombreZona()) ? "selected" : "" %>>
-                                <%= z.getNombreZona() %>
-                            </option>
-                            <%
-                                    }
-                                }
-                            %>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Buscar</label>
-                        <input type="text" id="input-search" name="busqueda" value="<%= busqueda %>" placeholder="Nombre o código del colaborador...">
-                    </div>
-                    <div class="filter-button">
-                        <button type="submit" class="btn btn--primary" id="btn-filter">Filtrar</button>
-                    </div>
-                </section>
-            </form>
-
-            <hr>
-            <div class="content-wrapper">
-                <section class="list-container">
-                    <header class="list-header">
-                        <h2>Listado de Colaboradores</h2>
-                        <p id="contador-colaboradores"><%= colaboradores != null ? colaboradores.size() : 0 %> colaboradores encontrados</p>
-                        <button type="button" class="btn btn--primary" id="btn-abrir-registro" onclick="window.location.href='/colaboradores?accion=nuevo'">
-                            Añadir Colaborador
-                        </button>
-                    </header>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Colaborador</th>
-                                <th>Localidad</th>
-                                <th>Zona</th>
-                                <th>Contacto</th>
-                            </tr>
-                            </thead>
-                            <tbody id="tabla-colaboradores">
-                            <%
-                                if (colaboradores != null && !colaboradores.isEmpty()) {
-                                    for (ColaboradorDTO c : colaboradores) {
-                                        // Al venir del DTO, simplemente comprobamos si son nulos para dar un valor por defecto
-                                        String localidad = c.getNombreDivision() != null ? c.getNombreDivision() : "Sin asignar";
-                                        String zonaCol = c.getNombreZona() != null ? c.getNombreZona() : "Sin asignar";
-                                        String contactoStr = c.getNombreContacto() != null ? c.getNombreContacto() : "Sin contacto";
-                            %>
-                            <tr>
-                                <td>
-                                    <a href="/colaboradores?id=<%= c.getIdColaborador() %>" style="color: inherit; text-decoration: none; font-weight: bold;">
-                                        <%= c.getNombreColaborador() %>
-                                    </a>
-                                </td>
-                                <td><%= localidad %></td>
-                                <td><%= zonaCol %></td>
-                                <td><%= contactoStr %></td>
-                            </tr>
-                            <%      }
-                            } else {
-                            %>
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px;">No se encontraron colaboradores.</td>
-                            </tr>
-                            <%  } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-                <aside class="detail-panel">
-                    <div class="detail-content">
-                        <% if ("detalle".equals(modoPanel) && seleccionado != null) { %>
-                        <jsp:include page="DetalleColaborador.jsp" />
-                        <% } else if ("editar".equals(modoPanel) && seleccionado != null) { %>
-                        <jsp:include page="EditarColaboradores.jsp" />
-                        <% } else if ("anadir".equals(modoPanel)) { %>
-                        <jsp:include page="AnadirColaboradores.jsp" />
-                        <% } else { %>
-                        <div style="text-align: center; padding: 40px; color: #888;">Selecciona un colaborador para ver sus detalles.</div>
-                        <% } %>
-                    </div>
-
-                    <div class="detail-actions-sticky" id="acciones-detalle-colaborador" style="<%= "detalle".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="button" id="btn-editar-colaborador" class="btn btn--primary" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>&accion=editar'">
-                            Editar Colaborador
-                        </button>
-                        <form action="/colaboradores/eliminar" method="POST" style="display: contents;">
-                            <input type="hidden" name="id" value="<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>">
-                            <button type="submit" id="btn-eliminar-colaborador" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar este colaborador?');">
-                                Eliminar
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="detail-actions-sticky" id="acciones-edicion-colaborador" style="<%= "editar".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="submit" form="form-edicion-colaborador" id="btn-guardar-cambios" class="btn btn--primary">
-                            Guardar Cambios
-                        </button>
-                        <button type="button" id="btn-cancelar-edicion" class="btn btn--cancel" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>'">
-                            Cancelar
-                        </button>
-                    </div>
-
-                    <div class="detail-actions-sticky" id="acciones-anadir-colaborador" style="<%= "anadir".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="submit" form="form-nuevo-colaborador-lateral" id="btn-guardar-nuevo" class="btn btn--primary">
-                            Guardar Colaborador
-                        </button>
-                        <button type="button" id="btn-cancelar-nuevo" class="btn btn--cancel" onclick="window.location.href='/colaboradores'">
-                            Cancelar
-                        </button>
-                    </div>
-                </aside>
-            </div>
-        </main>
-    </div>
-</div>
-
-<div class="overlay" id="overlay-eliminar">
-    <div class="popup" id="popup-eliminar">
-        <h3>¿Eliminar Colaborador?</h3>
-        <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar a este colaborador de la base de
-            datos?</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button class="btn-add btn-rojo" id="btn-confirmar-eliminar">Eliminar</button>
-                <button class="btn-cerrar-popup" id="btn-cancelar-eliminar">Cancelar</button>
-            </form>
-        </div>
-    </div>
-</div>
-</body>
-
 </html>
 </file>
 
@@ -9626,6 +9661,85 @@ public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntari
 </html>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/sidebar.jsp">
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("user");
+    String currentURI = request.getRequestURI().toLowerCase();
+%>
+
+<head>
+    <link rel="stylesheet" href="/css/Sidebar.css">
+</head>
+
+<aside class="sidebar">
+    <!-- BLOQUE DEL USUARIO / PERFIL -->
+    <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
+        <div class="user-block">
+            <!-- Primera letra del usuario para el Avatar -->
+            <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
+            <div class="user-info">
+                <p class="user-name"><%= usuario.getUsuario() %></p>
+                <p class="user-role"><%= usuario.getNombreRol() %></p>
+            </div>
+        </div>
+    </a>
+
+    <h2 class="menu-heading">MENÚ PRINCIPAL</h2>
+    <ul id="menu">
+        <li class="<%= currentURI.contains("administrador") ? "active" : "" %>">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+
+        <% int idRol = usuario.getIdRol(); %>
+
+        <!-- ADMINISTRADORES Y COORDINADORES -->
+        <% if (idRol == 1 || idRol == 2) { %>
+        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
+            <a href="/campanas">Campañas</a>
+        </li>
+        <li class="<%= currentURI.contains("/cadenas") ? "active" : "" %>">
+            <a href="/cadenas">Cadenas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
+        </li>
+        <li class="<%= currentURI.contains("/incidencias") ? "active" : "" %>">
+            <a href="/incidencias">Incidencias</a>
+        </li>
+        <% } %>
+
+        <!-- ADMINISTRADOREs -->
+        <% if (idRol == 1) { %>
+        <li class="<%= currentURI.contains("/tiendas") || currentURI.contains("/tienda") ? "active" : "" %>">
+            <a href="/tiendas">Tiendas</a>
+        </li>
+        <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
+            <a href="/colaboradores">Colaboradores</a>
+        </li>
+        <% } %>
+
+        <!-- COLABORADORES -->
+        <% if (idRol == 3) { %>
+        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
+            <a href="/campanas">Campañas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
+        </li>
+        <% } %>
+    </ul>
+
+    <div class="bottom-menu">
+        <ul>
+            <li><a href="/salir">Cerrar Sesión</a></li>
+        </ul>
+    </div>
+</aside>
+</file>
+
 <file path="src/main/webapp/WEB-INF/view/voluntarios.jsp">
 <!--
 Ainhoa García Rebollo: 80%
@@ -9786,167 +9900,6 @@ IA: 20% -> Dudas al implementar el pop-up
 </html>
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/CampanaService.java">
-/*
-Ainhoa García Rebollo: 80%
-IA: 20%
-*/
-
-package es.uma.tesaw.proyecto_bancosol.service;
-
-import es.uma.tesaw.proyecto_bancosol.dao.*;
-import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.*;
-import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
-
-@Service
-@AllArgsConstructor
-public class CampanaService {
-
-    private final CampanaRepository campanaRepository;
-    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final VoluntarioRepository voluntarioRepository;
-    private final EntityManager entityManager;
-    private final CampanaMapper campanaMapper;
-    private final CadenaRepository cadenaRepository;
-
-    public List<Campana> listarCampanas() {
-        return campanaRepository.findAll();
-    }
-
-    public List<CampanaDTO> listarCampanasDTO() {
-        return campanaMapper.toDTOList(campanaRepository.findAll());
-    }
-
-    @Transactional
-    public void guardarTurnos(String idCampana, String idTienda, HttpServletRequest request) {
-
-        Campana campana = campanaRepository.findById(idCampana)
-                .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
-
-        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda))
-                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idTienda));
-
-        asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
-        entityManager.flush();
-
-        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
-        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
-
-        for (int i = 0; i < dias.length; i++) {
-            String diaEs = dias[i];
-            LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
-
-            String idVolManana = request.getParameter("asignacion_manana_" + diaEs);
-            String idVolTarde = request.getParameter("asignacion_tarde_" + diaEs);
-
-            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
-            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
-        }
-
-        asignacionTurnoRepository.saveAll(nuevasAsignaciones);
-        entityManager.flush();
-    }
-
-    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
-                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
-                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
-
-        if (idVoluntario != null && !idVoluntario.isBlank()) {
-            voluntarioRepository.findById(Integer.parseInt(idVoluntario)).ifPresent(vol -> {
-                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
-                turno.setCampana(campana);
-                turno.setTienda(tienda);
-                turno.setVoluntario(vol);
-                turno.setColaborador(null);
-                turno.setFecha(fechaDia);
-                turno.setHoraInicio(inicio);
-                turno.setHoraFin(fin);
-
-                listaNuevasAsignaciones.add(turno);
-            });
-        }
-    }
-
-    // Filtrar para el listado
-    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
-        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
-        String busquedaFinal = (busqueda == null) ? "" : busqueda;
-
-        List<Campana> lista = campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
-        return campanaMapper.toDTOList(lista);
-    }
-
-    // Buscar una específica
-    public CampanaDTO buscarCampana(String id) {
-        return campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(null);
-    }
-
-    // Guardar (Crear o Actualizar)
-    @Transactional
-    public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
-        Campana campana;
-        if (idCampana == null || idCampana.isEmpty()) {
-            campana = new Campana();
-            // Generar ID básico (por ejemplo "VERANO_2024")
-            campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
-        } else {
-            campana = campanaRepository.findById(idCampana).orElse(new Campana());
-        }
-
-        campana.setNombreCampana(nombre);
-        campana.setFechaInicio(inicio);
-        campana.setFechaFin(fin);
-        campana.setEstado(estado);
-        campanaRepository.save(campana);
-
-        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
-        if (cadenasIds != null) {
-            List<Cadena> todasLasCadenas = cadenaRepository.findAll();
-            for (Cadena c : todasLasCadenas) {
-                if (cadenasIds.contains(c.getIdCadena())) {
-                    if (!c.getCampanas().contains(campana)) {
-                        c.getCampanas().add(campana);
-                    }
-                } else {
-                    c.getCampanas().remove(campana);
-                }
-            }
-            cadenaRepository.saveAll(todasLasCadenas);
-        }
-
-        return campana.getIdCampana();
-    }
-
-    // Eliminar
-    @Transactional
-    public void borrarCampana(String idCampana) {
-        campanaRepository.findById(idCampana).ifPresent(campana -> {
-            // Desvincular de cadenas antes de borrar
-            for (Cadena c : campana.getCadenas()) {
-                c.getCampanas().remove(campana);
-            }
-            cadenaRepository.saveAll(campana.getCadenas());
-            campanaRepository.delete(campana);
-        });
-    }
-}
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/VoluntariosService.java">
 /*
 Ainhoa García Rebollo: 80%
@@ -10077,6 +10030,207 @@ public class VoluntariosService {
 }
 </file>
 
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/CampanaService.java">
+/*
+Ainhoa García Rebollo: 80%
+IA: 20%
+*/
+
+package es.uma.tesaw.proyecto_bancosol.service;
+
+import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.*;
+import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@AllArgsConstructor
+public class CampanaService {
+
+    private final CampanaRepository campanaRepository;
+    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
+    private final EstablecimientoRepository establecimientoRepository;
+    private final VoluntarioRepository voluntarioRepository;
+    private final EntityManager entityManager;
+    private final CampanaMapper campanaMapper;
+    private final CadenaRepository cadenaRepository;
+
+
+    private static final Map<String, String> DIAS_ES = Map.of(
+            "MONDAY",    "lunes",
+            "TUESDAY",   "martes",
+            "WEDNESDAY", "miercoles",
+            "THURSDAY",  "jueves",
+            "FRIDAY",    "viernes",
+            "SATURDAY",  "sabado"
+    );
+
+
+    @Transactional(readOnly = true)
+    public Map<String, String> obtenerAsignaciones(String idCampana, Integer idTienda) {
+        Map<String, String> asignacionesGuardadas = new HashMap<>();
+
+        Campana campana = campanaRepository.findById(idCampana).orElse(null);
+        Establecimiento tienda = establecimientoRepository.findById(idTienda).orElse(null);
+
+        if (campana != null && tienda != null) {
+            List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
+
+            for (AsignacionTurnoColaborador t : turnos) {
+                String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
+                if (diaEs == null) continue;
+
+                String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
+
+                if (t.getVoluntario() != null) {
+                    asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
+                }
+            }
+        }
+        return asignacionesGuardadas;
+    }
+
+    public List<Campana> listarCampanas() {
+        return campanaRepository.findAll();
+    }
+
+    public List<CampanaDTO> listarCampanasDTO() {
+        return campanaMapper.toDTOList(campanaRepository.findAll());
+    }
+
+    @Transactional
+    public void guardarTurnos(String idCampana, String idTienda, Map<String, String> formData) { // <-- Cambia la firma
+
+        Campana campana = campanaRepository.findById(idCampana)
+                .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
+
+        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda))
+                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idTienda));
+
+        asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
+        entityManager.flush();
+
+        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
+        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
+
+        for (int i = 0; i < dias.length; i++) {
+            String diaEs = dias[i];
+            LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
+
+            // Cambiamos request.getParameter por formData.get()
+            String idVolManana = formData.get("asignacion_manana_" + diaEs);
+            String idVolTarde = formData.get("asignacion_tarde_" + diaEs);
+
+            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
+            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
+        }
+
+        asignacionTurnoRepository.saveAll(nuevasAsignaciones);
+        entityManager.flush();
+    }
+
+    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
+                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
+                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
+
+        if (idVoluntario != null && !idVoluntario.isBlank()) {
+            voluntarioRepository.findById(Integer.parseInt(idVoluntario)).ifPresent(vol -> {
+                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
+                turno.setCampana(campana);
+                turno.setTienda(tienda);
+                turno.setVoluntario(vol);
+                turno.setColaborador(null);
+                turno.setFecha(fechaDia);
+                turno.setHoraInicio(inicio);
+                turno.setHoraFin(fin);
+
+                listaNuevasAsignaciones.add(turno);
+            });
+        }
+    }
+
+    // Filtrar para el listado
+    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
+        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
+        String busquedaFinal = (busqueda == null) ? "" : busqueda;
+
+        List<Campana> lista = campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
+        return campanaMapper.toDTOList(lista);
+    }
+
+    // Buscar una específica
+    public CampanaDTO buscarCampana(String id) {
+        return campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(null);
+    }
+
+    // Guardar (Crear o Actualizar)
+    @Transactional
+    public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
+        Campana campana;
+        if (idCampana == null || idCampana.isEmpty()) {
+            campana = new Campana();
+            // Generar ID básico (por ejemplo "VERANO_2024")
+            campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
+        } else {
+            campana = campanaRepository.findById(idCampana).orElse(new Campana());
+        }
+
+        campana.setNombreCampana(nombre);
+        campana.setFechaInicio(inicio);
+        campana.setFechaFin(fin);
+        campana.setEstado(estado);
+        campanaRepository.save(campana);
+
+        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
+        // Normalizar: null significa "ninguna cadena seleccionada" (importante en edición
+        // cuando el usuario desmarca todas, el navegador no envía el parámetro)
+        List<String> cadenasSeleccionadas = (cadenasIds != null) ? cadenasIds : new ArrayList<>();
+
+        List<Cadena> todasLasCadenas = cadenaRepository.findAll();
+        for (Cadena c : todasLasCadenas) {
+            if (cadenasSeleccionadas.contains(c.getIdCadena())) {
+                if (!c.getCampanas().contains(campana)) {
+                    c.getCampanas().add(campana);
+                }
+            } else {
+                c.getCampanas().remove(campana);
+            }
+        }
+        cadenaRepository.saveAll(todasLasCadenas);
+
+        return campana.getIdCampana();
+    }
+
+    // Eliminar
+    @Transactional
+    public void borrarCampana(String idCampana) {
+        campanaRepository.findById(idCampana).ifPresent(campana -> {
+            // Desvincular de cadenas antes de borrar
+            for (Cadena c : campana.getCadenas()) {
+                c.getCampanas().remove(campana);
+            }
+            cadenaRepository.saveAll(campana.getCadenas());
+            campanaRepository.delete(campana);
+        });
+    }
+}
+</file>
+
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/VoluntariosController.java">
 /*
 Ainhoa García Rebollo: 100%
@@ -10084,9 +10238,9 @@ Ainhoa García Rebollo: 100%
 
 package es.uma.tesaw.proyecto_bancosol.controller;
 
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10103,7 +10257,7 @@ public class VoluntariosController {
 
     @GetMapping({"", "/"})
     public String doInit(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             Model model) {
 
         if (user == null) {
@@ -10136,7 +10290,7 @@ public class VoluntariosController {
 
     @GetMapping("/editar")
     public String doEditar(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("id") Integer id,
             Model model) {
 
@@ -10157,7 +10311,7 @@ public class VoluntariosController {
     }
 
     @GetMapping("/nuevo")
-    public String doNuevo(@SessionAttribute(name = "user", required = false) Usuario user,
+    public String doNuevo(@SessionAttribute(name = "user", required = false) UsuarioDTO user,
                           @RequestParam(value = "id", required = false) Integer idVoluntario,
                           Model model) {
 
@@ -10196,7 +10350,7 @@ public class VoluntariosController {
 
 
     @GetMapping("/borrar")
-    public String doBorrar(@SessionAttribute(name = "user", required = false) Usuario user,
+    public String doBorrar(@SessionAttribute(name = "user", required = false) UsuarioDTO user,
                            @RequestParam("id") Integer id) {
 
         if (user == null) {
@@ -10218,19 +10372,13 @@ public class VoluntariosController {
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CampanaController.java">
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
 import es.uma.tesaw.proyecto_bancosol.service.HistorialService;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -10241,7 +10389,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10255,21 +10402,9 @@ public class CampanaController {
     private final EstablecimientoService establecimientoService;
     private final VoluntariosService voluntariosService;
 
-    private final CampanaRepository campanaRepository;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
 
-    private static final Map<String, String> DIAS_ES = Map.of(
-            "MONDAY",    "lunes",
-            "TUESDAY",   "martes",
-            "WEDNESDAY", "miercoles",
-            "THURSDAY",  "jueves",
-            "FRIDAY",    "viernes",
-            "SATURDAY",  "sabado"
-    );
-
-    private boolean sinPermiso(Usuario user) {
-        return user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2);
+    private boolean sinPermiso(UsuarioDTO user) {
+        return user == null || (user.getIdRol() != 1 && user.getIdRol() != 2);
     }
 
     // ==========================================
@@ -10278,7 +10413,7 @@ public class CampanaController {
 
     @GetMapping("/campanas")
     public String verCampanas(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false, defaultValue = "Todos") String estado,
             @RequestParam(required = false, defaultValue = "") String busqueda,
             @RequestParam(required = false) String id,
@@ -10324,7 +10459,7 @@ public class CampanaController {
 
     @PostMapping("/campanas/guardar")
     public String guardarCampana(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String idCampana,
             @RequestParam String nombreCampana,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -10343,7 +10478,7 @@ public class CampanaController {
 
     @PostMapping("/campanas/eliminar")
     public String eliminarCampana(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("id") String idCampana) {
 
         if (sinPermiso(user)) return "redirect:/";
@@ -10357,7 +10492,7 @@ public class CampanaController {
     // ==========================================
 
     @GetMapping("/historial")
-    public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+    public String verHistorial(@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {
         if (sinPermiso(user)) return "redirect:/dashboard";
         model.addAttribute("logs", historialService.listarHistorial());
         return "historial";
@@ -10367,7 +10502,7 @@ public class CampanaController {
     public String verTurnosCampana(@RequestParam("id") String idCampana,
                                    @RequestParam(value = "cadena", required = false) String nombreCadena,
                                    @RequestParam(value = "idTienda", required = false) String idTiendaStr,
-                                   @SessionAttribute(name = "user", required = false) Usuario user,
+                                   @SessionAttribute(name = "user", required = false) UsuarioDTO user,
                                    Model model) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
@@ -10394,7 +10529,7 @@ public class CampanaController {
     @GetMapping("/campanas/asignacion")
     public String irAAsignacionTurnos(@RequestParam("idCampana") String idCampana,
                                       @RequestParam("idTienda") String idTienda,
-                                      @SessionAttribute(name = "user", required = false) Usuario user,
+                                      @SessionAttribute(name = "user", required = false) UsuarioDTO user,
                                       Model model) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
@@ -10404,39 +10539,23 @@ public class CampanaController {
         model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
         model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
 
-        Map<String, String> asignacionesGuardadas = new HashMap<>();
 
-        campanaRepository.findById(idCampana).ifPresent(campana -> {
-            establecimientoRepository.findById(Integer.parseInt(idTienda)).ifPresent(tienda -> {
-
-                List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
-
-                for (AsignacionTurnoColaborador t : turnos) {
-                    String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
-                    if (diaEs == null) continue;
-
-                    String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
-
-                    if (t.getVoluntario() != null) {
-                        asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
-                    }
-                }
-            });
-        });
+        Map<String, String> asignacionesGuardadas = campanaService.obtenerAsignaciones(idCampana, Integer.parseInt(idTienda));
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
         return "AsignacionTurnos";
     }
 
     @PostMapping("/campanas/turnos/guardar")
-    public String guardarTurnos(HttpServletRequest request,
+    public String guardarTurnos(@RequestParam Map<String, String> formData,
                                 @RequestParam("idCampana") String idCampana,
                                 @RequestParam("idTienda") String idTienda,
-                                @SessionAttribute(name = "user", required = false) Usuario user) {
+                                @SessionAttribute(name = "user", required = false) UsuarioDTO user) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
 
-        campanaService.guardarTurnos(idCampana, idTienda, request);
+        // Le pasamos el Map al servicio en lugar de la Request
+        campanaService.guardarTurnos(idCampana, idTienda, formData);
 
         return "redirect:/campanas/asignacion?idCampana=" + idCampana + "&idTienda=" + idTienda;
     }

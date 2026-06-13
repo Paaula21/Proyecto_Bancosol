@@ -31,16 +31,15 @@ public class PerfilController {
         if (usuarioLogueado == null) {
             return "redirect:/";
         }
-
-        // Los mensajes de éxito o error que vengan de RedirectAttributes se pasan solos a la vista
-        return "Perfil";
+        return "perfil";
     }
 
-    @PostMapping("/perfil/cambiar_contrasena")
+    @PostMapping("/perfil/cambiar-contrasena")
     public String procesarCambioContrasena(
             @ModelAttribute CambioContrasenaDTO cambioContrasenaDTO,
             HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
 
         UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
         if (usuarioLogueado == null) {
@@ -49,13 +48,13 @@ public class PerfilController {
 
         try {
             this.usuarioService.cambiarContrasena(usuarioLogueado.getIdUsuario(), cambioContrasenaDTO);
-            redirectAttributes.addFlashAttribute("mensajeTexto", "¡Contraseña actualizada con éxito!");
-            redirectAttributes.addFlashAttribute("mensajeTipo", "exito");
+            model.addAttribute("mensajeTexto", "¡Contraseña actualizada con éxito!");
+            model.addAttribute("mensajeTipo", "exito");
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("mensajeTexto", e.getMessage());
-            redirectAttributes.addFlashAttribute("mensajeTipo", "error");
+            model.addAttribute("mensajeTexto", e.getMessage());
+            model.addAttribute("mensajeTipo", "error");
         }
 
-        return "redirect:/perfil";
+        return "perfil";
     }
 }

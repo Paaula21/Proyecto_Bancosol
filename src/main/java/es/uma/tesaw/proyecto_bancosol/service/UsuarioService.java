@@ -25,29 +25,20 @@ public class UsuarioService {
 
     @Transactional
     public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
+        Usuario usuario = this.usuarioRepository.findById(idUsuario).get();
 
-        // 1. Validaciones básicas (Las mismas que tenías en React)
-        if (!dto.getNueva().equals(dto.getConfirmacion())) {
-            throw new IllegalArgumentException("Las contraseñas nuevas no coinciden.");
+        if(!usuario.getContrasenia().equals(dto.getActual())){
+            throw new IllegalArgumentException("La contraseña actual es incorrecta.");
+        }
+        if(!dto.getNueva().equals(dto.getConfirmacion())) {
+            throw new IllegalArgumentException("La contraseña de confirmación no es igual que la escrita");
+        }
+        if(dto.getNueva().length() < 8){
+            throw new IllegalArgumentException("La contraseña debe de contener mínimo 8 caracteres.");
         }
 
-        if (dto.getNueva().length() < 8) {
-            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
-        }
-
-        // 2. Buscar al usuario
-        Usuario usuario = this.usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        // 3. Comprobar que la contraseña actual es correcta
-        // Nota: Si en el futuro usas BCrypt o encriptación, aquí usarías passwordEncoder.matches()
-        if (!usuario.getContrasenia().equals(dto.getActual())) {
-            throw new IllegalArgumentException("La contraseña actual no es correcta.");
-        }
-
-        // 4. Guardar la nueva contraseña
         usuario.setContrasenia(dto.getNueva());
-        this.usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     @Transactional(readOnly = true)

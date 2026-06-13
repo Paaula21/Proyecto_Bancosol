@@ -25,17 +25,9 @@
 </head>
 <body>
 <div class="main-layout">
-
-
         <jsp:include page="sidebar.jsp" />
-
-
     <div class="right-content">
-
-
             <jsp:include page="header.jsp" />
-
-
         <main class="content-wrapper">
             <div class="content">
                 <h3 class="title">Información del Perfil</h3>
@@ -71,10 +63,10 @@
                                 <input class="input" type="password" name="confirmacion" required />
                             </div>
                         </div>
-
+                        <!-- REFACTORIZAR ESTILO A CSS SEGÚN EL TIPO DE MENSAJE-->
                         <div>
                             <% if (mensajeTexto != null) { %>
-                            <div style="color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>; marginBottom: 15px; fontWeight: bold;">
+                            <div style="color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>; margin-bottom: 15px; font-weight: bold;">
                                 <%= mensajeTexto %>
                             </div>
                             <% } %>
@@ -83,7 +75,7 @@
                     </form>
                 </div>
 
-                <% if ("1".equals(String.valueOf(usuarioLogueado.getRol())) || "2".equals(String.valueOf(usuarioLogueado.getRol()))) { %>
+                <% if ("1".equals(String.valueOf(usuarioLogueado.getIdRol())) || "2".equals(String.valueOf(usuarioLogueado.getIdRol()))) { %>
                 <div class="content content-double">
                     <h3 class="title">Exportar Datos del Sistema</h3>
 
