@@ -2,6 +2,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Campana;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class DashboardController {
     private final ZonaGeograficaRepository zonaRepository;
 
     @GetMapping("/dashboard")
-    public String verDashboard (@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+    public String verDashboard (@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {
         if (user == null) {
             return "redirect:/"; // Protegemos la ruta si no hay sesión
         }

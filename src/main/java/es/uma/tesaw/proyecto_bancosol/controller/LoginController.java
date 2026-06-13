@@ -1,7 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @AllArgsConstructor
 public class LoginController {
 
-    // pasar a service
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     @GetMapping("/")
-    public String doLogin() { return "login"; }
+    public String doLogin() {
+        return "login";
+    }
 
     @PostMapping("/autentica")
     public String doAutentica (@RequestParam("username") String username,
@@ -26,7 +27,8 @@ public class LoginController {
                                HttpSession session,
                                Model model) {
 
-        Usuario user = this.usuarioRepository.autenticar(username, password);
+        UsuarioDTO user = this.usuarioService.autenticar(username, password);
+
         if (user == null ) {
             model.addAttribute("error", "Usuario no encontrado o error de autenticación");
             return "login";
@@ -37,7 +39,6 @@ public class LoginController {
         }
     }
 
-    // cerrar sesión
     @GetMapping("/salir")
     public String doSalir (HttpSession session) {
         session.invalidate();

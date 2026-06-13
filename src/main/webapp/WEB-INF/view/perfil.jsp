@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("user");
+    UsuarioDTO usuarioLogueado = (UsuarioDTO) session.getAttribute("user");
     String mensajeTexto = (String) request.getAttribute("mensajeTexto");
     String mensajeTipo = (String) request.getAttribute("mensajeTipo");
 
@@ -11,7 +11,7 @@
             "2", "Coordinador",
             "3", "Colaborador"
     );
-    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getRol().getIdRol()), "Invitado");
+    String rolTexto = rolesTexto.getOrDefault(String.valueOf(usuarioLogueado.getIdRol()), "Invitado");
 %>
 <!DOCTYPE html>
 <html lang="es">

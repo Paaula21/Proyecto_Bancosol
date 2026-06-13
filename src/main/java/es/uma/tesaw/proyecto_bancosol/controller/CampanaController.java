@@ -1,18 +1,12 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
 import es.uma.tesaw.proyecto_bancosol.service.HistorialService;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -23,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,21 +30,9 @@ public class CampanaController {
     private final EstablecimientoService establecimientoService;
     private final VoluntariosService voluntariosService;
 
-    private final CampanaRepository campanaRepository;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
 
-    private static final Map<String, String> DIAS_ES = Map.of(
-            "MONDAY",    "lunes",
-            "TUESDAY",   "martes",
-            "WEDNESDAY", "miercoles",
-            "THURSDAY",  "jueves",
-            "FRIDAY",    "viernes",
-            "SATURDAY",  "sabado"
-    );
-
-    private boolean sinPermiso(Usuario user) {
-        return user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2);
+    private boolean sinPermiso(UsuarioDTO user) {
+        return user == null || (user.getIdRol() != 1 && user.getIdRol() != 2);
     }
 
     // ==========================================
@@ -60,7 +41,7 @@ public class CampanaController {
 
     @GetMapping("/campanas")
     public String verCampanas(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false, defaultValue = "Todos") String estado,
             @RequestParam(required = false, defaultValue = "") String busqueda,
             @RequestParam(required = false) String id,
@@ -106,7 +87,7 @@ public class CampanaController {
 
     @PostMapping("/campanas/guardar")
     public String guardarCampana(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String idCampana,
             @RequestParam String nombreCampana,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -125,7 +106,7 @@ public class CampanaController {
 
     @PostMapping("/campanas/eliminar")
     public String eliminarCampana(
-            @SessionAttribute(name = "user", required = false) Usuario user,
+            @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam("id") String idCampana) {
 
         if (sinPermiso(user)) return "redirect:/";
@@ -139,7 +120,7 @@ public class CampanaController {
     // ==========================================
 
     @GetMapping("/historial")
-    public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+    public String verHistorial(@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {
         if (sinPermiso(user)) return "redirect:/dashboard";
         model.addAttribute("logs", historialService.listarHistorial());
         return "historial";
@@ -149,7 +130,7 @@ public class CampanaController {
     public String verTurnosCampana(@RequestParam("id") String idCampana,
                                    @RequestParam(value = "cadena", required = false) String nombreCadena,
                                    @RequestParam(value = "idTienda", required = false) String idTiendaStr,
-                                   @SessionAttribute(name = "user", required = false) Usuario user,
+                                   @SessionAttribute(name = "user", required = false) UsuarioDTO user,
                                    Model model) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
@@ -176,7 +157,7 @@ public class CampanaController {
     @GetMapping("/campanas/asignacion")
     public String irAAsignacionTurnos(@RequestParam("idCampana") String idCampana,
                                       @RequestParam("idTienda") String idTienda,
-                                      @SessionAttribute(name = "user", required = false) Usuario user,
+                                      @SessionAttribute(name = "user", required = false) UsuarioDTO user,
                                       Model model) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
@@ -186,39 +167,23 @@ public class CampanaController {
         model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
         model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
 
-        Map<String, String> asignacionesGuardadas = new HashMap<>();
 
-        campanaRepository.findById(idCampana).ifPresent(campana -> {
-            establecimientoRepository.findById(Integer.parseInt(idTienda)).ifPresent(tienda -> {
-
-                List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
-
-                for (AsignacionTurnoColaborador t : turnos) {
-                    String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
-                    if (diaEs == null) continue;
-
-                    String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
-
-                    if (t.getVoluntario() != null) {
-                        asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
-                    }
-                }
-            });
-        });
+        Map<String, String> asignacionesGuardadas = campanaService.obtenerAsignaciones(idCampana, Integer.parseInt(idTienda));
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
         return "AsignacionTurnos";
     }
 
     @PostMapping("/campanas/turnos/guardar")
-    public String guardarTurnos(HttpServletRequest request,
+    public String guardarTurnos(@RequestParam Map<String, String> formData,
                                 @RequestParam("idCampana") String idCampana,
                                 @RequestParam("idTienda") String idTienda,
-                                @SessionAttribute(name = "user", required = false) Usuario user) {
+                                @SessionAttribute(name = "user", required = false) UsuarioDTO user) {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
 
-        campanaService.guardarTurnos(idCampana, idTienda, request);
+        // Le pasamos el Map al servicio en lugar de la Request
+        campanaService.guardarTurnos(idCampana, idTienda, formData);
 
         return "redirect:/campanas/asignacion?idCampana=" + idCampana + "&idTienda=" + idTienda;
     }

@@ -50,6 +50,7 @@ src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CadenaController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CampanaController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/ColaboradorController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/DashboardController.java
+src/main/java/es/uma/tesaw/proyecto_bancosol/controller/EstablecimientoController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/PerfilController.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/controller/VoluntariosController.java
@@ -137,6 +138,7 @@ src/main/java/es/uma/tesaw/proyecto_bancosol/ProyectoBancosolApplication.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/CadenaService.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/CampanaService.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/ColaboradoresService.java
+src/main/java/es/uma/tesaw/proyecto_bancosol/service/DivisionTerritorialService.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/EstablecimientoService.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/HistorialService.java
 src/main/java/es/uma/tesaw/proyecto_bancosol/service/UsuarioService.java
@@ -170,9 +172,13 @@ src/main/webapp/WEB-INF/view/Cadenas.jsp
 src/main/webapp/WEB-INF/view/campanas.jsp
 src/main/webapp/WEB-INF/view/Colaboradores.jsp
 src/main/webapp/WEB-INF/view/DetalleCadena.jsp
+src/main/webapp/WEB-INF/view/detalleCampana.jsp
 src/main/webapp/WEB-INF/view/DetalleColaborador.jsp
+src/main/webapp/WEB-INF/view/DetalleTienda.jsp
 src/main/webapp/WEB-INF/view/EditarCadena.jsp
+src/main/webapp/WEB-INF/view/editarCampana.jsp
 src/main/webapp/WEB-INF/view/EditarColaboradores.jsp
+src/main/webapp/WEB-INF/view/EditarTienda.jsp
 src/main/webapp/WEB-INF/view/EditarVoluntario.jsp
 src/main/webapp/WEB-INF/view/header.jsp
 src/main/webapp/WEB-INF/view/historial.jsp
@@ -181,6 +187,7 @@ src/main/webapp/WEB-INF/view/login.jsp
 src/main/webapp/WEB-INF/view/Perfil.jsp
 src/main/webapp/WEB-INF/view/RegistroVoluntarios.jsp
 src/main/webapp/WEB-INF/view/sidebar.jsp
+src/main/webapp/WEB-INF/view/Tiendas.jsp
 src/main/webapp/WEB-INF/view/voluntarios.jsp
 src/main/webapp/WEB-INF/web.xml
 src/test/java/es/uma/tesaw/proyecto_bancosol/ProyectoBancosolApplicationTests.java
@@ -819,44 +826,141 @@ public class CadenaController {
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java">
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/EstablecimientoController.java">
 package es.uma.tesaw.proyecto_bancosol.controller;
 
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import jakarta.servlet.http.HttpSession;
+import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
+import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
+import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
+import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
+import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
-public class LoginController {
+@RequestMapping("/tiendas")
+public class EstablecimientoController {
 
-    // pasar a service
-    private final UsuarioRepository usuarioRepository;
+    private final EstablecimientoService establecimientoService;
+    private final CadenaService cadenaService;
+    private final CampanaService campanaService;
+    private final ZonaGeograficaService zonaGeograficaService;
+    private final UsuarioService usuarioService;
 
-    @GetMapping("/")
-    public String doLogin() { return "login"; }
+    @GetMapping("")
+    public String doInit(
+            @RequestParam(required = false) String idCadena,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String idCampana,
+            @RequestParam(required = false) String tipoVia,
+            @RequestParam(required = false) String nombreVia,
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) String localidad,
+            @RequestParam(required = false) Integer idZona,
+            @RequestParam(required = false) String coordinador,
+            @RequestParam(required = false) Integer idTienda,
+            Model model) {
 
-    @PostMapping("/autentica")
-    public String doAutentica (@RequestParam("username") String username,
-                               @RequestParam("password") String password,
-                               HttpSession session,
-                               Model model) {
+        List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
+                idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
+        model.addAttribute("tiendas", tiendas);
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
 
-        Usuario user = this.usuarioRepository.autenticar(username, password);
-        if (user == null ) {
-            model.addAttribute("error", "Usuario no encontrado o error de autenticación");
-            return "login";
-        } else {
-            session.setAttribute("user", user);
-            session.setAttribute("id_user", user.getIdUsuario());
-            return "redirect:/dashboard";
+        String modoPanel = "ninguno";
+        EstablecimientoDTO tiendaSeleccionada = null;
+
+        if (idTienda != null) {
+            tiendaSeleccionada = establecimientoService.buscarTienda(idTienda);
+            if (tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null) {
+                modoPanel = "detalle";
+            }
         }
+
+        model.addAttribute("tiendaSeleccionada", tiendaSeleccionada);
+        model.addAttribute("modoPanel", modoPanel);
+
+        if (idCadena == null) idCadena = "";
+        if (nombre == null) nombre = "";
+        if (idCampana == null) idCampana = "";
+        if (tipoVia == null) tipoVia = "";
+        if (nombreVia == null) nombreVia = "";
+        if (codigo == null) codigo = "";
+        if (localidad == null) localidad = "";
+        if (coordinador == null) coordinador = "";
+        model.addAttribute("idCadena", idCadena);
+        model.addAttribute("nombre", nombre);
+        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("tipoVia", tipoVia);
+        model.addAttribute("nombreVia", nombreVia);
+        model.addAttribute("codigo", codigo);
+        model.addAttribute("localidad", localidad);
+        model.addAttribute("idZona", idZona);
+        model.addAttribute("coordinador", coordinador);
+
+        return "tiendas";
+    }
+
+    protected String editarCrear(Integer idTienda, Model model) {
+        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
+        model.addAttribute("tiendas", establecimientoService.listarTiendas());
+        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
+        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+        model.addAttribute("tiendaSeleccionada", tienda);
+        model.addAttribute("modoPanel", idTienda == null ? "anadir" : "editar");
+        model.addAttribute("idCadena", "");
+        model.addAttribute("nombre", "");
+        model.addAttribute("idCampana", "");
+        model.addAttribute("tipoVia", "");
+        model.addAttribute("nombreVia", "");
+        model.addAttribute("codigo", "");
+        model.addAttribute("localidad", "");
+        model.addAttribute("idZona", null);
+        model.addAttribute("coordinador", "");
+        return "tiendas";
+    }
+
+    @PostMapping("/anadir")
+    public String doAnadir(Model model) {
+        return editarCrear(null, model);
+    }
+
+    @GetMapping("/editar")
+    public String doEditar(@RequestParam("idTienda") Integer idTienda, Model model) {
+        return editarCrear(idTienda, model);
+    }
+
+    @PostMapping("/guardar")
+    public String doGuardar(
+            @RequestParam(required = false) Integer idEstablecimiento,
+            @RequestParam String idCadena,
+            @RequestParam String nombreResena,
+            @RequestParam(required = false) Integer lineales,
+            @RequestParam String tipoVia,
+            @RequestParam String nombreVia,
+            @RequestParam(required = false) String numero,
+            @RequestParam String codigo,
+            @RequestParam String localidad,
+            @RequestParam Integer idZona) {
+        establecimientoService.guardarTienda(idEstablecimiento, idCadena, nombreResena,
+                lineales, tipoVia, nombreVia, numero, codigo, localidad, idZona);
+        return "redirect:/tiendas";
+    }
+
+    @GetMapping("/borrar")
+    public String doBorrar(@RequestParam("idTienda") Integer idTienda) {
+        establecimientoService.borrarTienda(idTienda);
+        return "redirect:/tiendas";
     }
 }
 </file>
@@ -1131,25 +1235,6 @@ public class DivisionTerritorialDTO {
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dto/EstablecimientoDTO.java">
-package es.uma.tesaw.proyecto_bancosol.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class EstablecimientoDTO {
-    private Integer idEstablecimiento;
-    private String idCadena;
-    private String nombreResena;
-    private Integer lineales;
-    private Integer idDireccion;
-}
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dto/NotificacionDTO.java">
 package es.uma.tesaw.proyecto_bancosol.dto;
 
@@ -1290,37 +1375,6 @@ public class DivisionTerritorial {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_zona")
     private ZonaGeografica zona;
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/entities/Establecimiento.java">
-package es.uma.tesaw.proyecto_bancosol.entities;
-
-import jakarta.persistence.*;
-import lombok.*;
-
-@Entity
-@Table(name = "establecimiento")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-public class Establecimiento {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_establecimiento")
-    private Integer idEstablecimiento;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cadena", nullable = false)
-    private Cadena cadena;
-
-    @Column(name = "nombre_resena", nullable = false)
-    private String nombreResena;
-
-    private Integer lineales;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_direccion", nullable = false)
-    private Direccion direccion;
 }
 </file>
 
@@ -1497,32 +1551,6 @@ public class DivisionTerritorialMapper extends MapperDTO<DivisionTerritorialDTO,
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/mapper/EstablecimientoMapper.java">
-package es.uma.tesaw.proyecto_bancosol.mapper;
-
-import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
-import org.springframework.stereotype.Component;
-
-@Component
-public class EstablecimientoMapper extends MapperDTO<EstablecimientoDTO, Establecimiento> {
-
-    @Override
-    public EstablecimientoDTO toDTO(Establecimiento entity) {
-        if (entity == null) return null;
-
-        EstablecimientoDTO dto = new EstablecimientoDTO();
-        dto.setIdEstablecimiento(entity.getIdEstablecimiento());
-        dto.setIdCadena(entity.getCadena() != null ? entity.getCadena().getIdCadena() : null);
-        dto.setNombreResena(entity.getNombreResena());
-        dto.setLineales(entity.getLineales());
-        dto.setIdDireccion(entity.getDireccion() != null ? entity.getDireccion().getIdDireccion() : null);
-
-        return dto;
-    }
-}
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/mapper/MapperDTO.java">
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
@@ -1665,6 +1693,41 @@ public class ZonaGeograficaMapper extends MapperDTO<ZonaGeograficaDTO, ZonaGeogr
         dto.setNombreZona(entity.getNombreZona());
 
         return dto;
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/DivisionTerritorialService.java">
+package es.uma.tesaw.proyecto_bancosol.service;
+
+import es.uma.tesaw.proyecto_bancosol.dao.DivisionTerritorialRepository;
+import es.uma.tesaw.proyecto_bancosol.entities.DivisionTerritorial;
+import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class DivisionTerritorialService {
+
+    private final DivisionTerritorialRepository divisionTerritorialRepository;
+
+    @Transactional
+    public DivisionTerritorial buscarOCrear(String nombreDivision, ZonaGeografica zona) {
+        List<DivisionTerritorial> existentes = divisionTerritorialRepository.buscarPorNombre(nombreDivision);
+        if (!existentes.isEmpty()) return existentes.get(0);
+        DivisionTerritorial div = new DivisionTerritorial();
+        Integer maxId = divisionTerritorialRepository.findAll().stream()
+                .mapToInt(DivisionTerritorial::getIdDivision)
+                .max().orElse(0);
+        div.setIdDivision(maxId + 1);
+        div.setNombreDivision(nombreDivision);
+        div.setTipo(false);
+        div.setZona(zona);
+        return divisionTerritorialRepository.save(div);
     }
 }
 </file>
@@ -4335,6 +4398,44 @@ form {
 </div>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/detalleCampana.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%
+    CampanaDTO campana = (CampanaDTO) request.getAttribute("campanaSeleccionada");
+%>
+
+<div class="datos-colaborador">
+    <h3 class="ficha-titulo-principal">Detalle de la Campaña</h3>
+
+    <div class="ficha-cabecera">
+        <div class="ficha-titulos">
+            <h4 class="ficha-nombre"><%= campana.getNombreCampana() %></h4>
+            <span class="ficha-etiqueta-codigo" style="background-color: #6b7280;"><%= campana.getEstado() %></span>
+        </div>
+    </div>
+
+    <div class="ficha-tarjeta-info">
+        <h5>Fechas de Actividad</h5>
+        <p><strong>Inicio:</strong> <%= campana.getFechaInicio() != null ? campana.getFechaInicio() : "Sin fecha" %></p>
+        <p><strong>Fin:</strong> <%= campana.getFechaFin() != null ? campana.getFechaFin() : "Sin fecha" %></p>
+    </div>
+
+    <div class="ficha-tarjeta-info sin-margen-inferior">
+        <h5>Cadenas Asociadas</h5>
+        <% if (campana.getIdsCadenas() != null && !campana.getIdsCadenas().isEmpty()) { %>
+        <ul class="lista-cadenas-detalle" style="padding-left: 20px; margin-top: 5px;">
+            <% for (String idCadena : campana.getIdsCadenas()) { %>
+            <li style="margin-bottom: 4px;"><%= idCadena %></li>
+            <% } %>
+        </ul>
+        <% } else { %>
+        <p>No hay cadenas asignadas a esta campaña.</p>
+        <% } %>
+    </div>
+</div>
+</file>
+
 <file path="src/main/webapp/WEB-INF/view/DetalleColaborador.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
@@ -4424,6 +4525,42 @@ form {
 </div>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/DetalleTienda.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
+<%
+    EstablecimientoDTO tienda = (EstablecimientoDTO) request.getAttribute("tiendaSeleccionada");
+%>
+<div id="tienda-data">
+    <h3 class="ficha-titulo-principal">Ficha de la Tienda</h3>
+    <div class="ficha-cabecera">
+        <div>
+            <h4 class="ficha-nombre"><%= tienda != null ? tienda.getNombreResena() : "---" %></h4>
+        </div>
+    </div>
+    <div class="ficha-grid">
+        <div class="ficha-tarjeta-info">
+            <h5>INFORMACIÓN GENERAL</h5>
+            <p><strong>Cadena:</strong> <%= tienda != null && tienda.getNombreCadena() != null ? tienda.getNombreCadena() : "---" %></p>
+            <p><strong>Lineales:</strong> <%= tienda != null && tienda.getLineales() != null ? tienda.getLineales() : "---" %></p>
+        </div>
+        <div class="ficha-tarjeta-info">
+            <h5>DIRECCIÓN</h5>
+            <p><strong>Tipo Vía:</strong> <%= tienda != null && tienda.getTipoVia() != null ? tienda.getTipoVia() : "---" %></p>
+            <p><strong>Nombre Vía:</strong> <%= tienda != null && tienda.getNombreVia() != null ? tienda.getNombreVia() : "---" %></p>
+            <p><strong>Número:</strong> <%= tienda != null && tienda.getNumero() != null ? tienda.getNumero() : "---" %></p>
+            <p><strong>Código Postal:</strong> <%= tienda != null && tienda.getCodigo() != null ? tienda.getCodigo() : "---" %></p>
+            <p><strong>Localidad:</strong> <%= tienda != null && tienda.getLocalidad() != null ? tienda.getLocalidad() : "---" %></p>
+            <p><strong>Zona:</strong> <%= tienda != null && tienda.getNombreZona() != null ? tienda.getNombreZona() : "---" %></p>
+        </div>
+        <div class="ficha-tarjeta-info">
+            <h5>COORDINADOR</h5>
+            <p><%= tienda != null && tienda.getCoordinadorNombre() != null ? tienda.getCoordinadorNombre() : "Sin coordinador asignado" %></p>
+        </div>
+    </div>
+</div>
+</file>
+
 <file path="src/main/webapp/WEB-INF/view/EditarCadena.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
@@ -4460,6 +4597,79 @@ form {
                     } %>
                 </select>
                 <small class="form-hint">Mantén Ctrl (o Cmd en Mac) para seleccionar varias</small>
+            </div>
+        </div>
+    </form>
+</div>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/editarCampana.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
+<%@ page import="java.util.List" %>
+<%
+    CampanaDTO campana = (CampanaDTO) request.getAttribute("campanaSeleccionada");
+    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+
+    boolean isEdit = "editar".equals(modoPanel);
+
+    String idCampana = isEdit && campana != null ? campana.getIdCampana() : "";
+    String nombre = isEdit && campana != null ? campana.getNombreCampana() : "";
+    String inicio = isEdit && campana != null && campana.getFechaInicio() != null ? campana.getFechaInicio().toString() : "";
+    String fin = isEdit && campana != null && campana.getFechaFin() != null ? campana.getFechaFin().toString() : "";
+    String estado = isEdit && campana != null ? campana.getEstado() : "Planificada";
+%>
+
+<div class="datos-colaborador">
+    <h3 class="ficha-titulo-principal"><%= isEdit ? "Modificar Campaña" : "Nueva Campaña" %></h3>
+
+    <form id="form-campana" action="/campanas/guardar" method="POST">
+        <input type="hidden" name="idCampana" value="<%= idCampana %>">
+
+        <div class="ficha-tarjeta-info tarjeta-cabecera-edit">
+            <h5>Nombre de la Campaña</h5>
+            <input type="text" name="nombreCampana" value="<%= nombre %>" class="input-ficha-lateral input-nombre-principal" required placeholder="Ej. Gran Recogida 2024">
+        </div>
+
+        <div class="ficha-tarjeta-info">
+            <h5>Estado Actual</h5>
+            <select name="estado" class="select-ficha-lateral" required>
+                <option value="Planificada" <%= "Planificada".equals(estado) ? "selected" : "" %>>Planificada</option>
+                <option value="Activa" <%= "Activa".equals(estado) ? "selected" : "" %>>Activa</option>
+                <option value="Finalizada" <%= "Finalizada".equals(estado) ? "selected" : "" %>>Finalizada</option>
+                <option value="Cancelada" <%= "Cancelada".equals(estado) ? "selected" : "" %>>Cancelada</option>
+            </select>
+        </div>
+
+        <div class="ficha-tarjeta-info">
+            <h5>Fechas</h5>
+            <div class="campo-formulario-ficha">
+                <label><strong>Fecha Inicio:</strong></label>
+                <input type="date" name="fechaInicio" value="<%= inicio %>" class="input-ficha-lateral" required>
+            </div>
+            <div class="campo-formulario-ficha" style="margin-top: 10px;">
+                <label><strong>Fecha Fin:</strong></label>
+                <input type="date" name="fechaFin" value="<%= fin %>" class="input-ficha-lateral" required>
+            </div>
+        </div>
+
+        <div class="ficha-tarjeta-info sin-margen-inferior">
+            <h5>Cadenas Participantes</h5>
+            <div class="checkbox-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #cbd5e0; padding: 10px; border-radius: 6px; background-color: #ffffff;">
+                <% if (todasCadenas != null && !todasCadenas.isEmpty()) {
+                    for (CadenaDTO cadena : todasCadenas) {
+                        boolean checked = isEdit && campana != null && campana.getIdsCadenas() != null && campana.getIdsCadenas().contains(cadena.getIdCadena());
+                %>
+                <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+                    <input type="checkbox" name="cadenasIds" value="<%= cadena.getIdCadena() %>" <%= checked ? "checked" : "" %> style="width: auto;">
+                    <%= cadena.getNombreCadena() %>
+                </label>
+                <%  }
+                } else { %>
+                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">No hay cadenas registradas en el sistema.</p>
+                <% } %>
             </div>
         </div>
     </form>
@@ -4627,6 +4837,100 @@ form {
 </div>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/EditarTienda.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
+<%@ page import="java.util.List" %>
+<%
+    EstablecimientoDTO tienda = (EstablecimientoDTO) request.getAttribute("tiendaSeleccionada");
+    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
+    List<ZonaGeografica> zonas = (List<ZonaGeografica>) request.getAttribute("zonas");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    boolean esEditar = "editar".equals(modoPanel) && tienda != null && tienda.getIdEstablecimiento() != null;
+
+    String[] tiposVia = {"Calle", "Avenida", "Plaza"};
+%>
+<div id="tienda-form-panel">
+    <h3 class="ficha-titulo-principal"><%= esEditar ? "Editar Tienda" : "Nueva Tienda" %></h3>
+    <form id="tienda-form" action="/tiendas/guardar" method="POST">
+        <% if (esEditar) { %>
+            <input type="hidden" name="idEstablecimiento" value="<%= tienda.getIdEstablecimiento() %>">
+        <% } %>
+        <div class="ficha-tarjeta-info tarjeta-cabecera-edit">
+            <h5>Cadena</h5>
+            <select name="idCadena" class="select-ficha-lateral" required>
+                <option value="">Seleccione una cadena</option>
+                <% if (todasCadenas != null) {
+                    for (CadenaDTO c : todasCadenas) {
+                        String selected = (esEditar && tienda.getIdCadena() != null && tienda.getIdCadena().equals(c.getIdCadena())) ? "selected" : "";
+                %>
+                    <option value="<%= c.getIdCadena() %>" <%= selected %>><%= c.getNombreCadena() %></option>
+                <%  }
+                } %>
+            </select>
+        </div>
+        <div class="ficha-tarjeta-info tarjeta-cabecera-edit">
+            <h5>Nombre de la Tienda</h5>
+            <input type="text" name="nombreResena" class="input-ficha-lateral input-nombre-principal" required placeholder="Ej. Tienda Centro"
+                   value="<%= esEditar ? tienda.getNombreResena() : "" %>">
+        </div>
+        <div class="ficha-tarjeta-info">
+            <h5>Lineales</h5>
+            <input type="number" name="lineales" class="input-ficha-lateral" placeholder="Nº de lineales"
+                   value="<%= esEditar && tienda.getLineales() != null ? tienda.getLineales() : "" %>">
+        </div>
+        <div class="ficha-tarjeta-info">
+            <h5>DIRECCIÓN</h5>
+            <div class="campo-formulario-ficha">
+                <label for="form-tipo-via"><strong>Tipo de Vía:</strong></label>
+                <select id="form-tipo-via" name="tipoVia" class="select-ficha-lateral" required>
+                    <% for (String tv : tiposVia) {
+                        String selected = (esEditar && tienda.getTipoVia() != null && tienda.getTipoVia().equals(tv)) ? "selected" : "";
+                    %>
+                        <option value="<%= tv %>" <%= selected %>><%= tv %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="form-nombre-via"><strong>Nombre de la Vía:</strong></label>
+                <input type="text" id="form-nombre-via" name="nombreVia" class="input-ficha-lateral" required placeholder="Ej. Gran Vía"
+                       value="<%= esEditar ? tienda.getNombreVia() : "" %>">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="form-numero"><strong>Número:</strong></label>
+                <input type="text" id="form-numero" name="numero" class="input-ficha-lateral" placeholder="Ej. 42"
+                       value="<%= esEditar && tienda.getNumero() != null ? tienda.getNumero() : "" %>">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="form-codigo"><strong>Código Postal:</strong></label>
+                <input type="text" id="form-codigo" name="codigo" class="input-ficha-lateral" required placeholder="Ej. 29001"
+                       value="<%= esEditar && tienda.getCodigo() != null ? tienda.getCodigo() : "" %>">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="form-localidad"><strong>Localidad:</strong></label>
+                <input type="text" id="form-localidad" name="localidad" class="input-ficha-lateral" required placeholder="Ej. Málaga"
+                       value="<%= esEditar && tienda.getLocalidad() != null ? tienda.getLocalidad() : "" %>">
+            </div>
+            <div class="campo-formulario-ficha">
+                <label for="form-zona"><strong>Zona:</strong></label>
+                <select id="form-zona" name="idZona" class="select-ficha-lateral" required>
+                    <option value="">Seleccione una zona</option>
+                    <% if (zonas != null) {
+                        for (ZonaGeografica z : zonas) {
+                            String selected = (esEditar && tienda.getIdZona() != null && tienda.getIdZona().equals(z.getIdZona())) ? "selected" : "";
+                    %>
+                        <option value="<%= z.getIdZona() %>" <%= selected %>><%= z.getNombreZona() %></option>
+                    <%  }
+                    } %>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+</file>
+
 <file path="src/main/webapp/WEB-INF/view/header.jsp">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
@@ -4660,6 +4964,242 @@ form {
         </button>
     </nav>
 </header>
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/Tiendas.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
+<%
+    List<EstablecimientoDTO> tiendas = (List<EstablecimientoDTO>) request.getAttribute("tiendas");
+    List<CadenaDTO> todasCadenas = (List<CadenaDTO>) request.getAttribute("todasCadenas");
+    List<CampanaDTO> campanas = (List<CampanaDTO>) request.getAttribute("campanas");
+    List<ZonaGeografica> zonas = (List<ZonaGeografica>) request.getAttribute("zonas");
+    List<Usuario> coordinadores = (List<Usuario>) request.getAttribute("coordinadores");
+    EstablecimientoDTO tiendaSeleccionada = (EstablecimientoDTO) request.getAttribute("tiendaSeleccionada");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    String idCadena = (String) request.getAttribute("idCadena");
+    String nombre = (String) request.getAttribute("nombre");
+    String idCampana = (String) request.getAttribute("idCampana");
+    String tipoVia = (String) request.getAttribute("tipoVia");
+    String nombreVia = (String) request.getAttribute("nombreVia");
+    String codigo = (String) request.getAttribute("codigo");
+    String localidad = (String) request.getAttribute("localidad");
+    Integer idZona = (Integer) request.getAttribute("idZona");
+    String coordinador = (String) request.getAttribute("coordinador");
+
+    if (modoPanel == null) modoPanel = "ninguno";
+    if (idCadena == null) idCadena = "";
+    if (nombre == null) nombre = "";
+    if (idCampana == null) idCampana = "";
+    if (tipoVia == null) tipoVia = "";
+    if (nombreVia == null) nombreVia = "";
+    if (codigo == null) codigo = "";
+    if (localidad == null) localidad = "";
+    if (coordinador == null) coordinador = "";
+%>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tiendas</title>
+        <link rel="stylesheet" href="../css/InformacionTienda.css">
+        <link rel="stylesheet" href="../css/TablaEstilos.css">
+        <link rel="stylesheet" href="../css/Common.css">
+        <link rel="stylesheet" href="../css/Sidebar.css">
+        <link rel="stylesheet" href="../css/popUpRegistro.css">
+        <link rel="stylesheet" href="../css/Header.css">
+        <link rel="stylesheet" href="../css/DetalleColaborador.css">
+        <link rel="stylesheet" href="../css/EditarAnadirColaborador.css">
+    </head>
+    <body>
+    <div class="app-container">
+        <jsp:include page="sidebar.jsp" />
+        <div class="right-content">
+            <jsp:include page="header.jsp">
+                <jsp:param name="titulo" value="Tiendas" />
+                <jsp:param name="subtitulo" value="Gestion de establecimientos" />
+            </jsp:include>
+
+            <div class="main-layout">
+                <main>
+                    <!--FILTROS-->
+                    <form action="/tiendas" method="GET">
+                        <section class="filters">
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-chain">Cadena</label>
+                                    <select id="filter-chain" name="idCadena">
+                                        <option value="">Todas las cadenas</option>
+                                        <% if (todasCadenas != null) {
+                                            for (CadenaDTO c : todasCadenas) { %>
+                                                <option value="<%= c.getIdCadena() %>" <%= idCadena.equals(c.getIdCadena()) ? "selected" : "" %>>
+                                                    <%= c.getNombreCadena() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-name">Nombre</label>
+                                    <input type="text" id="filter-name" name="nombre" value="<%= nombre %>" placeholder="Nombre de tienda">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-coordinator">Coordinador</label>
+                                    <select id="filter-coordinator" name="coordinador">
+                                        <option value="">Todos los coordinadores</option>
+                                        <% if (coordinadores != null) {
+                                            for (Usuario u : coordinadores) { %>
+                                                <option value="<%= u.getPersona().getNombreCompleto() %>" <%= coordinador.equals(u.getPersona().getNombreCompleto()) ? "selected" : "" %>>
+                                                    <%= u.getPersona().getNombreCompleto() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-campaign">Campaña</label>
+                                    <select id="filter-campaign" name="idCampana">
+                                        <option value="">Todas las campañas</option>
+                                        <% if (campanas != null) {
+                                            for (CampanaDTO camp : campanas) { %>
+                                                <option value="<%= camp.getIdCampana() %>" <%= idCampana.equals(camp.getIdCampana()) ? "selected" : "" %>>
+                                                    <%= camp.getNombreCampana() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-type">Tipo Vía</label>
+                                    <input type="text" id="filter-type" name="tipoVia" value="<%= tipoVia %>" placeholder="Calle, Avda...">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-street">Calle</label>
+                                    <input type="text" id="filter-street" name="nombreVia" value="<%= nombreVia %>" placeholder="Nombre de la vía">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-code">Código Postal</label>
+                                    <input type="text" id="filter-code" name="codigo" value="<%= codigo %>" placeholder="C.P.">
+                                </div>
+                            </div>
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="filter-city">Localidad</label>
+                                    <input type="text" id="filter-city" name="localidad" value="<%= localidad %>" placeholder="Localidad">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-zone">Zona</label>
+                                    <select id="filter-zone" name="idZona">
+                                        <option value="">Todas las zonas</option>
+                                        <% if (zonas != null) {
+                                            for (ZonaGeografica z : zonas) { %>
+                                                <option value="<%= z.getIdZona() %>" <%= idZona != null && idZona.equals(z.getIdZona()) ? "selected" : "" %>>
+                                                    <%= z.getNombreZona() %>
+                                                </option>
+                                        <%  }
+                                        } %>
+                                    </select>
+                                </div>
+                                <div class="filter-group filter-group--btn">
+                                    <button type="submit" class="btn btn--primary">Filtrar</button>
+                                </div>
+                            </div>
+                        </section>
+                    </form>
+
+                    <div class="content-wrapper">
+                        <div class="list-container">
+                            <div class="list-header">
+                                <h2>Listado de Tiendas</h2>
+                                <form method="POST" action="/tiendas/anadir">
+                                    <button type="submit" class="btn btn--primary">Añadir Tienda</button>
+                                </form>
+                                <p><%= tiendas != null ? tiendas.size() : 0 %> tiendas encontradas</p>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table id="establishments-table" class="data-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Cadena</th>
+                                        <th>Dirección</th>
+                                        <th>Localidad</th>
+                                        <th>C.P.</th>
+                                        <th>Zona</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <%
+                                        if (tiendas != null && !tiendas.isEmpty()) {
+                                            for (EstablecimientoDTO t : tiendas) {
+                                        %>
+                                        <tr<%= "detalle".equals(modoPanel) && tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null && tiendaSeleccionada.getIdEstablecimiento().equals(t.getIdEstablecimiento()) ? " class=\"selected\"" : "" %>>
+                                            <td>
+                                                <a href="/tiendas?idTienda=<%= t.getIdEstablecimiento() %><%= !idCadena.isEmpty() ? "&idCadena=" + java.net.URLEncoder.encode(idCadena, "UTF-8") : "" %><%= !nombre.isEmpty() ? "&nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8") : "" %><%= !idCampana.isEmpty() ? "&idCampana=" + idCampana : "" %><%= !tipoVia.isEmpty() ? "&tipoVia=" + java.net.URLEncoder.encode(tipoVia, "UTF-8") : "" %><%= !nombreVia.isEmpty() ? "&nombreVia=" + java.net.URLEncoder.encode(nombreVia, "UTF-8") : "" %><%= !codigo.isEmpty() ? "&codigo=" + java.net.URLEncoder.encode(codigo, "UTF-8") : "" %><%= !localidad.isEmpty() ? "&localidad=" + java.net.URLEncoder.encode(localidad, "UTF-8") : "" %><%= idZona != null ? "&idZona=" + idZona : "" %><%= !coordinador.isEmpty() ? "&coordinador=" + java.net.URLEncoder.encode(coordinador, "UTF-8") : "" %>">
+                                                    <%= t.getNombreResena() %>
+                                                </a>
+                                            </td>
+                                            <td><%= t.getNombreCadena() %></td>
+                                            <td><%= t.getTipoVia() != null ? t.getTipoVia() + " " + t.getNombreVia() : "" %></td>
+                                            <td><%= t.getLocalidad() != null ? t.getLocalidad() : "" %></td>
+                                            <td><%= t.getCodigo() != null ? t.getCodigo() : "" %></td>
+                                            <td><%= t.getNombreZona() != null ? t.getNombreZona() : "" %></td>
+                                        </tr>
+                                    <%      }
+                                        } else { %>
+                                        <tr>
+                                            <td colspan="6" class="empty-state">No se encontraron tiendas.</td>
+                                        </tr>
+                                    <%  } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <aside class="detail-panel">
+                            <div class="detail-content">
+                                <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                                    <jsp:include page="DetalleTienda.jsp" />
+                                <% } else if ("editar".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                                    <jsp:include page="EditarTienda.jsp" />
+                                <% } else if ("anadir".equals(modoPanel)) { %>
+                                    <jsp:include page="EditarTienda.jsp" />
+                                <% } else { %>
+                                    <div class="estado-vacio">
+                                        <h3>Detalle de Tienda</h3>
+                                        <p>Haga clic en una tienda de la lista para ver sus detalles.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <% if ("detalle".equals(modoPanel) && tiendaSeleccionada != null) { %>
+                            <div class="detail-actions-sticky">
+                                <a href="/tiendas/editar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--primary">Editar</a>
+                                <a href="/tiendas/borrar?idTienda=<%= tiendaSeleccionada.getIdEstablecimiento() %>" class="btn btn--delete">Eliminar</a>
+                            </div>
+                            <% } %>
+                            <% if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) { %>
+                            <div class="detail-actions-sticky">
+                                <button type="submit" form="tienda-form" class="btn btn--primary">Guardar</button>
+                                <a href="/tiendas<%= tiendaSeleccionada != null && tiendaSeleccionada.getIdEstablecimiento() != null ? "?idTienda=" + tiendaSeleccionada.getIdEstablecimiento() : "" %>" class="btn btn--cancel">Cancelar</a>
+                            </div>
+                            <% } %>
+                        </aside>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    </body>
+</html>
 </file>
 
 <file path="src/main/webapp/WEB-INF/web.xml">
@@ -4731,6 +5271,55 @@ public class DashboardController {
         model.addAttribute("coberturasZona", coberturas);
 
         return "administrador";
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/LoginController.java">
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@AllArgsConstructor
+public class LoginController {
+
+    // pasar a service
+    private final UsuarioRepository usuarioRepository;
+
+    @GetMapping("/")
+    public String doLogin() { return "login"; }
+
+    @PostMapping("/autentica")
+    public String doAutentica (@RequestParam("username") String username,
+                               @RequestParam("password") String password,
+                               HttpSession session,
+                               Model model) {
+
+        Usuario user = this.usuarioRepository.autenticar(username, password);
+        if (user == null ) {
+            model.addAttribute("error", "Usuario no encontrado o error de autenticación");
+            return "login";
+        } else {
+            session.setAttribute("user", user);
+            session.setAttribute("id_user", user.getIdUsuario());
+            return "redirect:/dashboard";
+        }
+    }
+
+    // cerrar sesión
+    @GetMapping("/salir")
+    public String doSalir (HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 }
 </file>
@@ -4855,41 +5444,6 @@ public interface ContactoColaboradorRepository extends JpaRepository<ContactoCol
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/DivisionTerritorialRepository.java">
-package es.uma.tesaw.proyecto_bancosol.dao;
-
-import es.uma.tesaw.proyecto_bancosol.dao.DivisionTerritorialRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.DivisionTerritorial;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
-
-public interface DivisionTerritorialRepository extends JpaRepository<DivisionTerritorial, Integer> {
-    Optional<DivisionTerritorial> findByNombreDivision(String nombreDivision);
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/UsuarioRepository.java">
-package es.uma.tesaw.proyecto_bancosol.dao;
-
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import org.jspecify.annotations.Nullable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
-
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer>{
-    @Query("SELECT u FROM Usuario u WHERE u.usuario = :nombreUsuario and u.contrasenia = :contraseniaUsuario")
-    public Usuario autenticar (@Param("nombreUsuario")String usuario, @Param("contraseniaUsuario")String contrasenia);
-
-    @Query("SELECT u FROM Usuario u WHERE u.rol.idRol = :rol")
-    public List<Usuario> countByIdRol(@Param("rol") Integer rol);
-}
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/ZonaGeograficaRepository.java">
 package es.uma.tesaw.proyecto_bancosol.dao;
 
@@ -4943,6 +5497,33 @@ public class ColaboradorDTO {
     private String nombreContacto;
     private String emailContacto;
     private String telefonoContacto;
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dto/EstablecimientoDTO.java">
+package es.uma.tesaw.proyecto_bancosol.dto;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class EstablecimientoDTO {
+    private Integer idEstablecimiento;
+    private String idCadena;
+    private String nombreCadena;
+    private String nombreResena;
+    private Integer lineales;
+    private Integer idDireccion;
+    private String tipoVia;
+    private String nombreVia;
+    private String numero;
+    private String codigo;
+    private String localidad;
+    private Integer idZona;
+    private String nombreZona;
+    private String coordinadorNombre;
+    private List<String> campanasIds;
 }
 </file>
 
@@ -5079,6 +5660,36 @@ public class Direccion {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_cp")
   private CodigoPostal cp;
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/entities/Establecimiento.java">
+package es.uma.tesaw.proyecto_bancosol.entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "establecimiento")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+public class Establecimiento {
+    @Id
+    @Column(name = "id_establecimiento")
+    private Integer idEstablecimiento;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cadena", nullable = false)
+    private Cadena cadena;
+
+    @Column(name = "nombre_resena", nullable = false)
+    private String nombreResena;
+
+    private Integer lineales;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_direccion", nullable = false)
+    private Direccion direccion;
 }
 </file>
 
@@ -5271,6 +5882,79 @@ public class CadenaMapper extends MapperDTO<CadenaDTO, Cadena> {
         }
         dto.setCampanasIds(campanasIds);
 
+        return dto;
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/mapper/EstablecimientoMapper.java">
+package es.uma.tesaw.proyecto_bancosol.mapper;
+
+import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.AsignacionCoordinador;
+import es.uma.tesaw.proyecto_bancosol.entities.Campana;
+import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+public class EstablecimientoMapper extends MapperDTO<EstablecimientoDTO, Establecimiento> {
+
+    private String obtenerCoordinador(List<AsignacionCoordinador> asignaciones) {
+        if (asignaciones == null || asignaciones.isEmpty()) return null;
+        return asignaciones.get(0).getUsuarioCoordinador().getPersona().getNombreCompleto();
+    }
+
+    @Override
+    public EstablecimientoDTO toDTO(Establecimiento entity) {
+        if (entity == null) return null;
+
+        EstablecimientoDTO dto = new EstablecimientoDTO();
+        dto.setIdEstablecimiento(entity.getIdEstablecimiento());
+        dto.setNombreResena(entity.getNombreResena());
+        dto.setLineales(entity.getLineales());
+
+        if (entity.getCadena() != null) {
+            dto.setIdCadena(entity.getCadena().getIdCadena());
+            dto.setNombreCadena(entity.getCadena().getNombreCadena());
+
+            List<String> campanasIds = new ArrayList<>();
+            for (Campana campana : entity.getCadena().getCampanas()) {
+                campanasIds.add(campana.getIdCampana());
+            }
+            dto.setCampanasIds(campanasIds);
+        }
+
+        if (entity.getDireccion() != null) {
+            dto.setIdDireccion(entity.getDireccion().getIdDireccion());
+            dto.setTipoVia(entity.getDireccion().getTipoVia());
+            dto.setNombreVia(entity.getDireccion().getNombreVia());
+            dto.setNumero(entity.getDireccion().getNumero());
+
+            if (entity.getDireccion().getCp() != null) {
+                dto.setCodigo(entity.getDireccion().getCp().getCodigo());
+
+                if (entity.getDireccion().getCp().getDivision() != null) {
+                    dto.setLocalidad(entity.getDireccion().getCp().getDivision().getNombreDivision());
+
+                    if (entity.getDireccion().getCp().getDivision().getZona() != null) {
+                        dto.setIdZona(entity.getDireccion().getCp().getDivision().getZona().getIdZona());
+                        dto.setNombreZona(entity.getDireccion().getCp().getDivision().getZona().getNombreZona());
+                    }
+                }
+            }
+        }
+
+        return dto;
+    }
+
+    public EstablecimientoDTO toDTO(Establecimiento entity, List<AsignacionCoordinador> asignaciones) {
+        EstablecimientoDTO dto = toDTO(entity);
+        if (dto != null) {
+            dto.setCoordinadorNombre(obtenerCoordinador(asignaciones));
+        }
         return dto;
     }
 }
@@ -5486,350 +6170,6 @@ public class HistorialService {
     public List<LogCampana> listarHistorial() {
         return logCampanaRepository.findAllByOrderByTimestampDesc();
     }
-}
-</file>
-
-<file path="src/main/resources/static/css/Campana.css">
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f7f9 !important;
-    color: #111827;
-}
-
-.main-container {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-}
-
-.right-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-.header-dashboard {
-    background-color: #ffffff;
-    padding: 16px 32px;
-    gap: 15px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.header-titles h1 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.header-titles p {
-    margin: 4px 0 0 0;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.header-logo {
-    height: 50px;
-}
-
-.header-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: end;
-    gap: 16px;
-}
-
-.notification-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #374151;
-    font-weight: bold;
-}
-
-.notification-btn p {
-    margin: 0;
-}
-
-.campana-container {
-    padding: 24px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* --- FILTROS --- */
-.filters {
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 20px 24px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-end;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-}
-
-.filter-group label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-}
-
-.filter-group select,
-.filter-group input {
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    outline: none;
-    background-color: #ffffff;
-    color: #374151;
-}
-
-.filter-button {
-    flex: 1;
-}
-
-.filter-button button {
-    width: 20%;
-    padding: 10px 12px;
-    background-color: #420098;
-    border: 1px solid #420098;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.filter-button button:hover {
-    background-color: #310073;
-    border: 1px solid #310073;
-    border-radius: 6px;
-}
-
-/* --- LISTADO Y TABLA --- */
-.content-wrapper {
-    display: flex;
-    gap: 24px;
-    flex: 1;
-    overflow: hidden;
-}
-
-.list-container {
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 24px;
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    overflow-x: auto;
-}
-
-.detail-panel {
-    flex: 0 0 420px;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-}
-
-.detail-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 24px 8px 24px;
-    min-height: 0;
-}
-
-.detail-actions-sticky {
-    flex-shrink: 0;
-    background-color: #ffffff;
-    border-top: 1px solid #e5e7eb;
-    padding: 12px 24px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.list-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    margin-bottom: 24px;
-}
-
-.list-header h2 {
-    grid-column: 1;
-    grid-row: 1;
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.list-header p {
-    grid-column: 1;
-    grid-row: 2;
-    margin: 4px 0 0 0;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.btn-add {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-    border: 1px solid #420098;
-    background-color: #420098;
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.2s;
-}
-
-.btn-add:hover {
-    background-color: #310073;
-}
-
-.btn-history {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-    border: 1px solid #420098;
-    background-color: #420098;
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    transition: background-color 0.2s;
-}
-
-.btn-history:hover {
-    background-color: #310073;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-}
-
-thead {
-    position: sticky;
-    top: 0;
-    background-color: #f8fafc;
-    z-index: 1;
-}
-
-th {
-    padding: 12px 16px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-td {
-    padding: 16px;
-    font-size: 0.875rem;
-    color: #374151;
-    border-bottom: 1px solid #f3f4f6;
-    vertical-align: middle;
-}
-
-td strong {
-    color: #111827;
-    font-weight: 600;
-}
-
-td small {
-    display: block;
-    margin-top: 4px;
-    color: #6b7280;
-}
-
-tbody tr.selected {
-    background-color: #f5f0ff;
-}
-
-.btn-edit {
-    background-color: transparent;
-    border: 1px solid #d1d5db;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    color: #374151;
-    text-decoration: none;
-    display: inline-block;
-    white-space: nowrap;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.btn-edit:hover {
-    background-color: #f3f4f6;
-    color: #111827;
-}
-
-/* --- MENSAJES --- */
-.mensaje-vacio {
-    text-align: center;
-    padding: 24px;
-    color: #6b7280;
-}
-
-.mensaje-error {
-    text-align: center;
-    padding: 24px;
-    color: #ef4444;
-    font-weight: 600;
-}
-
-/* --- BOTÓN BORRAR --- */
-.btn-delete {
-    background-color: #dc3545;
-    color: #ffffff;
-    border: 1px;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    cursor: pointer;
-}
-
-.btn-delete:hover {
-    background-color: #7f1d1d;
-}
-
-.estado-vacio {
-    margin-top: 50px;
 }
 </file>
 
@@ -6392,6 +6732,51 @@ public interface CadenaRepository extends JpaRepository<Cadena, String> {
 }
 </file>
 
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/DivisionTerritorialRepository.java">
+package es.uma.tesaw.proyecto_bancosol.dao;
+
+import es.uma.tesaw.proyecto_bancosol.dao.DivisionTerritorialRepository;
+import es.uma.tesaw.proyecto_bancosol.entities.DivisionTerritorial;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface DivisionTerritorialRepository extends JpaRepository<DivisionTerritorial, Integer> {
+    Optional<DivisionTerritorial> findByNombreDivision(String nombreDivision);
+
+    @Query("SELECT d FROM DivisionTerritorial d WHERE d.nombreDivision = :nombreDivision")
+    List<DivisionTerritorial> buscarPorNombre(@Param("nombreDivision") String nombreDivision);
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/UsuarioRepository.java">
+package es.uma.tesaw.proyecto_bancosol.dao;
+
+import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer>{
+    @Query("SELECT u FROM Usuario u WHERE u.usuario = :nombreUsuario and u.contrasenia = :contraseniaUsuario")
+    public Usuario autenticar (@Param("nombreUsuario")String usuario, @Param("contraseniaUsuario")String contrasenia);
+
+    @Query("SELECT u FROM Usuario u WHERE u.rol.idRol = :rol")
+    public List<Usuario> countByIdRol(@Param("rol") Integer rol);
+
+    @Query("SELECT u FROM Usuario u WHERE u.rol.idRol = :idRol")
+    List<Usuario> findByRolId(@Param("idRol") Integer idRol);
+}
+</file>
+
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/VoluntarioRepository.java">
 package es.uma.tesaw.proyecto_bancosol.dao;
 
@@ -6908,74 +7293,369 @@ public class ColaboradoresService {
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/EstablecimientoService.java">
-/*
-Ainhoa García Rebollo: 100%
-*/
-
-package es.uma.tesaw.proyecto_bancosol.service;
-
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@AllArgsConstructor
-public class EstablecimientoService {
-
-    private final EstablecimientoRepository establecimientoRepository;
-
-    public List<Establecimiento> buscarEstablecimientosPorCampanaConFiltros(String idCampana, String nombreCadena, Integer idTienda) {
-        String cadenaFiltro = (nombreCadena != null) ? nombreCadena.trim() : null;
-        return establecimientoRepository.buscarEstablecimientosFiltrados(idCampana, cadenaFiltro, idTienda);
-    }
+<file path="src/main/resources/static/css/Campana.css">
+* {
+    box-sizing: border-box;
 }
-</file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/UsuarioService.java">
-package es.uma.tesaw.proyecto_bancosol.service;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7f9 !important;
+    color: #111827;
+}
 
-import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
-import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-@Service
-@AllArgsConstructor
-public class UsuarioService {
+.main-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
 
-    private final UsuarioRepository usuarioRepository;
+.right-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
 
-    @Transactional
-    public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
+.header-dashboard {
+    background-color: #ffffff;
+    padding: 16px 32px;
+    gap: 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
 
-        // 1. Validaciones básicas (Las mismas que tenías en React)
-        if (!dto.getNueva().equals(dto.getConfirmacion())) {
-            throw new IllegalArgumentException("Las contraseñas nuevas no coinciden.");
-        }
+.header-titles h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
 
-        if (dto.getNueva().length() < 8) {
-            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
-        }
+.header-titles p {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
 
-        // 2. Buscar al usuario
-        Usuario usuario = this.usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+.header-logo {
+    height: 50px;
+}
 
-        // 3. Comprobar que la contraseña actual es correcta
-        // Nota: Si en el futuro usas BCrypt o encriptación, aquí usarías passwordEncoder.matches()
-        if (!usuario.getContrasenia().equals(dto.getActual())) {
-            throw new IllegalArgumentException("La contraseña actual no es correcta.");
-        }
+.header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: end;
+    gap: 16px;
+}
 
-        // 4. Guardar la nueva contraseña
-        usuario.setContrasenia(dto.getNueva());
-        this.usuarioRepository.save(usuario);
-    }
+.notification-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    font-weight: bold;
+}
+
+.notification-btn p {
+    margin: 0;
+}
+
+.campana-container {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* --- FILTROS --- */
+.filters {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-form {
+    margin: 0;
+    padding: 0;
+    display: contents;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    outline: none;
+    background-color: #ffffff;
+    color: #374151;
+}
+
+.filter-button {
+    flex: 1;
+}
+
+.filter-button button {
+    width: 20%;
+    padding: 10px 12px;
+    background-color: #420098;
+    border: 1px solid #420098;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.filter-button button:hover {
+    background-color: #310073;
+    border: 1px solid #310073;
+    border-radius: 6px;
+}
+
+/* --- LISTADO Y TABLA --- */
+.content-wrapper {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.list-container {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+}
+
+.detail-panel {
+    flex: 0 0 420px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px 8px 24px;
+    min-height: 0;
+}
+
+.detail-actions-sticky {
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.list-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.list-header h2 {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.list-header p {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.btr-history-add {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-add {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    border: 1px solid #420098;
+    background-color: #420098;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.btn-add:hover {
+    background-color: #310073;
+}
+
+.btn-history {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    border: 1px solid #420098;
+    background-color: #420098;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.btn-history:hover {
+    background-color: #310073;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8fafc;
+    z-index: 1;
+}
+
+th {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+td strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+td small {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+}
+
+tbody tr.selected {
+    background-color: #f5f0ff;
+}
+
+.btn-edit {
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #374151;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+/* --- MENSAJES --- */
+.mensaje-vacio {
+    text-align: center;
+    padding: 24px;
+    color: #6b7280;
+}
+
+.mensaje-error {
+    text-align: center;
+    padding: 24px;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* --- BOTÓN BORRAR --- */
+.btn-delete {
+    background-color: #dc3545;
+    color: #ffffff;
+    border: 1px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #7f1d1d;
+}
+
+.estado-vacio {
+    margin-top: 50px;
+}
+
+.select-campain {
+    text-align: center;
+    padding: 40px;
+    color: #888;
 }
 </file>
 
@@ -7471,85 +8151,6 @@ Ainhoa García Rebollo: 100%
 </html>
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/sidebar.jsp">
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<%
-    Usuario usuario = (Usuario) session.getAttribute("user");
-    String currentURI = request.getRequestURI();
-%>
-
-<head>
-    <link rel="stylesheet" href="/css/Sidebar.css">
-</head>
-
-<aside class="sidebar">
-    <!-- BLOQUE DEL USUARIO / PERFIL -->
-    <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
-        <div class="user-block">
-            <!-- Primera letra del usuario para el Avatar -->
-            <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
-            <div class="user-info">
-                <p class="user-name"><%= usuario.getUsuario() %></p>
-                <p class="user-role"><%= usuario.getRol().getNombreRol() %></p>
-            </div>
-        </div>
-    </a>
-
-    <h2 class="menu-heading">MENÚ PRINCIPAL</h2>
-    <ul id="menu">
-        <li class="<%= currentURI.contains("/dashboard") ? "active" : "" %>">
-            <a href="/dashboard">Dashboard</a>
-        </li>
-
-        <% int idRol = usuario.getRol().getIdRol(); %>
-
-        <!-- ADMINISTRADORES Y COORDINADORES -->
-        <% if (idRol == 1 || idRol == 2) { %>
-        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
-            <a href="/campanas">Campañas</a>
-        </li>
-        <li class="<%= currentURI.contains("/cadenas") ? "active" : "" %>">
-            <a href="/cadenas">Cadenas</a>
-        </li>
-        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
-            <a href="/voluntarios">Voluntarios</a>
-        </li>
-        <li class="<%= currentURI.contains("/incidencias") ? "active" : "" %>">
-            <a href="/incidencias">Incidencias</a>
-        </li>
-        <% } %>
-
-        <!-- ADMINISTRADOREs -->
-        <% if (idRol == 1) { %>
-        <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
-            <a href="/tiendas">Tiendas</a>
-        </li>
-        <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
-            <a href="/colaboradores">Colaboradores</a>
-        </li>
-        <% } %>
-
-        <!-- COLABORADORES -->
-        <% if (idRol == 3) { %>
-        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
-            <a href="/campanas">Campañas</a>
-        </li>
-        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
-            <a href="/voluntarios">Voluntarios</a>
-        </li>
-        <% } %>
-    </ul>
-
-    <div class="bottom-menu">
-        <ul>
-            <li><a href="/salir">Cerrar Sesión</a></li>
-        </ul>
-    </div>
-</aside>
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/ColaboradorController.java">
 /*
 Paula Fernández Jiménez: 100%
@@ -7699,22 +8300,6 @@ public interface AsignacionTurnoColaboradorRepository extends JpaRepository<Asig
 }
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/CampanaRepository.java">
-package es.uma.tesaw.proyecto_bancosol.dao;
-
-import es.uma.tesaw.proyecto_bancosol.entities.Campana;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
-
-public interface CampanaRepository extends JpaRepository<Campana, String> {  // String, no Integer
-    @Query("SELECT c FROM Campana c WHERE c.estado = :estado")
-    List<Campana> findByEstado(@Param("estado") String estado);
-}
-</file>
-
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/entities/Persona.java">
 package es.uma.tesaw.proyecto_bancosol.entities;
 
@@ -7786,6 +8371,245 @@ public class VistaVoluntarios {
 }
 </file>
 
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/EstablecimientoService.java">
+/*
+Ainhoa García Rebollo: 100%
+*/
+
+package es.uma.tesaw.proyecto_bancosol.service;
+
+import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.*;
+import es.uma.tesaw.proyecto_bancosol.mapper.EstablecimientoMapper;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@AllArgsConstructor
+public class EstablecimientoService {
+
+    private final EstablecimientoRepository establecimientoRepository;
+    private final CadenaRepository cadenaRepository;
+    private final DireccionRepository direccionRepository;
+    private final CodigoPostalRepository codigoPostalRepository;
+    private final DivisionTerritorialRepository divisionTerritorialRepository;
+    private final ZonaGeograficaRepository zonaGeograficaRepository;
+    private final AsignacionCoordinadorRepository asignacionCoordinadorRepository;
+    private final EstablecimientoMapper establecimientoMapper;
+
+    public List<EstablecimientoDTO> listarTiendas(String idCadena, String nombre, String idCampana,
+                                                   String tipoVia, String nombreVia, String codigo,
+                                                   String localidad, Integer idZona, String coordinador) {
+        String cadenaFiltro = (idCadena != null) ? idCadena.trim() : null;
+        if (cadenaFiltro != null && cadenaFiltro.isEmpty()) cadenaFiltro = null;
+        String nombreFiltro = (nombre != null) ? nombre.trim() : null;
+        if (nombreFiltro != null && nombreFiltro.isEmpty()) nombreFiltro = null;
+        String campanaFiltro = (idCampana != null) ? idCampana.trim() : null;
+        if (campanaFiltro != null && campanaFiltro.isEmpty()) campanaFiltro = null;
+        String tipoViaFiltro = (tipoVia != null) ? tipoVia.trim() : null;
+        if (tipoViaFiltro != null && tipoViaFiltro.isEmpty()) tipoViaFiltro = null;
+        String nombreViaFiltro = (nombreVia != null) ? nombreVia.trim() : null;
+        if (nombreViaFiltro != null && nombreViaFiltro.isEmpty()) nombreViaFiltro = null;
+        String codigoFiltro = (codigo != null) ? codigo.trim() : null;
+        if (codigoFiltro != null && codigoFiltro.isEmpty()) codigoFiltro = null;
+        String localidadFiltro = (localidad != null) ? localidad.trim() : null;
+        if (localidadFiltro != null && localidadFiltro.isEmpty()) localidadFiltro = null;
+        String coordinadorFiltro = (coordinador != null) ? coordinador.trim() : null;
+        if (coordinadorFiltro != null && coordinadorFiltro.isEmpty()) coordinadorFiltro = null;
+
+        List<Establecimiento> lista = establecimientoRepository.findAllFiltrados(
+                cadenaFiltro, nombreFiltro, campanaFiltro, tipoViaFiltro,
+                nombreViaFiltro, codigoFiltro, localidadFiltro, idZona);
+
+        List<Integer> ids = lista.stream().map(Establecimiento::getIdEstablecimiento).collect(Collectors.toList());
+        Map<Integer, List<AsignacionCoordinador>> asignacionesPorTienda;
+        if (ids.isEmpty()) {
+            asignacionesPorTienda = Map.of();
+        } else {
+            List<AsignacionCoordinador> todas = asignacionCoordinadorRepository.findAll().stream()
+                    .filter(a -> a.getTienda() != null && ids.contains(a.getTienda().getIdEstablecimiento()))
+                    .collect(Collectors.toList());
+            asignacionesPorTienda = todas.stream()
+                    .collect(Collectors.groupingBy(a -> a.getTienda().getIdEstablecimiento()));
+        }
+
+        List<EstablecimientoDTO> dtos = new ArrayList<>();
+        for (Establecimiento e : lista) {
+            List<AsignacionCoordinador> asigs = asignacionesPorTienda.getOrDefault(e.getIdEstablecimiento(), List.of());
+            EstablecimientoDTO dto = establecimientoMapper.toDTO(e, asigs);
+            if (coordinadorFiltro != null) {
+                if (dto.getCoordinadorNombre() == null) continue;
+                if (!dto.getCoordinadorNombre().toLowerCase().contains(coordinadorFiltro.toLowerCase())) continue;
+            }
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    public List<EstablecimientoDTO> listarTiendas() {
+        return listarTiendas(null, null, null, null, null, null, null, null, null);
+    }
+
+    public List<Establecimiento> buscarEstablecimientosPorCampanaConFiltros(String idCampana, String nombreCadena, Integer idTienda) {
+        String cadenaFiltro = (nombreCadena != null) ? nombreCadena.trim() : null;
+        return establecimientoRepository.buscarEstablecimientosFiltrados(idCampana, cadenaFiltro, idTienda);
+    }
+
+    public EstablecimientoDTO buscarTienda(Integer idEstablecimiento) {
+        if (idEstablecimiento == null) return new EstablecimientoDTO();
+        Establecimiento entidad = establecimientoRepository.findById(idEstablecimiento).orElse(null);
+        if (entidad == null) return new EstablecimientoDTO();
+        List<AsignacionCoordinador> asigs = asignacionCoordinadorRepository.findAll().stream()
+                .filter(a -> a.getTienda() != null && a.getTienda().getIdEstablecimiento().equals(idEstablecimiento))
+                .collect(Collectors.toList());
+        return establecimientoMapper.toDTO(entidad, asigs);
+    }
+
+    @Transactional
+    public void guardarTienda(Integer idEstablecimiento, String idCadena, String nombreResena,
+                              Integer lineales, String tipoVia, String nombreVia, String numero,
+                              String codigoPostal, String localidad, Integer idZona) {
+
+        Cadena cadena = cadenaRepository.findById(idCadena)
+                .orElseThrow(() -> new IllegalArgumentException("Cadena no encontrada: " + idCadena));
+
+        ZonaGeografica zona = zonaGeograficaRepository.findById(idZona)
+                .orElseThrow(() -> new IllegalArgumentException("Zona no encontrada: " + idZona));
+
+        List<DivisionTerritorial> divisiones = divisionTerritorialRepository.buscarPorNombre(localidad);
+        DivisionTerritorial division;
+        if (!divisiones.isEmpty()) {
+            division = divisiones.get(0);
+        } else {
+            division = new DivisionTerritorial();
+            Integer maxId = divisionTerritorialRepository.findAll().stream()
+                    .mapToInt(DivisionTerritorial::getIdDivision)
+                    .max().orElse(0);
+            division.setIdDivision(maxId + 1);
+            division.setNombreDivision(localidad);
+            division.setTipo(false);
+            division.setZona(zona);
+            divisionTerritorialRepository.save(division);
+        }
+        final DivisionTerritorial divisionFinal = division;
+
+        CodigoPostal cp = codigoPostalRepository.findByCodigo(codigoPostal)
+                .orElseGet(() -> {
+                    CodigoPostal nuevoCp = new CodigoPostal();
+                    Integer maxId = codigoPostalRepository.findAll().stream()
+                            .mapToInt(CodigoPostal::getIdCp)
+                            .max().orElse(0);
+                    nuevoCp.setIdCp(maxId + 1);
+                    nuevoCp.setCodigo(codigoPostal);
+                    nuevoCp.setDivision(divisionFinal);
+                    return codigoPostalRepository.save(nuevoCp);
+                });
+
+        Direccion direccion = direccionRepository.findAll().stream()
+                .filter(d -> d.getTipoVia() != null && d.getTipoVia().equals(tipoVia)
+                        && d.getNombreVia().equals(nombreVia)
+                        && d.getNumero() != null && d.getNumero().equals(numero)
+                        && d.getCp() != null && d.getCp().getIdCp().equals(cp.getIdCp()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Direccion nuevaDir = new Direccion();
+                    Integer maxId = direccionRepository.findAll().stream()
+                            .mapToInt(Direccion::getIdDireccion)
+                            .max().orElse(0);
+                    nuevaDir.setIdDireccion(maxId + 1);
+                    nuevaDir.setTipoVia(tipoVia);
+                    nuevaDir.setNombreVia(nombreVia);
+                    nuevaDir.setNumero(numero);
+                    nuevaDir.setCp(cp);
+                    return direccionRepository.save(nuevaDir);
+                });
+
+        Establecimiento tienda;
+        if (idEstablecimiento == null) {
+            tienda = new Establecimiento();
+            tienda.setIdEstablecimiento(establecimientoRepository.findMaxId() + 1);
+        } else {
+            tienda = establecimientoRepository.findById(idEstablecimiento)
+                    .orElse(new Establecimiento());
+        }
+
+        tienda.setCadena(cadena);
+        tienda.setNombreResena(nombreResena);
+        tienda.setLineales(lineales);
+        tienda.setDireccion(direccion);
+
+        establecimientoRepository.save(tienda);
+    }
+
+    @Transactional
+    public void borrarTienda(Integer idEstablecimiento) {
+        Establecimiento entidad = establecimientoRepository.findById(idEstablecimiento)
+                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idEstablecimiento));
+        establecimientoRepository.delete(entidad);
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/service/UsuarioService.java">
+package es.uma.tesaw.proyecto_bancosol.service;
+
+import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class UsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+
+    @Transactional(readOnly = true)
+    public List<Usuario> listarCoordinadores() {
+        return usuarioRepository.findByRolId(2);
+    }
+
+    @Transactional
+    public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
+
+        // 1. Validaciones básicas (Las mismas que tenías en React)
+        if (!dto.getNueva().equals(dto.getConfirmacion())) {
+            throw new IllegalArgumentException("Las contraseñas nuevas no coinciden.");
+        }
+
+        if (dto.getNueva().length() < 8) {
+            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
+        }
+
+        // 2. Buscar al usuario
+        Usuario usuario = this.usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        // 3. Comprobar que la contraseña actual es correcta
+        // Nota: Si en el futuro usas BCrypt o encriptación, aquí usarías passwordEncoder.matches()
+        if (!usuario.getContrasenia().equals(dto.getActual())) {
+            throw new IllegalArgumentException("La contraseña actual no es correcta.");
+        }
+
+        // 4. Guardar la nueva contraseña
+        usuario.setContrasenia(dto.getNueva());
+        this.usuarioRepository.save(usuario);
+    }
+}
+</file>
+
 <file path="src/main/resources/application.properties">
 spring.application.name=Proyecto_Bancosol
 spring.mvc.view.prefix=/WEB-INF/view/
@@ -7810,163 +8634,6 @@ spring.jpa.properties.hibernate.default_batch_fetch_size=100
 server.servlet.encoding.charset=UTF-8
 server.servlet.encoding.enabled=true
 server.servlet.encoding.force=true
-</file>
-
-<file path="src/main/webapp/WEB-INF/view/administrador.jsp">
-<%@ page import="java.util.List" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Campana" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    Integer campanasActivasCount = (Integer) request.getAttribute("campanasActivasCount");
-    Long tiendasTotales = (Long) request.getAttribute("tiendasTotales");
-    Long zonasTotales = (Long) request.getAttribute("zonasTotales");
-    Long colaboradoresTotales = (Long) request.getAttribute("colaboradoresTotales");
-    Integer coordinadoresTotales = (Integer) request.getAttribute("coordinadoresTotales");
-    List<Campana> proximasCampanas = (List<Campana>) request.getAttribute("proximasCampanas");
-    List<CoberturaZonaDTO> coberturasZona = (List<CoberturaZonaDTO>) request.getAttribute("coberturasZona");
-%>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Vista de administrador</title>
-    <link rel="stylesheet" href="/css/Administrador.css">
-    <link rel="stylesheet" href="/css/Sidebar.css">
-    <link rel="stylesheet" href="/css/Header.css">
-</head>
-<body>
-<div class="main-container">
-
-    <jsp:include page="sidebar.jsp" />
-
-    <div class="right-container">
-
-        <jsp:include page="header.jsp">
-            <jsp:param name="titulo" value="Dashboard" />
-            <jsp:param name="subtitulo" value="Resumen general de los datos" />
-        </jsp:include>
-
-        <main class="dashboard-container">
-
-            <section class="grid">
-                <div class="card">
-                    <h3>Campañas Activas</h3>
-                    <div class="card" id="stat-campaigns-value"><%= campanasActivasCount %></div>
-                </div>
-                <div class="card">
-                    <h3>Tiendas Totales</h3>
-                    <div class="card" id="stat-stores-value"><%= tiendasTotales %></div>
-                    <p class="card" id="stat-stores-subtitle">En <%= zonasTotales %> zonas geográficas</p>
-                </div>
-                <div class="card">
-                    <h3>Colaboradores</h3>
-                    <div class="card" id="stat-collaborators-value"><%= colaboradoresTotales %></div>
-                    <p class="card" id="stat-collaborators-subtitle">Entidades y organizaciones</p>
-                </div>
-                <div class="card">
-                    <h3>Coordinadores</h3>
-                    <div class="card" id="stat-coordinators-value"><%= coordinadoresTotales %></div>
-                    <p class="card" id="stat-coordinators-subtitle">Activos en campaña</p>
-                </div>
-            </section>
-
-            <section class="dashboard-middle">
-
-                <div class="upcoming-campaigns">
-                    <div class="header-upcoming-campaigns">
-                        <div>
-                            <h2>Próximas Campañas</h2>
-                            <p>Campañas programadas</p>
-                        </div>
-                        <button class="btn-view-all" onclick="window.location.href='/campanas'">Ver todas</button>
-                    </div>
-
-                    <div class="campaign-container" id="campaign-container">
-                        <%
-                            if (proximasCampanas != null && !proximasCampanas.isEmpty()) {
-                                for (Campana campana : proximasCampanas) {
-                                    String fechaInicioStr = (campana.getFechaInicio() != null) ? campana.getFechaInicio().toString() : "Sin fecha";
-                                    String fechaFinStr = (campana.getFechaFin() != null) ? campana.getFechaFin().toString() : "Sin fecha";
-                        %>
-                        <div class="campaign-item">
-                            <div class="campaign-info">
-                                <h4><%= campana.getNombreCampana() %></h4>
-                                <span><%= fechaInicioStr %> - <%= fechaFinStr %></span>
-                            </div>
-                            <div class="campaign-stats">
-                                <div class="stat">
-                                    <strong><%= campana.getEstado() %></strong>
-                                </div>
-                            </div>
-                        </div>
-                        <%
-                            }
-                        } else {
-                        %>
-                        <p>No hay campañas próximas.</p>
-                        <%
-                            }
-                        %>
-                    </div>
-                </div>
-
-                <div class="zone-coverage panel">
-                    <div class="panel-header">
-                        <h2>Cobertura por Zona</h2>
-                        <p>Número de tiendas por zona</p>
-                    </div>
-                    <div class="shops-list" id="shops-list">
-                        <%
-                            if (coberturasZona != null && !coberturasZona.isEmpty()) {
-                                for (CoberturaZonaDTO cob : coberturasZona) {
-                        %>
-                        <div class="shops-item">
-                            <div class="shop-labels">
-                                <span><%= cob.getNombreZona() %></span>
-                                <span><%= cob.getTiendas() %> tiendas</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <!-- Usamos data-target-width para que JS sepa hasta dónde animar -->
-                                <div class="progress-bar" data-target-width="<%= cob.getPorcentaje() %>%" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                        <%
-                            }
-                        } else {
-                        %>
-                        <p>No hay datos de cobertura.</p>
-                        <%
-                            }
-                        %>
-                    </div>
-                </div>
-
-            </section>
-
-        </main>
-    </div>
-</div>
-
-<script>
-    // Mantenemos la lógica visual de la animación en JS, separada de la carga de datos
-    document.addEventListener("DOMContentLoaded", function () {
-        const barras = document.querySelectorAll('.progress-bar');
-
-        barras.forEach(function(barra, indice) {
-            const anchoObjetivo = barra.getAttribute('data-target-width');
-
-            // Retardo escalonado (100ms inicial + 80ms por cada barra extra)
-            setTimeout(function () {
-                barra.style.width = anchoObjetivo;
-            }, 100 + (indice * 80));
-        });
-    });
-</script>
-
-</body>
-</html>
 </file>
 
 <file path="src/main/webapp/WEB-INF/view/listadoCampanas.jsp">
@@ -8148,6 +8815,85 @@ server.servlet.encoding.force=true
 </html>
 </file>
 
+<file path="src/main/webapp/WEB-INF/view/sidebar.jsp">
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Usuario" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    Usuario usuario = (Usuario) session.getAttribute("user");
+    String currentURI = request.getRequestURI();
+%>
+
+<head>
+    <link rel="stylesheet" href="/css/Sidebar.css">
+</head>
+
+<aside class="sidebar">
+    <!-- BLOQUE DEL USUARIO / PERFIL -->
+    <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
+        <div class="user-block">
+            <!-- Primera letra del usuario para el Avatar -->
+            <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
+            <div class="user-info">
+                <p class="user-name"><%= usuario.getUsuario() %></p>
+                <p class="user-role"><%= usuario.getRol().getNombreRol() %></p>
+            </div>
+        </div>
+    </a>
+
+    <h2 class="menu-heading">MENÚ PRINCIPAL</h2>
+    <ul id="menu">
+        <li class="<%= currentURI.contains("administrador") ? "active" : "" %>">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+
+        <% int idRol = usuario.getRol().getIdRol(); %>
+
+        <!-- ADMINISTRADORES Y COORDINADORES -->
+        <% if (idRol == 1 || idRol == 2) { %>
+        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
+            <a href="/campanas">Campañas</a>
+        </li>
+        <li class="<%= currentURI.contains("/cadenas") ? "active" : "" %>">
+            <a href="/cadenas">Cadenas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
+        </li>
+        <li class="<%= currentURI.contains("/incidencias") ? "active" : "" %>">
+            <a href="/incidencias">Incidencias</a>
+        </li>
+        <% } %>
+
+        <!-- ADMINISTRADOREs -->
+        <% if (idRol == 1) { %>
+        <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
+            <a href="/tiendas">Tiendas</a>
+        </li>
+        <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
+            <a href="/colaboradores">Colaboradores</a>
+        </li>
+        <% } %>
+
+        <!-- COLABORADORES -->
+        <% if (idRol == 3) { %>
+        <li class="<%= currentURI.contains("/campanas") ? "active" : "" %>">
+            <a href="/campanas">Campañas</a>
+        </li>
+        <li class="<%= currentURI.contains("/voluntarios") ? "active" : "" %>">
+            <a href="/voluntarios">Voluntarios</a>
+        </li>
+        <% } %>
+    </ul>
+
+    <div class="bottom-menu">
+        <ul>
+            <li><a href="/salir">Cerrar Sesión</a></li>
+        </ul>
+    </div>
+</aside>
+</file>
+
 <file path="pom.xml">
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8257,64 +9003,51 @@ server.servlet.encoding.force=true
 </project>
 </file>
 
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/EstablecimientoRepository.java">
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/CampanaRepository.java">
 package es.uma.tesaw.proyecto_bancosol.dao;
 
-import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
+import es.uma.tesaw.proyecto_bancosol.entities.Campana;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface EstablecimientoRepository extends JpaRepository<Establecimiento, Integer>{
+public interface CampanaRepository extends JpaRepository<Campana, String> {  // String, no Integer
+    @Query("SELECT c FROM Campana c WHERE c.estado = :estado")
+    List<Campana> findByEstado(@Param("estado") String estado);
 
-    @Query("SELECT z.nombreZona, COUNT(e) FROM Establecimiento e JOIN e.direccion d JOIN d.cp cp JOIN cp.division div JOIN div.zona z " +
-            "GROUP BY z.nombreZona ORDER BY COUNT(e) DESC")
-    List<Object[]> countEstablecimientosPorZona();
-
-    @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana")
-    List<Establecimiento> findByCampanaId(@Param("idCampana") String idCampana);
-
-    @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp " +
-            "WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana " +
-            "AND (:nombreCadena IS NULL OR :nombreCadena = '' OR LOWER(c.nombreCadena) LIKE LOWER(CONCAT('%', :nombreCadena, '%'))) " +
-            "AND (:idEstablecimiento IS NULL OR e.idEstablecimiento = :idEstablecimiento)")
-    List<Establecimiento> buscarEstablecimientosFiltrados(
-            @Param("idCampana") String idCampana,
-            @Param("nombreCadena") String nombreCadena,
-            @Param("idEstablecimiento") Integer idEstablecimiento
-    );
+    @Query("SELECT c FROM Campana c WHERE " +
+            "(:estado = 'Todos' OR c.estado = :estado) AND " +
+            "LOWER(c.nombreCampana) LIKE LOWER(CONCAT('%', :busqueda, '%'))")
+    List<Campana> filtrarCampanas(@Param("estado") String estado, @Param("busqueda") String busqueda);
 }
 </file>
 
-<file path="src/main/webapp/WEB-INF/view/campanas.jsp">
+<file path="src/main/webapp/WEB-INF/view/administrador.jsp">
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Campana" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <%
-    List<Campana> listaCampanas = (List<Campana>) request.getAttribute("campanas");
+    Integer campanasActivasCount = (Integer) request.getAttribute("campanasActivasCount");
+    Long tiendasTotales = (Long) request.getAttribute("tiendasTotales");
+    Long zonasTotales = (Long) request.getAttribute("zonasTotales");
+    Long colaboradoresTotales = (Long) request.getAttribute("colaboradoresTotales");
+    Integer coordinadoresTotales = (Integer) request.getAttribute("coordinadoresTotales");
+    List<Campana> proximasCampanas = (List<Campana>) request.getAttribute("proximasCampanas");
+    List<CoberturaZonaDTO> coberturasZona = (List<CoberturaZonaDTO>) request.getAttribute("coberturasZona");
 %>
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Campana.css">
-    <link rel="stylesheet" href="../css/Sidebar.css">
-    <link rel="stylesheet" href="../css/popUpRegistro.css">
-    <link rel="stylesheet" href="../css/Header.css">
-    <link rel="stylesheet" href="../css/DetalleColaborador.css">
-    <link rel="stylesheet" href="../css/EditarAnadirColaborador.css">
-    <link rel="stylesheet" href="../css/EditarCampana.css">
-    <link rel="stylesheet" href="../css/Common.css">
-
-    <title>Vista de campañas</title>
+    <title>Dashboard - Vista de administrador</title>
+    <link rel="stylesheet" href="/css/Administrador.css">
+    <link rel="stylesheet" href="/css/Sidebar.css">
+    <link rel="stylesheet" href="/css/Header.css">
 </head>
-
 <body>
 <div class="main-container">
 
@@ -8323,169 +9056,127 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
     <div class="right-container">
 
         <jsp:include page="header.jsp">
-            <jsp:param name="titulo" value="Campañas" />
-            <jsp:param name="subtitulo" value="Gestion y planificacion de campañas activas" />
+            <jsp:param name="titulo" value="Dashboard" />
+            <jsp:param name="subtitulo" value="Resumen general de los datos" />
         </jsp:include>
 
-        <main class="campana-container">
-            <section class="filters">
-                <div class="filter-group" id="estado">
-                    <label>Estado</label>
-                    <select id="filter-state">
-                        <option value="Todos">Todos</option>
-                        <option value="Planificada">Planificada</option>
-                        <option value="Activa">Activa</option>
-                        <option value="Finalizada">Finalizada</option>
-                        <option value="Cancelada">Cancelada</option>
-                    </select>
-                </div>
+        <main class="dashboard-container">
 
-                <div class="filter-group" id="search">
-                    <label>Buscar</label>
-                    <input type="text" id="filter-search" placeholder="Nombre de campaña...">
+            <section class="grid">
+                <div class="card">
+                    <h3>Campañas Activas</h3>
+                    <div class="card" id="stat-campaigns-value"><%= campanasActivasCount %></div>
                 </div>
-
-                <div class="filter-button">
-                    <button type="button" id="btn-filter">Filtrar</button>
+                <div class="card">
+                    <h3>Tiendas Totales</h3>
+                    <div class="card" id="stat-stores-value"><%= tiendasTotales %></div>
+                    <p class="card" id="stat-stores-subtitle">En <%= zonasTotales %> zonas geográficas</p>
+                </div>
+                <div class="card">
+                    <h3>Colaboradores</h3>
+                    <div class="card" id="stat-collaborators-value"><%= colaboradoresTotales %></div>
+                    <p class="card" id="stat-collaborators-subtitle">Entidades y organizaciones</p>
+                </div>
+                <div class="card">
+                    <h3>Coordinadores</h3>
+                    <div class="card" id="stat-coordinators-value"><%= coordinadoresTotales %></div>
+                    <p class="card" id="stat-coordinators-subtitle">Activos en campaña</p>
                 </div>
             </section>
 
-            <div class="content-wrapper">
-                <section class="list-container">
+            <section class="dashboard-middle">
 
-                    <header class="list-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                        <div class="header-titles">
-                            <h2 style="margin: 0; margin-bottom: 5px;">Listado de Campañas</h2>
-                            <p id="total-campanas">
-                                <%= listaCampanas != null ? listaCampanas.size() : 0 %> campañas registradas
-                            </p>
-                        </div>
-
+                <div class="upcoming-campaigns">
+                    <div class="header-upcoming-campaigns">
                         <div>
-                            <button type="button" class="btn-history" onclick="window.location.href='/historial'">
-                                Ver historial
-                            </button>
-                            <button type="button" class="btn btn--primary"
-                                    onclick="window.location.href='/campanas/nueva'">
-                                Añadir campaña
-                            </button>
+                            <h2>Próximas Campañas</h2>
+                            <p>Campañas programadas</p>
                         </div>
-                    </header>
+                        <button class="btn-view-all" onclick="window.location.href='/campanas'">Ver todas</button>
+                    </div>
 
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Campaña</th>
-                            <th>Fecha de Inicio</th>
-                            <th>Fecha de Fin</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody id="table-campanas">
+                    <div class="campaign-container" id="campaign-container">
                         <%
-                            if (listaCampanas != null && !listaCampanas.isEmpty()) {
-                                for (Campana c : listaCampanas) {
+                            if (proximasCampanas != null && !proximasCampanas.isEmpty()) {
+                                for (Campana campana : proximasCampanas) {
+                                    String fechaInicioStr = (campana.getFechaInicio() != null) ? campana.getFechaInicio().toString() : "Sin fecha";
+                                    String fechaFinStr = (campana.getFechaFin() != null) ? campana.getFechaFin().toString() : "Sin fecha";
                         %>
-                        <tr>
-                            <td><strong><%= c.getNombreCampana() %></strong></td>
-                            <td><%= c.getFechaInicio() != null ? c.getFechaInicio() : "-" %></td>
-                            <td><%= c.getFechaFin() != null ? c.getFechaFin() : "-" %></td>
-                            <td>
-            <span class="badge <%= "Activa".equalsIgnoreCase(c.getEstado()) ? "badge--success" : "badge--secondary" %>">
-                <%= c.getEstado() != null ? c.getEstado() : "Sin estado" %>
-            </span>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 5px; align-items: center;">
-                                    <button type="button" class="btn-action turnos"
-                                            onclick="window.location.href='/campanas/turnos?id=<%= c.getIdCampana() %>'"
-                                            style="padding: 2px 8px; font-size: 0.8em; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                        Ver turnos
-                                    </button>
-
-                                    <button class="btn-action edit" onclick="window.location.href='/campanas/editar?id=<%= c.getIdCampana() %>'">✏️</button>
-                                    <button class="btn-action delete" onclick="document.getElementById('overlay-delete').style.display='flex'">🗑️</button>
+                        <div class="campaign-item">
+                            <div class="campaign-info">
+                                <h4><%= campana.getNombreCampana() %></h4>
+                                <span><%= fechaInicioStr %> - <%= fechaFinStr %></span>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="stat">
+                                    <strong><%= campana.getEstado() %></strong>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                         <%
                             }
                         } else {
                         %>
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #9ca3af; padding: 20px;">
-                                No hay ninguna campaña registrada actualmente.
-                            </td>
-                        </tr>
-                        <% } %>
-                        </tbody>
-                    </table>
-                </section>
+                        <p>No hay campañas próximas.</p>
+                        <%
+                            }
+                        %>
+                    </div>
+                </div>
 
-                <aside class="detail-panel" id="detail-panel">
-                    <div class="detail-content">
-                        <include-html src="../html/DetalleCampana.html"></include-html>
-                        <include-html src="../html/EditarCampana.html"></include-html>
+                <div class="zone-coverage panel">
+                    <div class="panel-header">
+                        <h2>Cobertura por Zona</h2>
+                        <p>Número de tiendas por zona</p>
                     </div>
-                    <div class="detail-actions-sticky" id="detail-actions-campaign" style="display: none;">
-                        <button type="button" id="btn-edit-campaign" class="btn-ficha btn-editar">
-                            Editar Campaña
-                        </button>
-                        <button type="button" id="btn-delete-campaign" class="btn-ficha btn-eliminar">
-                            Eliminar
-                        </button>
+                    <div class="shops-list" id="shops-list">
+                        <%
+                            if (coberturasZona != null && !coberturasZona.isEmpty()) {
+                                for (CoberturaZonaDTO cob : coberturasZona) {
+                        %>
+                        <div class="shops-item">
+                            <div class="shop-labels">
+                                <span><%= cob.getNombreZona() %></span>
+                                <span><%= cob.getTiendas() %> tiendas</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <!-- Usamos data-target-width para que JS sepa hasta dónde animar -->
+                                <div class="progress-bar" data-target-width="<%= cob.getPorcentaje() %>%" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <%
+                            }
+                        } else {
+                        %>
+                        <p>No hay datos de cobertura.</p>
+                        <%
+                            }
+                        %>
                     </div>
-                    <div class="detail-actions-sticky" id="edit-actions-campaign" style="display: none;">
-                        <button type="button" id="btn-save-changes-campaign" class="btn-ficha btn-guardar">
-                            Guardar Cambios
-                        </button>
-                        <button type="button" id="btn-cancel-edit-campaign" class="btn-ficha btn-cancel-edit">
-                            Cancelar
-                        </button>
-                    </div>
-                </aside>
-            </div>
+                </div>
+
+            </section>
+
         </main>
     </div>
 </div>
 
-<div class="overlay" id="overlay-delete" style="display:none;">
-    <div class="popup" id="popup-delete">
-        <h3>¿Eliminar Campaña?</h3>
-        <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar esta campaña de la base de datos?</p>
-        <div>
-            <form action="" onsubmit="return false;">
-                <button class="btn btn--delete" id="btn-confirm-delete">Eliminar</button>
-                <button class="btn btn--cancel" id="btn-cancel-delete" onclick="document.getElementById('overlay-delete').style.display='none'">Cancelar</button>
-            </form>
-        </div>
-    </div>
-</div>
+<script>
+    <!-- Script generado por ia para añadir una animación en la cobertura por zona al iniciar la página -->
+    document.addEventListener("DOMContentLoaded", function () {
+        const barras = document.querySelectorAll('.progress-bar');
 
-<div class="overlay" id="overlay-success-campaign" style="display:none;">
-    <div class="popup" id="popup-success-campaign">
-        <h3>¡Guardado con éxito!</h3>
-        <p>La campaña y sus cadenas asociadas se han actualizado correctamente.</p>
-        <div>
-            <form action="" onsubmit="return false;">
-                <button type="button" class="btn btn--primary" id="btn-accept-edit-campaign" onclick="document.getElementById('overlay-success-campaign').style.display='none'">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>
+        barras.forEach(function(barra, indice) {
+            const anchoObjetivo = barra.getAttribute('data-target-width');
 
-<div class="overlay" id="overlay-error-campaign" style="display:none;">
-    <div class="popup" id="popup-error-campaign">
-        <h3>Ha ocurrido un error</h3>
-        <p id="error-text-popup-campaign">No se han podido guardar los cambios en el servidor.</p>
-        <div>
-            <form action="" onsubmit="return false;">
-                <button type="button" class="btn btn--primary" id="btn-accept-error-campaign" onclick="document.getElementById('overlay-error-campaign').style.display='none'">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>
+            // Retardo escalonado (100ms inicial + 80ms por cada barra extra)
+            setTimeout(function () {
+                barra.style.width = anchoObjetivo;
+            }, 100 + (indice * 80));
+        });
+    });
+</script>
+
 </body>
 </html>
 </file>
@@ -8678,6 +9369,67 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
 </html>
 </file>
 
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/EstablecimientoRepository.java">
+package es.uma.tesaw.proyecto_bancosol.dao;
+
+import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface EstablecimientoRepository extends JpaRepository<Establecimiento, Integer>{
+
+    @Query("SELECT z.nombreZona, COUNT(e) FROM Establecimiento e JOIN e.direccion d JOIN d.cp cp JOIN cp.division div JOIN div.zona z " +
+            "GROUP BY z.nombreZona ORDER BY COUNT(e) DESC")
+    List<Object[]> countEstablecimientosPorZona();
+
+    @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana")
+    List<Establecimiento> findByCampanaId(@Param("idCampana") String idCampana);
+
+    @Query("SELECT e FROM Establecimiento e JOIN e.cadena c, Campana camp " +
+            "WHERE c MEMBER OF camp.cadenas AND camp.idCampana = :idCampana " +
+            "AND (:nombreCadena IS NULL OR :nombreCadena = '' OR LOWER(c.nombreCadena) LIKE LOWER(CONCAT('%', :nombreCadena, '%'))) " +
+            "AND (:idEstablecimiento IS NULL OR e.idEstablecimiento = :idEstablecimiento)")
+    List<Establecimiento> buscarEstablecimientosFiltrados(
+            @Param("idCampana") String idCampana,
+            @Param("nombreCadena") String nombreCadena,
+            @Param("idEstablecimiento") Integer idEstablecimiento
+    );
+
+    @Query("SELECT COALESCE(MAX(e.idEstablecimiento), 0) FROM Establecimiento e")
+    Integer findMaxId();
+
+    @Query("SELECT DISTINCT e FROM Establecimiento e " +
+            "LEFT JOIN e.direccion d " +
+            "LEFT JOIN d.cp cp " +
+            "LEFT JOIN cp.division div " +
+            "LEFT JOIN div.zona z " +
+            "LEFT JOIN e.cadena c " +
+            "LEFT JOIN c.campanas camp " +
+            "WHERE " +
+            "(:idCadena IS NULL OR :idCadena = '' OR c.idCadena = :idCadena) AND " +
+            "(:nombre IS NULL OR :nombre = '' OR LOWER(e.nombreResena) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
+            "(:idCampana IS NULL OR :idCampana = '' OR camp.idCampana = :idCampana) AND " +
+            "(:tipoVia IS NULL OR :tipoVia = '' OR d.tipoVia = :tipoVia) AND " +
+            "(:nombreVia IS NULL OR :nombreVia = '' OR LOWER(d.nombreVia) LIKE LOWER(CONCAT('%', :nombreVia, '%'))) AND " +
+            "(:codigo IS NULL OR :codigo = '' OR cp.codigo = :codigo) AND " +
+            "(:localidad IS NULL OR :localidad = '' OR LOWER(div.nombreDivision) LIKE LOWER(CONCAT('%', :localidad, '%'))) AND " +
+            "(:idZona IS NULL OR z.idZona = :idZona)")
+    List<Establecimiento> findAllFiltrados(
+            @Param("idCadena") String idCadena,
+            @Param("nombre") String nombre,
+            @Param("idCampana") String idCampana,
+            @Param("tipoVia") String tipoVia,
+            @Param("nombreVia") String nombreVia,
+            @Param("codigo") String codigo,
+            @Param("localidad") String localidad,
+            @Param("idZona") Integer idZona
+    );
+}
+</file>
+
 <file path="src/main/java/es/uma/tesaw/proyecto_bancosol/dao/VistaVoluntariosRepository.java">
 package es.uma.tesaw.proyecto_bancosol.dao;
 
@@ -8692,6 +9444,186 @@ public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntari
 
 
 }
+</file>
+
+<file path="src/main/webapp/WEB-INF/view/campanas.jsp">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%
+    List<CampanaDTO> listaCampanas = (List<CampanaDTO>) request.getAttribute("campanas");
+    CampanaDTO campanaSeleccionada = (CampanaDTO) request.getAttribute("campanaSeleccionada");
+    String modoPanel = (String) request.getAttribute("modoPanel");
+    String estadoFiltro = (String) request.getAttribute("estadoFiltro");
+    String busquedaFiltro = (String) request.getAttribute("busquedaFiltro");
+
+    if (modoPanel == null) modoPanel = "ninguno";
+    if (estadoFiltro == null) estadoFiltro = "Todos";
+    if (busquedaFiltro == null) busquedaFiltro = "";
+%>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista de campañas</title>
+
+    <link rel="stylesheet" href="/css/Common.css">
+    <link rel="stylesheet" href="/css/Campana.css">
+    <link rel="stylesheet" href="/css/Sidebar.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/DetalleColaborador.css">
+    <link rel="stylesheet" href="/css/EditarAnadirColaborador.css">
+    <link rel="stylesheet" href="/css/EditarCampana.css">
+</head>
+
+<body>
+<div class="main-layout">
+    <jsp:include page="sidebar.jsp" />
+
+    <div class="right-content">
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Campañas" />
+            <jsp:param name="subtitulo" value="Gestión y planificación de campañas activas" />
+        </jsp:include>
+
+        <main>
+            <!-- Formulario GET para los filtros -->
+            <form action="/campanas" method="GET" class="filter-form">
+                <section class="filters">
+                    <div class="filter-group">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="Todos" <%= "Todos".equals(estadoFiltro) ? "selected" : "" %>>Todos</option>
+                            <option value="planificada" <%= "planificada".equals(estadoFiltro) ? "selected" : "" %>>Planificada</option>
+                            <option value="activa" <%= "activa".equals(estadoFiltro) ? "selected" : "" %>>Activa</option>
+                            <option value="finalizada" <%= "finalizada".equals(estadoFiltro) ? "selected" : "" %>>Finalizada</option>
+                            <option value="cancelada" <%= "cancelada".equals(estadoFiltro) ? "selected" : "" %>>Cancelada</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Buscar</label>
+                        <input type="text" name="busqueda" value="<%= busquedaFiltro %>" placeholder="Nombre de campaña...">
+                    </div>
+
+                    <div class="filter-button">
+                        <button type="submit" class="btn btn--primary">Filtrar</button>
+                    </div>
+                </section>
+            </form>
+
+            <div class="content-wrapper">
+                <section class="list-container">
+                    <header class="list-header">
+                        <div class="header-titles">
+                            <h2>Listado de Campañas</h2>
+                            <p id="total-campanas">
+                                <%= listaCampanas != null ? listaCampanas.size() : 0 %> campañas encontradas
+                            </p>
+                        </div>
+                        <div class="btn-history-add">
+                            <button type="button" class="btn btn--primary" onclick="window.location.href='/historial'">
+                                Ver historial
+                            </button>
+                            <button type="button" class="btn btn--primary" onclick="window.location.href='/campanas?accion=nuevo'">
+                                Añadir campaña
+                            </button>
+                        </div>
+                    </header>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Campaña</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <%
+                                if (listaCampanas != null && !listaCampanas.isEmpty()) {
+                                    for (CampanaDTO c : listaCampanas) {
+                                        boolean isSelected = campanaSeleccionada != null && c.getIdCampana().equals(campanaSeleccionada.getIdCampana());
+                            %>
+                            <tr style="<%= isSelected ? "background-color: #f5f0ff;" : "" %>">
+                                <td>
+                                    <a href="/campanas?id=<%= c.getIdCampana() %>&estado=<%= estadoFiltro %>&busqueda=<%= busquedaFiltro %>" style="color: inherit; text-decoration: none; font-weight: bold;">
+                                        <%= c.getNombreCampana() %>
+                                    </a>
+                                </td>
+                                <td><%= c.getFechaInicio() != null ? c.getFechaInicio() : "-" %></td>
+                                <td><%= c.getFechaFin() != null ? c.getFechaFin() : "-" %></td>
+                                <td>
+                                    <span class="badge <%= "Activa".equalsIgnoreCase(c.getEstado()) ? "badge--success" : "badge--secondary" %>">
+                                        <%= c.getEstado() != null ? c.getEstado() : "Sin estado" %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn--cancel" onclick="window.location.href='/campanas/turnos?id=<%= c.getIdCampana() %>'">
+                                        Asignar turnos
+                                    </button>
+                                </td>
+                            </tr>
+                            <%
+                                }
+                            } else {
+                            %>
+                            <tr>
+                                <td colspan="5">
+                                    No hay ninguna campaña que coincida con los filtros.
+                                </td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <aside class="detail-panel">
+                    <div class="detail-content">
+                        <% if ("detalle".equals(modoPanel) && campanaSeleccionada != null) { %>
+                        <jsp:include page="detalleCampana.jsp" />
+                        <% } else if (("editar".equals(modoPanel) && campanaSeleccionada != null) || "anadir".equals(modoPanel)) { %>
+                        <jsp:include page="editarCampana.jsp" />
+                        <% } else { %>
+                        <div class="select-campain">Selecciona una campaña para ver sus detalles.</div>
+                        <% } %>
+                    </div>
+
+                    <% if ("detalle".equals(modoPanel) && campanaSeleccionada != null) { %>
+                    <div class="detail-actions-sticky">
+                        <button type="button" class="btn btn--primary" onclick="window.location.href='/campanas?id=<%= campanaSeleccionada.getIdCampana() %>&accion=editar'">
+                            Editar Campaña
+                        </button>
+                        <form action="/campanas/eliminar" method="POST" style="display: contents;">
+                            <input type="hidden" name="id" value="<%= campanaSeleccionada.getIdCampana() %>">
+                            <button type="submit" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta campaña de forma permanente?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </div>
+                    <% } else if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) { %>
+                    <div class="detail-actions-sticky">
+                        <button type="submit" form="form-campana" class="btn btn--primary">
+                            Guardar Cambios
+                        </button>
+                        <button type="button" class="btn btn--cancel" onclick="window.location.href='/campanas<%= campanaSeleccionada != null ? "?id=" + campanaSeleccionada.getIdCampana() : "" %>'">
+                            Cancelar
+                        </button>
+                    </div>
+                    <% } %>
+                </aside>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
 </file>
 
 <file path="src/main/webapp/WEB-INF/view/voluntarios.jsp">
@@ -8862,10 +9794,7 @@ IA: 20%
 
 package es.uma.tesaw.proyecto_bancosol.service;
 
-import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
@@ -8892,6 +9821,7 @@ public class CampanaService {
     private final VoluntarioRepository voluntarioRepository;
     private final EntityManager entityManager;
     private final CampanaMapper campanaMapper;
+    private final CadenaRepository cadenaRepository;
 
     public List<Campana> listarCampanas() {
         return campanaRepository.findAll();
@@ -8950,6 +9880,69 @@ public class CampanaService {
                 listaNuevasAsignaciones.add(turno);
             });
         }
+    }
+
+    // Filtrar para el listado
+    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
+        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
+        String busquedaFinal = (busqueda == null) ? "" : busqueda;
+
+        List<Campana> lista = campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
+        return campanaMapper.toDTOList(lista);
+    }
+
+    // Buscar una específica
+    public CampanaDTO buscarCampana(String id) {
+        return campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(null);
+    }
+
+    // Guardar (Crear o Actualizar)
+    @Transactional
+    public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
+        Campana campana;
+        if (idCampana == null || idCampana.isEmpty()) {
+            campana = new Campana();
+            // Generar ID básico (por ejemplo "VERANO_2024")
+            campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
+        } else {
+            campana = campanaRepository.findById(idCampana).orElse(new Campana());
+        }
+
+        campana.setNombreCampana(nombre);
+        campana.setFechaInicio(inicio);
+        campana.setFechaFin(fin);
+        campana.setEstado(estado);
+        campanaRepository.save(campana);
+
+        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
+        if (cadenasIds != null) {
+            List<Cadena> todasLasCadenas = cadenaRepository.findAll();
+            for (Cadena c : todasLasCadenas) {
+                if (cadenasIds.contains(c.getIdCadena())) {
+                    if (!c.getCampanas().contains(campana)) {
+                        c.getCampanas().add(campana);
+                    }
+                } else {
+                    c.getCampanas().remove(campana);
+                }
+            }
+            cadenaRepository.saveAll(todasLasCadenas);
+        }
+
+        return campana.getIdCampana();
+    }
+
+    // Eliminar
+    @Transactional
+    public void borrarCampana(String idCampana) {
+        campanaRepository.findById(idCampana).ifPresent(campana -> {
+            // Desvincular de cadenas antes de borrar
+            for (Cadena c : campana.getCadenas()) {
+                c.getCampanas().remove(campana);
+            }
+            cadenaRepository.saveAll(campana.getCadenas());
+            campanaRepository.delete(campana);
+        });
     }
 }
 </file>
@@ -9081,153 +10074,6 @@ public class VoluntariosService {
         }
     }
 
-}
-</file>
-
-<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CampanaController.java">
-package es.uma.tesaw.proyecto_bancosol.controller;
-
-import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
-import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
-import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
-import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
-import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
-import es.uma.tesaw.proyecto_bancosol.service.HistorialService;
-import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-@Controller
-@AllArgsConstructor
-public class CampanaController {
-
-    private final CampanaService campanaService;
-    private final HistorialService historialService;
-    private final EstablecimientoService establecimientoService;
-    private final VoluntariosService voluntariosService;
-
-    private final CampanaRepository campanaRepository;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
-
-    private static final Map<String, String> DIAS_ES = Map.of(
-            "MONDAY",    "lunes",
-            "TUESDAY",   "martes",
-            "WEDNESDAY", "miercoles",
-            "THURSDAY",  "jueves",
-            "FRIDAY",    "viernes",
-            "SATURDAY",  "sabado"
-    );
-
-    private boolean sinPermiso(Usuario user) {
-        return user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2);
-    }
-
-    @GetMapping("/campanas")
-    public String verCampanas(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
-        if (sinPermiso(user)) return "redirect:/dashboard";
-
-        model.addAttribute("campanas", campanaService.listarCampanas());
-        return "campanas";
-    }
-
-    @GetMapping("/historial")
-    public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
-        if (sinPermiso(user)) return "redirect:/dashboard";
-
-        model.addAttribute("logs", historialService.listarHistorial());
-        return "historial";
-    }
-
-    @GetMapping("/campanas/turnos")
-    public String verTurnosCampana(@RequestParam("id") String idCampana,
-                                   @RequestParam(value = "cadena", required = false) String nombreCadena,
-                                   @RequestParam(value = "idTienda", required = false) String idTiendaStr,
-                                   @SessionAttribute(name = "user", required = false) Usuario user,
-                                   Model model) {
-
-        if (sinPermiso(user)) return "redirect:/dashboard";
-
-        model.addAttribute("idCampana", idCampana);
-        model.addAttribute("cadenaSeleccionada", nombreCadena);
-        model.addAttribute("idTiendaBuscado", idTiendaStr);
-
-        Integer idTienda = null;
-        if (idTiendaStr != null && !idTiendaStr.isBlank()) {
-            try {
-                idTienda = Integer.parseInt(idTiendaStr.trim());
-            } catch (NumberFormatException e) {
-                idTienda = -1;
-            }
-        }
-
-        model.addAttribute("establecimientos",
-                establecimientoService.buscarEstablecimientosPorCampanaConFiltros(idCampana, nombreCadena, idTienda));
-
-        return "listadoCampanas";
-    }
-
-    @GetMapping("/campanas/asignacion")
-    public String irAAsignacionTurnos(@RequestParam("idCampana") String idCampana,
-                                      @RequestParam("idTienda") String idTienda,
-                                      @SessionAttribute(name = "user", required = false) Usuario user,
-                                      Model model) {
-
-        if (sinPermiso(user)) return "redirect:/dashboard";
-
-        model.addAttribute("idCampana", idCampana);
-        model.addAttribute("idTienda", idTienda);
-        model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
-        model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
-
-        Map<String, String> asignacionesGuardadas = new HashMap<>();
-
-        campanaRepository.findById(idCampana).ifPresent(campana -> {
-            establecimientoRepository.findById(Integer.parseInt(idTienda)).ifPresent(tienda -> {
-
-                List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
-
-                for (AsignacionTurnoColaborador t : turnos) {
-                    String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
-                    if (diaEs == null) continue;
-
-                    String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
-
-                    if (t.getVoluntario() != null) {
-                        asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
-                    }
-                }
-            });
-        });
-
-        model.addAttribute("asignaciones", asignacionesGuardadas);
-        return "AsignacionTurnos";
-    }
-
-    @PostMapping("/campanas/turnos/guardar")
-    public String guardarTurnos(HttpServletRequest request,
-                                @RequestParam("idCampana") String idCampana,
-                                @RequestParam("idTienda") String idTienda,
-                                @SessionAttribute(name = "user", required = false) Usuario user) {
-
-        if (sinPermiso(user)) return "redirect:/dashboard";
-
-        campanaService.guardarTurnos(idCampana, idTienda, request);
-
-        return "redirect:/campanas/asignacion?idCampana=" + idCampana + "&idTienda=" + idTienda;
-    }
 }
 </file>
 
@@ -9365,6 +10211,234 @@ public class VoluntariosController {
         }
 
         return "redirect:/voluntarios";
+    }
+}
+</file>
+
+<file path="src/main/java/es/uma/tesaw/proyecto_bancosol/controller/CampanaController.java">
+package es.uma.tesaw.proyecto_bancosol.controller;
+
+import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
+import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
+import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
+import es.uma.tesaw.proyecto_bancosol.service.HistorialService;
+import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@AllArgsConstructor
+public class CampanaController {
+
+    private final CampanaService campanaService;
+    private final CadenaService cadenaService; // Necesario para listar cadenas al editar/crear
+    private final HistorialService historialService;
+    private final EstablecimientoService establecimientoService;
+    private final VoluntariosService voluntariosService;
+
+    private final CampanaRepository campanaRepository;
+    private final EstablecimientoRepository establecimientoRepository;
+    private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
+
+    private static final Map<String, String> DIAS_ES = Map.of(
+            "MONDAY",    "lunes",
+            "TUESDAY",   "martes",
+            "WEDNESDAY", "miercoles",
+            "THURSDAY",  "jueves",
+            "FRIDAY",    "viernes",
+            "SATURDAY",  "sabado"
+    );
+
+    private boolean sinPermiso(Usuario user) {
+        return user == null || (user.getRol().getIdRol() != 1 && user.getRol().getIdRol() != 2);
+    }
+
+    // ==========================================
+    // GESTIÓN DE CAMPAÑAS (CRUD Y FILTROS)
+    // ==========================================
+
+    @GetMapping("/campanas")
+    public String verCampanas(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false, defaultValue = "Todos") String estado,
+            @RequestParam(required = false, defaultValue = "") String busqueda,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String accion,
+            Model model) {
+
+        if (sinPermiso(user)) return "redirect:/dashboard";
+
+        // 1. Filtrado de campañas (Añadiremos este método en el Service)
+        List<CampanaDTO> campanas = campanaService.listarCampanasDTO(estado, busqueda);
+
+        // 2. Lógica del modoPanel (Igual que en Colaboradores)
+        String modoPanel = "ninguno";
+        CampanaDTO campanaSeleccionada = null;
+
+        if (id != null && !id.isEmpty()) {
+            campanaSeleccionada = campanaService.buscarCampana(id);
+            if (campanaSeleccionada != null) {
+                if ("editar".equals(accion)) {
+                    modoPanel = "editar";
+                } else {
+                    modoPanel = "detalle";
+                }
+            }
+        } else if ("nuevo".equals(accion)) {
+            modoPanel = "anadir";
+        }
+
+        // 3. Pasamos los datos a la vista
+        model.addAttribute("campanas", campanas);
+        model.addAttribute("campanaSeleccionada", campanaSeleccionada);
+        model.addAttribute("modoPanel", modoPanel);
+        model.addAttribute("estadoFiltro", estado);
+        model.addAttribute("busquedaFiltro", busqueda);
+
+        // Si vamos a crear o editar, necesitamos la lista de cadenas para poder asignarlas
+        if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) {
+            model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+        }
+
+        return "campanas"; // Llama a campanas.jsp
+    }
+
+    @PostMapping("/campanas/guardar")
+    public String guardarCampana(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam(required = false) String idCampana,
+            @RequestParam String nombreCampana,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam String estado,
+            @RequestParam(required = false) List<String> cadenasIds) {
+
+        if (sinPermiso(user)) return "redirect:/";
+
+        // Añadiremos este método en el Service
+        String idGuardado = campanaService.guardarCampana(idCampana, nombreCampana, fechaInicio, fechaFin, estado, cadenasIds);
+
+        // Redirigimos a la vista de detalle de la campaña guardada
+        return "redirect:/campanas?id=" + idGuardado;
+    }
+
+    @PostMapping("/campanas/eliminar")
+    public String eliminarCampana(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("id") String idCampana) {
+
+        if (sinPermiso(user)) return "redirect:/";
+
+        campanaService.borrarCampana(idCampana);
+        return "redirect:/campanas";
+    }
+
+    // ==========================================
+    // HISTORIAL Y ASIGNACIÓN DE TURNOS (Intacto)
+    // ==========================================
+
+    @GetMapping("/historial")
+    public String verHistorial(@SessionAttribute(name = "user", required = false) Usuario user, Model model) {
+        if (sinPermiso(user)) return "redirect:/dashboard";
+        model.addAttribute("logs", historialService.listarHistorial());
+        return "historial";
+    }
+
+    @GetMapping("/campanas/turnos")
+    public String verTurnosCampana(@RequestParam("id") String idCampana,
+                                   @RequestParam(value = "cadena", required = false) String nombreCadena,
+                                   @RequestParam(value = "idTienda", required = false) String idTiendaStr,
+                                   @SessionAttribute(name = "user", required = false) Usuario user,
+                                   Model model) {
+
+        if (sinPermiso(user)) return "redirect:/dashboard";
+
+        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("cadenaSeleccionada", nombreCadena);
+        model.addAttribute("idTiendaBuscado", idTiendaStr);
+
+        Integer idTienda = null;
+        if (idTiendaStr != null && !idTiendaStr.isBlank()) {
+            try {
+                idTienda = Integer.parseInt(idTiendaStr.trim());
+            } catch (NumberFormatException e) {
+                idTienda = -1;
+            }
+        }
+
+        model.addAttribute("establecimientos",
+                establecimientoService.buscarEstablecimientosPorCampanaConFiltros(idCampana, nombreCadena, idTienda));
+
+        return "listadoCampanas";
+    }
+
+    @GetMapping("/campanas/asignacion")
+    public String irAAsignacionTurnos(@RequestParam("idCampana") String idCampana,
+                                      @RequestParam("idTienda") String idTienda,
+                                      @SessionAttribute(name = "user", required = false) Usuario user,
+                                      Model model) {
+
+        if (sinPermiso(user)) return "redirect:/dashboard";
+
+        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("idTienda", idTienda);
+        model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
+        model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
+
+        Map<String, String> asignacionesGuardadas = new HashMap<>();
+
+        campanaRepository.findById(idCampana).ifPresent(campana -> {
+            establecimientoRepository.findById(Integer.parseInt(idTienda)).ifPresent(tienda -> {
+
+                List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
+
+                for (AsignacionTurnoColaborador t : turnos) {
+                    String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
+                    if (diaEs == null) continue;
+
+                    String turno = (t.getHoraInicio().getHour() < 14) ? "manana" : "tarde";
+
+                    if (t.getVoluntario() != null) {
+                        asignacionesGuardadas.put("asignacion_" + turno + "_" + diaEs, String.valueOf(t.getVoluntario().getIdVoluntario()));
+                    }
+                }
+            });
+        });
+
+        model.addAttribute("asignaciones", asignacionesGuardadas);
+        return "AsignacionTurnos";
+    }
+
+    @PostMapping("/campanas/turnos/guardar")
+    public String guardarTurnos(HttpServletRequest request,
+                                @RequestParam("idCampana") String idCampana,
+                                @RequestParam("idTienda") String idTienda,
+                                @SessionAttribute(name = "user", required = false) Usuario user) {
+
+        if (sinPermiso(user)) return "redirect:/dashboard";
+
+        campanaService.guardarTurnos(idCampana, idTienda, request);
+
+        return "redirect:/campanas/asignacion?idCampana=" + idCampana + "&idTienda=" + idTienda;
     }
 }
 </file>

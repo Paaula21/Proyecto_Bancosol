@@ -2,7 +2,9 @@ package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
 import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
+import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.mapper.UsuarioMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional(readOnly = true)
     public List<Usuario> listarCoordinadores() {
@@ -45,5 +48,14 @@ public class UsuarioService {
         // 4. Guardar la nueva contraseña
         usuario.setContrasenia(dto.getNueva());
         this.usuarioRepository.save(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioDTO autenticar(String username, String password) {
+        Usuario usuario = this.usuarioRepository.autenticar(username, password);
+        if (usuario == null) {
+            return null;
+        }
+        return usuarioMapper.toDTO(usuario);
     }
 }
