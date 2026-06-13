@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
-<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Campana" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     Integer campanasActivasCount = (Integer) request.getAttribute("campanasActivasCount");
@@ -8,8 +9,9 @@
     Long zonasTotales = (Long) request.getAttribute("zonasTotales");
     Long colaboradoresTotales = (Long) request.getAttribute("colaboradoresTotales");
     Integer coordinadoresTotales = (Integer) request.getAttribute("coordinadoresTotales");
-    List<Campana> proximasCampanas = (List<Campana>) request.getAttribute("proximasCampanas");
+    List<CampanaDTO> proximasCampanas = (List<CampanaDTO>) request.getAttribute("proximasCampanas");
     List<CoberturaZonaDTO> coberturasZona = (List<CoberturaZonaDTO>) request.getAttribute("coberturasZona");
+    UsuarioDTO user = (UsuarioDTO) session.getAttribute("user");
 %>
 
 <!DOCTYPE html>
@@ -65,13 +67,15 @@
                             <h2>Próximas Campañas</h2>
                             <p>Campañas programadas</p>
                         </div>
+                        <% if (user.getIdRol() == 1) { %>
                         <button class="btn-view-all" onclick="window.location.href='/campanas'">Ver todas</button>
+                        <% } %>
                     </div>
 
                     <div class="campaign-container" id="campaign-container">
                         <%
                             if (proximasCampanas != null && !proximasCampanas.isEmpty()) {
-                                for (Campana campana : proximasCampanas) {
+                                for (CampanaDTO campana : proximasCampanas) {
                                     String fechaInicioStr = (campana.getFechaInicio() != null) ? campana.getFechaInicio().toString() : "Sin fecha";
                                     String fechaFinStr = (campana.getFechaFin() != null) ? campana.getFechaFin().toString() : "Sin fecha";
                         %>

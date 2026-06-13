@@ -27,6 +27,7 @@ public class CampanaService {
     private final VoluntarioRepository voluntarioRepository;
     private final CadenaRepository cadenaRepository;
     private final CampanaMapper campanaMapper;
+    private final NotificacionService notificacionService;
 
     private static final Map<String, String> DIAS_ES = Map.of(
             "MONDAY",    "lunes",
@@ -94,9 +95,12 @@ public class CampanaService {
     @Transactional
     public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
         Campana campana;
+        boolean esNueva = false;
+
         if (idCampana == null || idCampana.isEmpty()) {
             campana = new Campana();
             campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
+            esNueva = true;
         } else {
             campana = this.campanaRepository.findById(idCampana).orElse(new Campana());
         }
@@ -120,6 +124,15 @@ public class CampanaService {
             }
         }
         this.cadenaRepository.saveAll(todasLasCadenas);
+
+        if (esNueva) {
+            String mensaje = String.format("Se ha programado una nueva campaña '%s' que estará activa desde el %s hasta el %s. Por favor, revise la asignación de turnos.",
+                    campana.getNombreCampana(),
+                    campana.getFechaInicio() != null ? campana.getFechaInicio().toString() : "fecha sin asignar",
+                    campana.getFechaFin() != null ? campana.getFechaFin().toString() : "fecha sin asignar");
+
+            notificacionService.notificarACoordinadores("Nueva campaña: " + campana.getNombreCampana(), mensaje);
+        }
 
         return campana.getIdCampana();
     }
@@ -195,5 +208,16 @@ public class CampanaService {
             // 3. Borramos la entidad
             this.campanaRepository.delete(campana);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public int contarCampanasActivas() {
+        return this.campanaRepository.findByEstado("Activa").size();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampanaDTO> listarProximasCampanasDTO() {
+        // En tu código original hacías un findAll() para esto
+        return campanaMapper.toDTOList(this.campanaRepository.findAll());
     }
 }

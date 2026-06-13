@@ -1,0 +1,205 @@
+/* Notificaciones.css */
+
+.notificaciones-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notificacion-item {
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.notificacion-item:hover {
+    background-color: #f9fafb;
+}
+
+.notificacion-item.selected {
+    background-color: #f5f0ff;
+}
+
+.notificacion-item.unread {
+    border-left: 4px solid #420098;
+}
+
+.notif-title {
+    margin: 0 0 6px 0;
+    color: #111827;
+    font-size: 15px;
+}
+
+.notif-type {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.notif-date-container {
+    text-align: right;
+}
+
+.notif-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.notif-new-badge {
+    display: block;
+    color: #e74c3c;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+/* Panel de Detalles */
+.notif-empty-state {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.notif-detail-container {
+    padding: 24px;
+}
+
+.notif-detail-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.notif-detail-title-wrapper {
+    margin: 20px 0;
+}
+
+.notif-detail-title {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+    color: #111827;
+}
+
+.notif-detail-badge {
+    background: #420098;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.notif-card {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.notif-card h5 {
+    color: #7f8c8d;
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.notif-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+}
+
+.notif-card p.content-text {
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.notif-actions {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn-notif-delete {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-notif-delete:hover {
+    background-color: #c0392b;
+}
+
+/* Modal Popup Específico */
+.notif-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: #fff;
+    padding: 28px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 460px;
+    text-align: center;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+}
+
+.notif-popup h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    color: #111827;
+}
+
+.notif-popup p {
+    margin: 0 0 24px 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.notif-popup-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.notif-popup-actions button {
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.notif-popup-actions .btn--cancel {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+}
+
+.notif-popup-actions .btn--cancel:hover {
+    background: #f3f4f6;
+}
+
+.notif-popup-actions .btn--delete {
+    border: none;
+    background: #e74c3c;
+    color: #fff;
+}
+
+.notif-popup-actions .btn--delete:hover {
+    background: #dc2626;
+}

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%
     List<CampanaDTO> listaCampanas = (List<CampanaDTO>) request.getAttribute("campanas");
     CampanaDTO campanaSeleccionada = (CampanaDTO) request.getAttribute("campanaSeleccionada");
@@ -11,6 +12,9 @@
     if (modoPanel == null) modoPanel = "ninguno";
     if (estadoFiltro == null) estadoFiltro = "Todos";
     if (busquedaFiltro == null) busquedaFiltro = "";
+
+    // Obtenemos el rol del usuario para los permisos
+    UsuarioDTO user = (UsuarioDTO) session.getAttribute("user");
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -75,6 +79,8 @@
                                     <%= listaCampanas != null ? listaCampanas.size() : 0 %> campañas encontradas
                                 </p>
                             </div>
+
+                            <% if (user.getIdRol() == 1) { %>
                             <div class="btn-history-add">
                                 <button type="button" class="btn btn--primary" onclick="window.location.href='/historial'">
                                     Ver historial
@@ -83,6 +89,8 @@
                                     Añadir campaña
                                 </button>
                             </div>
+                            <% } %>
+
                         </div>
 
                         <div class="table-wrapper">
@@ -151,16 +159,21 @@
                         </div>
 
                         <% if ("detalle".equals(modoPanel) && campanaSeleccionada != null) { %>
+
+                        <% if (user.getIdRol() == 1) { %>
                         <div class="detail-actions-sticky">
                             <a href="/campanas?id=<%= campanaSeleccionada.getIdCampana() %>&accion=editar" class="btn btn--primary">Editar Campaña</a>
                             <form action="/campanas/eliminar" method="POST" style="display: contents;">
                                 <input type="hidden" name="id" value="<%= campanaSeleccionada.getIdCampana() %>">
-                                <button type="submit" class="btn btn--delete">
+                                <button type="submit" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta campaña de forma permanente?');">
                                     Eliminar
                                 </button>
                             </form>
                         </div>
+                        <% } %>
+
                         <% } else if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) { %>
+                        <%-- Esta pantalla de edición/creación solo la alcanzan los roles 1 y 2 de todos modos --%>
                         <div class="detail-actions-sticky">
                             <button type="submit" form="form-campana" class="btn btn--primary">
                                 Guardar Cambios

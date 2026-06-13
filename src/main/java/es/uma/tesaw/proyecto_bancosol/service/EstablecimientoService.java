@@ -5,6 +5,7 @@ Ainhoa García Rebollo: 100%
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.EstablecimientoMapper;
@@ -178,5 +179,28 @@ public class EstablecimientoService {
         if (valor == null) return null;
         String trim = valor.trim();
         return trim.isEmpty() ? null : trim;
+    }
+
+    @Transactional(readOnly = true)
+    public long contarEstablecimientos() {
+        return this.establecimientoRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CoberturaZonaDTO> obtenerCoberturaPorZona() {
+        List<Object[]> conteoPorZona = this.establecimientoRepository.countEstablecimientosPorZona();
+        List<CoberturaZonaDTO> coberturas = new ArrayList<>();
+
+        if (!conteoPorZona.isEmpty()) {
+            Long maxTiendas = (Long) conteoPorZona.get(0)[1];
+
+            for (Object[] fila : conteoPorZona) {
+                String nombreZona = (String) fila[0];
+                Long tiendas = (Long) fila[1];
+                int porcentaje = (int) Math.round((tiendas.doubleValue() / maxTiendas) * 100);
+                coberturas.add(new CoberturaZonaDTO(nombreZona, tiendas, porcentaje));
+            }
+        }
+        return coberturas;
     }
 }

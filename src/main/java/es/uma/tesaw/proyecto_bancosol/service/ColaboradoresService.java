@@ -169,4 +169,9 @@ public class ColaboradoresService {
     public Optional<ContactoColaborador> obtenerContactoPorColaborador(Colaborador colaborador) {
         return this.contactoColaboradorRepository.findByColaborador(colaborador);
     }
+
+    @Transactional(readOnly = true)
+    public long contarColaboradores() {
+        return this.colaboradorRepository.count();
+    }
 }

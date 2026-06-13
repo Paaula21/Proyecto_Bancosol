@@ -19,4 +19,9 @@ public class ZonaGeograficaService {
     public List<ZonaGeografica> obtenerTodasLasZonas() {
         return this.zonaGeograficaRepository.findAll();
     }
+
+    @Transactional(readOnly = true)
+    public long contarZonas() {
+        return this.zonaGeograficaRepository.count();
+    }
 }

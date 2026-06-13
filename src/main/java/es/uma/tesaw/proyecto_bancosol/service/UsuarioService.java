@@ -49,4 +49,9 @@ public class UsuarioService {
         }
         return usuarioMapper.toDTO(usuario);
     }
+
+    @Transactional(readOnly = true)
+    public int contarCoordinadores() {
+        return this.usuarioRepository.countByIdRol(2).size();
+    }
 }
