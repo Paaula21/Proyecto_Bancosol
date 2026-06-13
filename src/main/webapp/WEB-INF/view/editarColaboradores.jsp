@@ -130,29 +130,3 @@
 
     </form>
 </div>
-
-<div class="overlay" id="overlay-exito">
-    <div class="popup" id="popup-exito">
-        <h3>¡Guardado con éxito!</h3>
-        <p>El colaborador y sus datos de contacto se han actualizado correctamente en el sistema.</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button type="button" class="btn-add" id="btn-aceptar-edicion">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="overlay" id="overlay-error">
-    <div class="popup" id="popup-error">
-        <h3>Ha ocurrido un error</h3>
-        <p id="texto-error-popup">No se pudieron guardar los cambios relacionales en el servidor.</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button type="button" class="btn-cerrar-popup" id="btn-aceptar-error">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>

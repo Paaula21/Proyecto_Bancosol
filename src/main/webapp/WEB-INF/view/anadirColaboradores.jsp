@@ -86,29 +86,3 @@
         </div>
     </form>
 </div>
-
-<div class="overlay" id="overlay-exito-nuevo">
-    <div class="popup" id="popup-exito-nuevo">
-        <h3>¡Creado con éxito!</h3>
-        <p>El colaborador y sus datos de contacto se han creado correctamente en el sistema.</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button type="button" class="btn-add" id="btn-aceptar-exito-nuevo">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="overlay" id="overlay-error-nuevo">
-    <div class="popup" id="popup-error-nuevo">
-        <h3>Ha ocurrido un error</h3>
-        <p id="texto-error-popup-nuevo">No se pudieron crear las relaciones en el servidor.</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button type="button" class="btn-cerrar-popup" id="btn-aceptar-error-nuevo">Aceptar</button>
-            </form>
-        </div>
-    </div>
-</div>

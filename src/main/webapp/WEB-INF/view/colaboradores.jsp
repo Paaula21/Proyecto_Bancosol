@@ -165,21 +165,6 @@
         </main>
     </div>
 </div>
-
-<div class="overlay" id="overlay-eliminar">
-    <div class="popup" id="popup-eliminar">
-        <h3>¿Eliminar Colaborador?</h3>
-        <p>Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar a este colaborador de la base de
-            datos?</p>
-
-        <div class="popup-actions">
-            <form action="">
-                <button class="btn-add btn-rojo" id="btn-confirmar-eliminar">Eliminar</button>
-                <button class="btn-cerrar-popup" id="btn-cancelar-eliminar">Cancelar</button>
-            </form>
-        </div>
-    </div>
-</div>
 </body>
 
 </html>
