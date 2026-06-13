@@ -3,7 +3,7 @@
 
 <%
     Usuario usuario = (Usuario) session.getAttribute("user");
-    String currentURI = request.getRequestURI();
+    String currentURI = request.getRequestURI().toLowerCase();
 %>
 
 <head>
@@ -49,7 +49,7 @@
 
         <!-- ADMINISTRADOREs -->
         <% if (idRol == 1) { %>
-        <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
+        <li class="<%= currentURI.contains("/tiendas") || currentURI.contains("/tienda") ? "active" : "" %>">
             <a href="/tiendas">Tiendas</a>
         </li>
         <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">

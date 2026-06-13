@@ -1,6 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
+import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
@@ -26,6 +27,7 @@ public class EstablecimientoController {
 
     @GetMapping("")
     public String doInit(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) String idCadena,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String idCampana,
@@ -37,6 +39,7 @@ public class EstablecimientoController {
             @RequestParam(required = false) String coordinador,
             @RequestParam(required = false) Integer idTienda,
             Model model) {
+        if (user == null) return "redirect:/";
 
         List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
                 idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
@@ -77,7 +80,7 @@ public class EstablecimientoController {
         model.addAttribute("idZona", idZona);
         model.addAttribute("coordinador", coordinador);
 
-        return "tiendas";
+        return "Tienda";
     }
 
     protected String editarCrear(Integer idTienda, Model model) {
@@ -98,21 +101,29 @@ public class EstablecimientoController {
         model.addAttribute("localidad", "");
         model.addAttribute("idZona", null);
         model.addAttribute("coordinador", "");
-        return "tiendas";
+        return "Tienda";
     }
 
     @PostMapping("/anadir")
-    public String doAnadir(Model model) {
+    public String doAnadir(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            Model model) {
+        if (user == null) return "redirect:/";
         return editarCrear(null, model);
     }
 
     @GetMapping("/editar")
-    public String doEditar(@RequestParam("idTienda") Integer idTienda, Model model) {
+    public String doEditar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idTienda") Integer idTienda,
+            Model model) {
+        if (user == null) return "redirect:/";
         return editarCrear(idTienda, model);
     }
 
     @PostMapping("/guardar")
     public String doGuardar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
             @RequestParam(required = false) Integer idEstablecimiento,
             @RequestParam String idCadena,
             @RequestParam String nombreResena,
@@ -123,13 +134,17 @@ public class EstablecimientoController {
             @RequestParam String codigo,
             @RequestParam String localidad,
             @RequestParam Integer idZona) {
+        if (user == null) return "redirect:/";
         establecimientoService.guardarTienda(idEstablecimiento, idCadena, nombreResena,
                 lineales, tipoVia, nombreVia, numero, codigo, localidad, idZona);
         return "redirect:/tiendas";
     }
 
     @GetMapping("/borrar")
-    public String doBorrar(@RequestParam("idTienda") Integer idTienda) {
+    public String doBorrar(
+            @SessionAttribute(name = "user", required = false) Usuario user,
+            @RequestParam("idTienda") Integer idTienda) {
+        if (user == null) return "redirect:/";
         establecimientoService.borrarTienda(idTienda);
         return "redirect:/tiendas";
     }

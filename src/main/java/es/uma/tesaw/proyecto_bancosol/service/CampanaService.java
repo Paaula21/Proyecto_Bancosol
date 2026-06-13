@@ -126,19 +126,21 @@ public class CampanaService {
         campanaRepository.save(campana);
 
         // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
-        if (cadenasIds != null) {
-            List<Cadena> todasLasCadenas = cadenaRepository.findAll();
-            for (Cadena c : todasLasCadenas) {
-                if (cadenasIds.contains(c.getIdCadena())) {
-                    if (!c.getCampanas().contains(campana)) {
-                        c.getCampanas().add(campana);
-                    }
-                } else {
-                    c.getCampanas().remove(campana);
+        // Normalizar: null significa "ninguna cadena seleccionada" (importante en edición
+        // cuando el usuario desmarca todas, el navegador no envía el parámetro)
+        List<String> cadenasSeleccionadas = (cadenasIds != null) ? cadenasIds : new ArrayList<>();
+
+        List<Cadena> todasLasCadenas = cadenaRepository.findAll();
+        for (Cadena c : todasLasCadenas) {
+            if (cadenasSeleccionadas.contains(c.getIdCadena())) {
+                if (!c.getCampanas().contains(campana)) {
+                    c.getCampanas().add(campana);
                 }
+            } else {
+                c.getCampanas().remove(campana);
             }
-            cadenaRepository.saveAll(todasLasCadenas);
         }
+        cadenaRepository.saveAll(todasLasCadenas);
 
         return campana.getIdCampana();
     }
