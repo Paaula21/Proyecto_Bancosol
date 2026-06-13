@@ -5,10 +5,7 @@ IA: 20%
 
 package es.uma.tesaw.proyecto_bancosol.service;
 
-import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.CampanaRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.EstablecimientoRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;
+import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
@@ -35,6 +32,7 @@ public class CampanaService {
     private final VoluntarioRepository voluntarioRepository;
     private final EntityManager entityManager;
     private final CampanaMapper campanaMapper;
+    private final CadenaRepository cadenaRepository;
 
     public List<Campana> listarCampanas() {
         return campanaRepository.findAll();
@@ -93,5 +91,68 @@ public class CampanaService {
                 listaNuevasAsignaciones.add(turno);
             });
         }
+    }
+
+    // Filtrar para el listado
+    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
+        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
+        String busquedaFinal = (busqueda == null) ? "" : busqueda;
+
+        List<Campana> lista = campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
+        return campanaMapper.toDTOList(lista);
+    }
+
+    // Buscar una específica
+    public CampanaDTO buscarCampana(String id) {
+        return campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(null);
+    }
+
+    // Guardar (Crear o Actualizar)
+    @Transactional
+    public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
+        Campana campana;
+        if (idCampana == null || idCampana.isEmpty()) {
+            campana = new Campana();
+            // Generar ID básico (por ejemplo "VERANO_2024")
+            campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
+        } else {
+            campana = campanaRepository.findById(idCampana).orElse(new Campana());
+        }
+
+        campana.setNombreCampana(nombre);
+        campana.setFechaInicio(inicio);
+        campana.setFechaFin(fin);
+        campana.setEstado(estado);
+        campanaRepository.save(campana);
+
+        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
+        if (cadenasIds != null) {
+            List<Cadena> todasLasCadenas = cadenaRepository.findAll();
+            for (Cadena c : todasLasCadenas) {
+                if (cadenasIds.contains(c.getIdCadena())) {
+                    if (!c.getCampanas().contains(campana)) {
+                        c.getCampanas().add(campana);
+                    }
+                } else {
+                    c.getCampanas().remove(campana);
+                }
+            }
+            cadenaRepository.saveAll(todasLasCadenas);
+        }
+
+        return campana.getIdCampana();
+    }
+
+    // Eliminar
+    @Transactional
+    public void borrarCampana(String idCampana) {
+        campanaRepository.findById(idCampana).ifPresent(campana -> {
+            // Desvincular de cadenas antes de borrar
+            for (Cadena c : campana.getCadenas()) {
+                c.getCampanas().remove(campana);
+            }
+            cadenaRepository.saveAll(campana.getCadenas());
+            campanaRepository.delete(campana);
+        });
     }
 }

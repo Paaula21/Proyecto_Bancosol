@@ -135,7 +135,7 @@
 </div>
 
 <script>
-    // Mantenemos la lógica visual de la animación en JS, separada de la carga de datos
+    <!-- Script generado por ia para añadir una animación en la cobertura por zona al iniciar la página -->
     document.addEventListener("DOMContentLoaded", function () {
         const barras = document.querySelectorAll('.progress-bar');
 

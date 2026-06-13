@@ -36,4 +36,11 @@ public class LoginController {
             return "redirect:/dashboard";
         }
     }
+
+    // cerrar sesión
+    @GetMapping("/salir")
+    public String doSalir (HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
 }
