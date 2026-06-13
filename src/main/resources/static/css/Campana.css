@@ -90,12 +90,6 @@ body {
     align-items: flex-end;
 }
 
-.filter-form {
-    margin: 0;
-    padding: 0;
-    display: contents;
-}
-
 .filter-group {
     display: flex;
     flex-direction: column;
@@ -195,10 +189,6 @@ body {
     grid-template-columns: 1fr auto;
     grid-template-rows: auto auto;
     margin-bottom: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
 }
 
 .list-header h2 {
@@ -207,7 +197,6 @@ body {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
-    margin-bottom: 5px;
 }
 
 .list-header p {
@@ -216,11 +205,6 @@ body {
     margin: 4px 0 0 0;
     font-size: 0.875rem;
     color: #6b7280;
-}
-
-.btr-history-add {
-    display: flex;
-    gap: 10px;
 }
 
 .btn-add {
@@ -354,10 +338,4 @@ tbody tr.selected {
 
 .estado-vacio {
     margin-top: 50px;
-}
-
-.select-campain {
-    text-align: center;
-    padding: 40px;
-    color: #888;
 }
