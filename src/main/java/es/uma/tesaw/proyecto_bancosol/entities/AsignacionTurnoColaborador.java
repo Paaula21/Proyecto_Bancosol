@@ -24,7 +24,7 @@ public class AsignacionTurnoColaborador {
   private Establecimiento tienda;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_colaborador", nullable = false)
+  @JoinColumn(name = "id_colaborador")
   private Colaborador colaborador;
 
   @Column(nullable = false)

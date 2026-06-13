@@ -9,6 +9,5 @@ import java.util.List;
 
 public interface VistaVoluntariosRepository extends JpaRepository<VistaVoluntarios, Integer> {
 
-    List<Voluntario> findByDisponibilidadContainingIgnoreCase(@Param("disponibilidadId") Integer disponibilidadId);
 
 }

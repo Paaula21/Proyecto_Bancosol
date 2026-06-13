@@ -1,3 +1,7 @@
+/*
+Ainhoa García Rebollo: 100%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
@@ -78,10 +82,6 @@ public class EstablecimientoService {
 
     public List<EstablecimientoDTO> listarTiendas() {
         return listarTiendas(null, null, null, null, null, null, null, null, null);
-    }
-
-    public List<Establecimiento> buscarEstablecimientosPorCampana(String idCampana) {
-        return establecimientoRepository.findByCampanaId(idCampana);
     }
 
     public List<Establecimiento> buscarEstablecimientosPorCampanaConFiltros(String idCampana, String nombreCadena, Integer idTienda) {

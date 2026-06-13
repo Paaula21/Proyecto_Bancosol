@@ -1,3 +1,7 @@
+/*
+Ainhoa García Rebollo: 100%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
@@ -20,10 +24,6 @@ public class VoluntariosController {
     @GetMapping({"", "/"})
     public String doInit(
             @SessionAttribute(name = "user", required = false) Usuario user,
-            @RequestParam(required = false) String nombre_completo,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String telefono,
-            @RequestParam(required = false) String disponibilidad,
             Model model) {
 
         if (user == null) {
@@ -61,24 +61,19 @@ public class VoluntariosController {
             Model model) {
 
         if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
+            return "redirect:/";
         }
 
-        // Buscamos el voluntario (Devuelve un VistaVoluntarioDTO)
-        VistaVoluntarioDTO voluntarioActual =
-                voluntariosService.obtenerVoluntario(id).orElse(null);
+        VistaVoluntarioDTO voluntarioActual = voluntariosService.obtenerVoluntario(id).orElse(null);
 
-        // Si por algún motivo no existe, volvemos a la lista
         if (voluntarioActual == null) {
             return "redirect:/voluntarios";
         }
 
-        // Pasamos los atributos con los nombres exactos que usan tus JSPs
         model.addAttribute("voluntarioActual", voluntarioActual);
         model.addAttribute("editando", true);
 
-        // CAMBIO CLAVE: Devolvemos el nombre de tu archivo JSP de edición
-        return "EditarVoluntario"; // Si usas el mismo de registrar, pon "RegistroVoluntarios"
+        return "EditarVoluntario";
     }
 
     @GetMapping("/nuevo")
@@ -104,15 +99,6 @@ public class VoluntariosController {
 
     private void cargarDesplegablesFormulario(Model model) {
         model.addAttribute("cadenas", this.voluntariosService);
-        /*No se que tengo que poner más, Dani puso esto:
-        model.addAttribute("cadenas", this.cadenaService.listarCadenas());
-        model.addAttribute("zonas", this.zonaService.listarZonas());
-        model.addAttribute("municipios", this.municipioService.listarMunicipios());
-        model.addAttribute("localidades", this.localidadService.listarLocalidades());
-        model.addAttribute("distritos", this.distritoService.listarDistritos());
-        model.addAttribute("coordinadores", this.usuarioService.listarCoordinadores());
-        model.addAttribute("capitanes", this.usuarioService.listarCapitanes());
-         */
     }
 
     @PostMapping("/guardar")
@@ -123,10 +109,8 @@ public class VoluntariosController {
             @RequestParam(value = "telefono", required = false) String telefono,
             @RequestParam("disponibilidad") String disponibilidad) {
 
-        // 1. Guardamos en la base de datos usando tu servicio
         this.voluntariosService.guardarVoluntario(id, nombre, email, telefono, disponibilidad);
 
-        // 2. ¡CLAVE! Redirigimos al listado general mediante la URL, no el nombre del JSP
         return "redirect:/voluntarios";
     }
 
@@ -136,22 +120,16 @@ public class VoluntariosController {
                            @RequestParam("id") Integer id) {
 
         if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
+            return "redirect:/";
         }
 
         try {
             voluntariosService.eliminarVoluntarioConPersona(id);
         } catch (Exception e) {
-            // Si la BD impide el borrado, lo veremos en letras rojas en tu IDE
             System.err.println("Error al intentar borrar el voluntario con ID: " + id);
             e.printStackTrace();
         }
 
-        return "redirect:/voluntarios"; // Redirigimos limpios
-    }
-
-
-    private String emptyIfNull(String s) {
-        return s == null ? "" : s;
+        return "redirect:/voluntarios";
     }
 }

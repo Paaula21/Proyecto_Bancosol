@@ -1,3 +1,8 @@
+/*
+Ainhoa García Rebollo: 80%
+IA: 20%
+*/
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.AsignacionTurnoColaboradorRepository;
@@ -13,8 +18,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,76 +44,54 @@ public class CampanaService {
         return campanaMapper.toDTOList(campanaRepository.findAll());
     }
 
-    public List<Campana> buscarCadenasPorCampana(String idCampana) {
-        return campanaRepository.findByEstado(idCampana);
-    }
-
     @Transactional
     public void guardarTurnos(String idCampana, String idTienda, HttpServletRequest request) {
 
-        Campana campana = campanaRepository.findById(idCampana).orElseThrow(
-                () -> new IllegalArgumentException("Campaña no encontrada: " + idCampana)
-        );
-        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda)).orElseThrow(
-                () -> new IllegalArgumentException("Tienda no encontrada: " + idTienda)
-        );
+        Campana campana = campanaRepository.findById(idCampana)
+                .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
 
-        // 1. Borramos las asignaciones previas y forzamos el flush para que el DELETE
-        //    llegue a la BD ANTES de los INSERT, evitando conflictos de constraint
+        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda))
+                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idTienda));
+
         asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
         entityManager.flush();
 
-        // 2. Construimos las nuevas asignaciones en una lista y hacemos un saveAll al final
-        String[]  dias      = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
-        LocalTime iniManana = LocalTime.of(9, 0);
-        LocalTime finManana = LocalTime.of(14, 0);
-        LocalTime iniTarde  = LocalTime.of(15, 0);
-        LocalTime finTarde  = LocalTime.of(20, 0);
-        LocalDate fechaBase = campana.getFechaInicio();
-
+        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
+        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
 
         for (int i = 0; i < dias.length; i++) {
-            String    dia      = dias[i];
-            LocalDate fechaDia = fechaBase.plusDays(i);
+            String diaEs = dias[i];
+            LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
 
-            String idVolManana = request.getParameter("asignacion_manana_" + dia);
-            String idVolTarde  = request.getParameter("asignacion_tarde_"  + dia);
+            String idVolManana = request.getParameter("asignacion_manana_" + diaEs);
+            String idVolTarde = request.getParameter("asignacion_tarde_" + diaEs);
 
-            // --- Turno mañana ---
-            if (idVolManana != null && !idVolManana.isEmpty()) {
-                Voluntario vol = voluntarioRepository.findById(Integer.parseInt(idVolManana)).orElse(null);
-                if (vol != null && vol.getColaborador() != null) {
-                    AsignacionTurnoColaborador t = new AsignacionTurnoColaborador();
-                    t.setCampana(campana);
-                    t.setTienda(tienda);
-                    t.setColaborador(vol.getColaborador());
-                    t.setVoluntario(vol);
-                    t.setFecha(fechaDia);
-                    t.setHoraInicio(iniManana);
-                    t.setHoraFin(finManana);
-                    nuevasAsignaciones.add(t);
-                }
-            }
-
-            // --- Turno tarde ---
-            if (idVolTarde != null && !idVolTarde.isEmpty()) {
-                Voluntario vol = voluntarioRepository.findById(Integer.parseInt(idVolTarde)).orElse(null);
-                if (vol != null && vol.getColaborador() != null) {
-                    AsignacionTurnoColaborador t = new AsignacionTurnoColaborador();
-                    t.setCampana(campana);
-                    t.setTienda(tienda);
-                    t.setColaborador(vol.getColaborador());
-                    t.setVoluntario(vol);
-                    t.setFecha(fechaDia);
-                    t.setHoraInicio(iniTarde);
-                    t.setHoraFin(finTarde);
-                    nuevasAsignaciones.add(t);
-                }
-            }
+            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
+            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
         }
 
-        // 3. Un único saveAll con todas las filas nuevas
         asignacionTurnoRepository.saveAll(nuevasAsignaciones);
+        entityManager.flush();
+    }
+
+    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
+                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
+                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
+
+        if (idVoluntario != null && !idVoluntario.isBlank()) {
+            voluntarioRepository.findById(Integer.parseInt(idVoluntario)).ifPresent(vol -> {
+                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
+                turno.setCampana(campana);
+                turno.setTienda(tienda);
+                turno.setVoluntario(vol);
+                turno.setColaborador(null);
+                turno.setFecha(fechaDia);
+                turno.setHoraInicio(inicio);
+                turno.setHoraFin(fin);
+
+                listaNuevasAsignaciones.add(turno);
+            });
+        }
     }
 }
