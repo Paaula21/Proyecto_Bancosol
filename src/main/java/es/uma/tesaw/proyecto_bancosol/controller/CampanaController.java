@@ -50,10 +50,8 @@ public class CampanaController {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
 
-        // 1. Filtrado de campañas (Añadiremos este método en el Service)
         List<CampanaDTO> campanas = campanaService.listarCampanasDTO(estado, busqueda);
 
-        // 2. Lógica del modoPanel (Igual que en Colaboradores)
         String modoPanel = "ninguno";
         CampanaDTO campanaSeleccionada = null;
 
@@ -70,19 +68,17 @@ public class CampanaController {
             modoPanel = "anadir";
         }
 
-        // 3. Pasamos los datos a la vista
         model.addAttribute("campanas", campanas);
         model.addAttribute("campanaSeleccionada", campanaSeleccionada);
         model.addAttribute("modoPanel", modoPanel);
         model.addAttribute("estadoFiltro", estado);
         model.addAttribute("busquedaFiltro", busqueda);
 
-        // Si vamos a crear o editar, necesitamos la lista de cadenas para poder asignarlas
         if ("editar".equals(modoPanel) || "anadir".equals(modoPanel)) {
             model.addAttribute("todasCadenas", cadenaService.listarCadenas());
         }
 
-        return "campanas"; // Llama a campanas.jsp
+        return "campanas";
     }
 
     @PostMapping("/campanas/guardar")
@@ -97,10 +93,8 @@ public class CampanaController {
 
         if (sinPermiso(user)) return "redirect:/";
 
-        // Añadiremos este método en el Service
         String idGuardado = campanaService.guardarCampana(idCampana, nombreCampana, fechaInicio, fechaFin, estado, cadenasIds);
 
-        // Redirigimos a la vista de detalle de la campaña guardada
         return "redirect:/campanas?id=" + idGuardado;
     }
 
@@ -116,7 +110,7 @@ public class CampanaController {
     }
 
     // ==========================================
-    // HISTORIAL Y ASIGNACIÓN DE TURNOS (Intacto)
+    // HISTORIAL Y ASIGNACIÓN DE TURNOS
     // ==========================================
 
     @GetMapping("/historial")
@@ -167,10 +161,10 @@ public class CampanaController {
         model.addAttribute("voluntariosManana", voluntariosService.listarVoluntarios("mañana"));
         model.addAttribute("voluntariosTarde",  voluntariosService.listarVoluntarios("tarde"));
 
-
         Map<String, String> asignacionesGuardadas = campanaService.obtenerAsignaciones(idCampana, Integer.parseInt(idTienda));
 
         model.addAttribute("asignaciones", asignacionesGuardadas);
+
         return "asignacionTurnos";
     }
 
@@ -182,7 +176,6 @@ public class CampanaController {
 
         if (sinPermiso(user)) return "redirect:/dashboard";
 
-        // Le pasamos el Map al servicio en lugar de la Request
         campanaService.guardarTurnos(idCampana, idTienda, formData);
 
         return "redirect:/campanas/asignacion?idCampana=" + idCampana + "&idTienda=" + idTienda;

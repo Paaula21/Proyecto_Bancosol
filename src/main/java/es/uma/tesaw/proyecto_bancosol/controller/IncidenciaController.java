@@ -29,7 +29,7 @@ public class IncidenciaController {
         }
         model.addAttribute("campanas", campanaService.listarCampanasDTO());
         model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        return "Incidencias";
+        return "incidencias";
     }
 
     @PostMapping("/incidencias/guardar")

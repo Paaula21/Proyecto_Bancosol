@@ -1,16 +1,9 @@
-/*
-Ainhoa García Rebollo: 80%
-IA: 20%
-*/
-
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +25,8 @@ public class CampanaService {
     private final AsignacionTurnoColaboradorRepository asignacionTurnoRepository;
     private final EstablecimientoRepository establecimientoRepository;
     private final VoluntarioRepository voluntarioRepository;
-    private final EntityManager entityManager;
-    private final CampanaMapper campanaMapper;
     private final CadenaRepository cadenaRepository;
-
+    private final CampanaMapper campanaMapper;
 
     private static final Map<String, String> DIAS_ES = Map.of(
             "MONDAY",    "lunes",
@@ -46,16 +37,41 @@ public class CampanaService {
             "SATURDAY",  "sabado"
     );
 
+    // ==========================================
+    // MÉTODOS DE BÚSQUEDA Y LISTADO
+    // ==========================================
+
+    @Transactional(readOnly = true)
+    public List<CampanaDTO> listarCampanasDTO() {
+        return campanaMapper.toDTOList(this.campanaRepository.findAll());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
+        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
+        String busquedaFinal = (busqueda == null) ? "" : busqueda;
+
+        List<Campana> lista = this.campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
+        return campanaMapper.toDTOList(lista);
+    }
+
+    @Transactional(readOnly = true)
+    public CampanaDTO buscarCampana(String id) {
+        if (id == null || id.isEmpty()) {
+            return new CampanaDTO();
+        }
+        return this.campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(new CampanaDTO());
+    }
 
     @Transactional(readOnly = true)
     public Map<String, String> obtenerAsignaciones(String idCampana, Integer idTienda) {
         Map<String, String> asignacionesGuardadas = new HashMap<>();
 
-        Campana campana = campanaRepository.findById(idCampana).orElse(null);
-        Establecimiento tienda = establecimientoRepository.findById(idTienda).orElse(null);
+        Campana campana = this.campanaRepository.findById(idCampana).orElse(null);
+        Establecimiento tienda = this.establecimientoRepository.findById(idTienda).orElse(null);
 
         if (campana != null && tienda != null) {
-            List<AsignacionTurnoColaborador> turnos = asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
+            List<AsignacionTurnoColaborador> turnos = this.asignacionTurnoRepository.findByCampanaAndTienda(campana, tienda);
 
             for (AsignacionTurnoColaborador t : turnos) {
                 String diaEs = DIAS_ES.get(t.getFecha().getDayOfWeek().name());
@@ -71,104 +87,29 @@ public class CampanaService {
         return asignacionesGuardadas;
     }
 
-    public List<Campana> listarCampanas() {
-        return campanaRepository.findAll();
-    }
+    // ==========================================
+    // MÉTODOS DE GUARDADO Y EDICIÓN
+    // ==========================================
 
-    public List<CampanaDTO> listarCampanasDTO() {
-        return campanaMapper.toDTOList(campanaRepository.findAll());
-    }
-
-    @Transactional
-    public void guardarTurnos(String idCampana, String idTienda, Map<String, String> formData) { // <-- Cambia la firma
-
-        Campana campana = campanaRepository.findById(idCampana)
-                .orElseThrow(() -> new IllegalArgumentException("Campaña no encontrada: " + idCampana));
-
-        Establecimiento tienda = establecimientoRepository.findById(Integer.parseInt(idTienda))
-                .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idTienda));
-
-        asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
-        entityManager.flush();
-
-        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
-        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
-
-        for (int i = 0; i < dias.length; i++) {
-            String diaEs = dias[i];
-            LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
-
-            // Cambiamos request.getParameter por formData.get()
-            String idVolManana = formData.get("asignacion_manana_" + diaEs);
-            String idVolTarde = formData.get("asignacion_tarde_" + diaEs);
-
-            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
-            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
-        }
-
-        asignacionTurnoRepository.saveAll(nuevasAsignaciones);
-        entityManager.flush();
-    }
-
-    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
-                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
-                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
-
-        if (idVoluntario != null && !idVoluntario.isBlank()) {
-            voluntarioRepository.findById(Integer.parseInt(idVoluntario)).ifPresent(vol -> {
-                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
-                turno.setCampana(campana);
-                turno.setTienda(tienda);
-                turno.setVoluntario(vol);
-                turno.setColaborador(null);
-                turno.setFecha(fechaDia);
-                turno.setHoraInicio(inicio);
-                turno.setHoraFin(fin);
-
-                listaNuevasAsignaciones.add(turno);
-            });
-        }
-    }
-
-    // Filtrar para el listado
-    public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
-        String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
-        String busquedaFinal = (busqueda == null) ? "" : busqueda;
-
-        List<Campana> lista = campanaRepository.filtrarCampanas(estadoFinal, busquedaFinal);
-        return campanaMapper.toDTOList(lista);
-    }
-
-    // Buscar una específica
-    public CampanaDTO buscarCampana(String id) {
-        return campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(null);
-    }
-
-    // Guardar (Crear o Actualizar)
     @Transactional
     public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
         Campana campana;
         if (idCampana == null || idCampana.isEmpty()) {
             campana = new Campana();
-            // Generar ID básico (por ejemplo "VERANO_2024")
             campana.setIdCampana(nombre.toUpperCase().replaceAll("\\s+", "_"));
         } else {
-            campana = campanaRepository.findById(idCampana).orElse(new Campana());
+            campana = this.campanaRepository.findById(idCampana).orElse(new Campana());
         }
 
         campana.setNombreCampana(nombre);
         campana.setFechaInicio(inicio);
         campana.setFechaFin(fin);
         campana.setEstado(estado);
-        campanaRepository.save(campana);
+        this.campanaRepository.save(campana);
 
-        // Lógica para asignar cadenas a la campaña (como Cadena es la entidad dueña de la relación ManyToMany)
-        // Normalizar: null significa "ninguna cadena seleccionada" (importante en edición
-        // cuando el usuario desmarca todas, el navegador no envía el parámetro)
         List<String> cadenasSeleccionadas = (cadenasIds != null) ? cadenasIds : new ArrayList<>();
+        List<Cadena> todasLasCadenas = this.cadenaRepository.findAll();
 
-        List<Cadena> todasLasCadenas = cadenaRepository.findAll();
         for (Cadena c : todasLasCadenas) {
             if (cadenasSeleccionadas.contains(c.getIdCadena())) {
                 if (!c.getCampanas().contains(campana)) {
@@ -178,21 +119,81 @@ public class CampanaService {
                 c.getCampanas().remove(campana);
             }
         }
-        cadenaRepository.saveAll(todasLasCadenas);
+        this.cadenaRepository.saveAll(todasLasCadenas);
 
         return campana.getIdCampana();
     }
 
-    // Eliminar
+    @Transactional
+    public void guardarTurnos(String idCampana, String idTienda, Map<String, String> formData) {
+        Campana campana = this.campanaRepository.findById(idCampana).get();
+        Establecimiento tienda = this.establecimientoRepository.findById(Integer.parseInt(idTienda)).get();
+
+        // Borramos usando el repositorio estándar
+        this.asignacionTurnoRepository.deleteByCampanaAndTienda(campana, tienda);
+
+        LocalDate lunesDeLaSemana = campana.getFechaInicio().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        List<AsignacionTurnoColaborador> nuevasAsignaciones = new ArrayList<>();
+        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado"};
+
+        for (int i = 0; i < dias.length; i++) {
+            String diaEs = dias[i];
+            LocalDate fechaDia = lunesDeLaSemana.plusDays(i);
+
+            String idVolManana = formData.get("asignacion_manana_" + diaEs);
+            String idVolTarde = formData.get("asignacion_tarde_" + diaEs);
+
+            procesarTurno(idVolManana, campana, tienda, fechaDia, LocalTime.of(9, 0), LocalTime.of(14, 0), nuevasAsignaciones);
+            procesarTurno(idVolTarde, campana, tienda, fechaDia, LocalTime.of(15, 0), LocalTime.of(20, 0), nuevasAsignaciones);
+        }
+
+        this.asignacionTurnoRepository.saveAll(nuevasAsignaciones);
+    }
+
+    private void procesarTurno(String idVoluntario, Campana campana, Establecimiento tienda,
+                               LocalDate fechaDia, LocalTime inicio, LocalTime fin,
+                               List<AsignacionTurnoColaborador> listaNuevasAsignaciones) {
+        if (idVoluntario != null && !idVoluntario.isBlank()) {
+            Voluntario vol = this.voluntarioRepository.findById(Integer.parseInt(idVoluntario)).orElse(null);
+            if(vol != null) {
+                AsignacionTurnoColaborador turno = new AsignacionTurnoColaborador();
+                turno.setCampana(campana);
+                turno.setTienda(tienda);
+                turno.setVoluntario(vol);
+                turno.setColaborador(null);
+                turno.setFecha(fechaDia);
+                turno.setHoraInicio(inicio);
+                turno.setHoraFin(fin);
+                listaNuevasAsignaciones.add(turno);
+            }
+        }
+    }
+
+    // ==========================================
+    // MÉTODOS DE BORRADO
+    // ==========================================
+
     @Transactional
     public void borrarCampana(String idCampana) {
-        campanaRepository.findById(idCampana).ifPresent(campana -> {
-            // Desvincular de cadenas antes de borrar
+        Campana campana = this.campanaRepository.findById(idCampana).orElse(null);
+
+        if (campana != null) {
+            // 1. Borramos los turnos asociados para evitar el error de base de datos
+            List<AsignacionTurnoColaborador> turnosAsignados = this.asignacionTurnoRepository.findAll();
+            for(AsignacionTurnoColaborador turno : turnosAsignados){
+                if(turno.getCampana().getIdCampana().equals(campana.getIdCampana())){
+                    this.asignacionTurnoRepository.delete(turno);
+                }
+            }
+
+            // 2. Limpiamos las relaciones ManyToMany (igual que hacéis en borrarMovie)
             for (Cadena c : campana.getCadenas()) {
                 c.getCampanas().remove(campana);
             }
-            cadenaRepository.saveAll(campana.getCadenas());
-            campanaRepository.delete(campana);
-        });
+            this.cadenaRepository.saveAll(campana.getCadenas());
+
+            // 3. Borramos la entidad
+            this.campanaRepository.delete(campana);
+        }
     }
 }
