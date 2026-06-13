@@ -25,7 +25,7 @@
 
     <h2 class="menu-heading">MENÚ PRINCIPAL</h2>
     <ul id="menu">
-        <li class="<%= currentURI.contains("/dashboard") ? "active" : "" %>">
+        <li class="<%= currentURI.contains("administrador") ? "active" : "" %>">
             <a href="/dashboard">Dashboard</a>
         </li>
 
