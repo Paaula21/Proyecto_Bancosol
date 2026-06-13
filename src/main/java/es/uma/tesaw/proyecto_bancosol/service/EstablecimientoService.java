@@ -31,24 +31,16 @@ public class EstablecimientoService {
     private final EstablecimientoMapper establecimientoMapper;
 
     public List<EstablecimientoDTO> listarTiendas(String idCadena, String nombre, String idCampana,
-                                                   String tipoVia, String nombreVia, String codigo,
-                                                   String localidad, Integer idZona, String coordinador) {
-        String cadenaFiltro = (idCadena != null) ? idCadena.trim() : null;
-        if (cadenaFiltro != null && cadenaFiltro.isEmpty()) cadenaFiltro = null;
-        String nombreFiltro = (nombre != null) ? nombre.trim() : null;
-        if (nombreFiltro != null && nombreFiltro.isEmpty()) nombreFiltro = null;
-        String campanaFiltro = (idCampana != null) ? idCampana.trim() : null;
-        if (campanaFiltro != null && campanaFiltro.isEmpty()) campanaFiltro = null;
-        String tipoViaFiltro = (tipoVia != null) ? tipoVia.trim() : null;
-        if (tipoViaFiltro != null && tipoViaFiltro.isEmpty()) tipoViaFiltro = null;
-        String nombreViaFiltro = (nombreVia != null) ? nombreVia.trim() : null;
-        if (nombreViaFiltro != null && nombreViaFiltro.isEmpty()) nombreViaFiltro = null;
-        String codigoFiltro = (codigo != null) ? codigo.trim() : null;
-        if (codigoFiltro != null && codigoFiltro.isEmpty()) codigoFiltro = null;
-        String localidadFiltro = (localidad != null) ? localidad.trim() : null;
-        if (localidadFiltro != null && localidadFiltro.isEmpty()) localidadFiltro = null;
-        String coordinadorFiltro = (coordinador != null) ? coordinador.trim() : null;
-        if (coordinadorFiltro != null && coordinadorFiltro.isEmpty()) coordinadorFiltro = null;
+                                                    String tipoVia, String nombreVia, String codigo,
+                                                    String localidad, Integer idZona, String coordinador) {
+        String cadenaFiltro = normalizarFiltro(idCadena);
+        String nombreFiltro = normalizarFiltro(nombre);
+        String campanaFiltro = normalizarFiltro(idCampana);
+        String tipoViaFiltro = normalizarFiltro(tipoVia);
+        String nombreViaFiltro = normalizarFiltro(nombreVia);
+        String codigoFiltro = normalizarFiltro(codigo);
+        String localidadFiltro = normalizarFiltro(localidad);
+        String coordinadorFiltro = normalizarFiltro(coordinador);
 
         List<Establecimiento> lista = establecimientoRepository.findAllFiltrados(
                 cadenaFiltro, nombreFiltro, campanaFiltro, tipoViaFiltro,
@@ -177,8 +169,14 @@ public class EstablecimientoService {
 
     @Transactional
     public void borrarTienda(Integer idEstablecimiento) {
-        Establecimiento entidad = establecimientoRepository.findById(idEstablecimiento)
+        Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
                 .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idEstablecimiento));
-        establecimientoRepository.delete(entidad);
+        establecimientoRepository.delete(establecimiento);
+    }
+
+    private static String normalizarFiltro(String valor) {
+        if (valor == null) return null;
+        String trim = valor.trim();
+        return trim.isEmpty() ? null : trim;
     }
 }

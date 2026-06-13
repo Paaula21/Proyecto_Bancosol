@@ -30,8 +30,7 @@ public class CadenaController {
 
         List<CadenaDTO> cadenas = cadenaService.listarCadenas(nombre, idCampana);
         model.addAttribute("cadenas", cadenas);
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        model.addAttribute("campanas", campanaService.listarCampanasDTO());
+        cargarDesplegablesCadenas(model);
 
         String modoPanel = "ninguno";
         CadenaDTO cadenaSeleccionada = null;
@@ -46,19 +45,21 @@ public class CadenaController {
         model.addAttribute("cadenaSeleccionada", cadenaSeleccionada);
         model.addAttribute("modoPanel", modoPanel);
 
-        if (nombre == null) nombre = "";
-        if (idCampana == null) idCampana = "";
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("idCampana", idCampana);
+        model.addAttribute("nombre", nombre != null ? nombre : "");
+        model.addAttribute("idCampana", idCampana != null ? idCampana : "");
 
         return "cadenas";
     }
 
-    protected String editarCrear(String idCadena, Model model) {
-        CadenaDTO cadena = cadenaService.buscarCadena(idCadena);
-        model.addAttribute("cadenas", cadenaService.listarCadenas());
+    private void cargarDesplegablesCadenas(Model model) {
         model.addAttribute("todasCadenas", cadenaService.listarCadenas());
         model.addAttribute("campanas", campanaService.listarCampanasDTO());
+    }
+
+    private String editarCrear(String idCadena, Model model) {
+        CadenaDTO cadena = cadenaService.buscarCadena(idCadena);
+        model.addAttribute("cadenas", cadenaService.listarCadenas());
+        cargarDesplegablesCadenas(model);
         model.addAttribute("cadenaSeleccionada", cadena);
         model.addAttribute("modoPanel", idCadena == null ? "anadir" : "editar");
         model.addAttribute("nombre", "");

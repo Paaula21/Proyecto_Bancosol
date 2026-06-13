@@ -50,7 +50,7 @@ public class IncidenciaController {
 
         incidenciaService.guardar(rol, nombre_persona, id_campana, id_cadena,
                 tienda, turno_dia, turno_franja, urgencia, descripcion,
-                user.getIdUsuario());
+                user.getIdPersona());
         return "redirect:/dashboard";
     }
 }

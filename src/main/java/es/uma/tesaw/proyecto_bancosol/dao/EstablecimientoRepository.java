@@ -13,9 +13,6 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
             "GROUP BY z.nombreZona ORDER BY COUNT(e) DESC")
     List<Object[]> countEstablecimientosPorZona();
 
-    @Query("SELECT e FROM Campana camp JOIN camp.cadenas c JOIN c.establecimientos e WHERE camp.idCampana = :idCampana")
-    List<Establecimiento> findByCampanaId(@Param("idCampana") String idCampana);
-
     @Query("SELECT e FROM Campana camp JOIN camp.cadenas c JOIN c.establecimientos e " +
             "WHERE camp.idCampana = :idCampana " +
             "AND (:nombreCadena IS NULL OR :nombreCadena = '' OR LOWER(c.nombreCadena) LIKE LOWER(CONCAT('%', :nombreCadena, '%'))) " +

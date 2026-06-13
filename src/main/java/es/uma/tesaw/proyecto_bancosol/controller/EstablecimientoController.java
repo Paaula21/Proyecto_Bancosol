@@ -44,10 +44,7 @@ public class EstablecimientoController {
         List<EstablecimientoDTO> tiendas = establecimientoService.listarTiendas(
                 idCadena, nombre, idCampana, tipoVia, nombreVia, codigo, localidad, idZona, coordinador);
         model.addAttribute("tiendas", tiendas);
-        model.addAttribute("todasCadenas", cadenaService.listarCadenas());
-        model.addAttribute("campanas", campanaService.listarCampanasDTO());
-        model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
-        model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+        cargarDesplegablesTiendas(model);
 
         String modoPanel = "ninguno";
         EstablecimientoDTO tiendaSeleccionada = null;
@@ -62,34 +59,30 @@ public class EstablecimientoController {
         model.addAttribute("tiendaSeleccionada", tiendaSeleccionada);
         model.addAttribute("modoPanel", modoPanel);
 
-        if (idCadena == null) idCadena = "";
-        if (nombre == null) nombre = "";
-        if (idCampana == null) idCampana = "";
-        if (tipoVia == null) tipoVia = "";
-        if (nombreVia == null) nombreVia = "";
-        if (codigo == null) codigo = "";
-        if (localidad == null) localidad = "";
-        if (coordinador == null) coordinador = "";
-        model.addAttribute("idCadena", idCadena);
-        model.addAttribute("nombre", nombre);
-        model.addAttribute("idCampana", idCampana);
-        model.addAttribute("tipoVia", tipoVia);
-        model.addAttribute("nombreVia", nombreVia);
-        model.addAttribute("codigo", codigo);
-        model.addAttribute("localidad", localidad);
+        model.addAttribute("idCadena", idCadena != null ? idCadena : "");
+        model.addAttribute("nombre", nombre != null ? nombre : "");
+        model.addAttribute("idCampana", idCampana != null ? idCampana : "");
+        model.addAttribute("tipoVia", tipoVia != null ? tipoVia : "");
+        model.addAttribute("nombreVia", nombreVia != null ? nombreVia : "");
+        model.addAttribute("codigo", codigo != null ? codigo : "");
+        model.addAttribute("localidad", localidad != null ? localidad : "");
         model.addAttribute("idZona", idZona);
-        model.addAttribute("coordinador", coordinador);
+        model.addAttribute("coordinador", coordinador != null ? coordinador : "");
 
         return "tienda";
     }
 
-    protected String editarCrear(Integer idTienda, Model model) {
-        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
-        model.addAttribute("tiendas", establecimientoService.listarTiendas());
+    private void cargarDesplegablesTiendas(Model model) {
         model.addAttribute("todasCadenas", cadenaService.listarCadenas());
         model.addAttribute("campanas", campanaService.listarCampanasDTO());
         model.addAttribute("zonas", zonaGeograficaService.obtenerTodasLasZonas());
         model.addAttribute("coordinadores", usuarioService.listarCoordinadores());
+    }
+
+    private String editarCrear(Integer idTienda, Model model) {
+        EstablecimientoDTO tienda = establecimientoService.buscarTienda(idTienda);
+        model.addAttribute("tiendas", establecimientoService.listarTiendas());
+        cargarDesplegablesTiendas(model);
         model.addAttribute("tiendaSeleccionada", tienda);
         model.addAttribute("modoPanel", idTienda == null ? "anadir" : "editar");
         model.addAttribute("idCadena", "");
@@ -99,7 +92,7 @@ public class EstablecimientoController {
         model.addAttribute("nombreVia", "");
         model.addAttribute("codigo", "");
         model.addAttribute("localidad", "");
-        model.addAttribute("idZona", null);
+        model.addAttribute("idZona", (Object) null);
         model.addAttribute("coordinador", "");
         return "tienda";
     }

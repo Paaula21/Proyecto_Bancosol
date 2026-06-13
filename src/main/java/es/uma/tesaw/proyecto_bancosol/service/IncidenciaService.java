@@ -35,7 +35,7 @@ public class IncidenciaService {
     public void guardar(String rol, String nombrePersona, String idCampana,
                         String idCadena, String tienda, String turnoDia,
                         String turnoFranja, String urgencia, String descripcion,
-                        Integer idUsuario) {
+                        Integer idPersona) {
 
         String nombreCampana = campanaService.listarCampanasDTO().stream()
                 .filter(c -> c.getIdCampana().equals(idCampana))
@@ -45,9 +45,8 @@ public class IncidenciaService {
 
         String nombreCadena = "";
         if (idCadena != null && !idCadena.isEmpty()) {
-            String finalIdCadena = idCadena;
             nombreCadena = cadenaService.listarCadenas().stream()
-                    .filter(c -> c.getIdCadena().equals(finalIdCadena))
+                    .filter(c -> c.getIdCadena().equals(idCadena))
                     .findFirst()
                     .map(c -> c.getNombreCadena())
                     .orElse("");
@@ -71,7 +70,7 @@ public class IncidenciaService {
         TipoNotificacion tipo = tipoNotificacionRepository.findById(TIPO_INCIDENCIA_ID)
                 .orElseThrow(() -> new RuntimeException("Tipo de notificación INCIDENCIA no encontrado"));
 
-        Persona persona = personaRepository.findById(idUsuario)
+        Persona persona = personaRepository.findById(idPersona)
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada para el usuario"));
 
         Notificacion notificacion = new Notificacion();
