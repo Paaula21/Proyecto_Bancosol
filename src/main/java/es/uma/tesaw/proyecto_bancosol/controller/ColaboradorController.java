@@ -57,7 +57,7 @@ public class ColaboradorController {
         if (id != null && !id.isEmpty()) {
             colaboradorSeleccionado = this.colaboradoresService.obtenerColaboradorEntidad(id).orElse(null);
             if (colaboradorSeleccionado != null) {
-                contactoSeleccionado = this.colaboradoresService.obtenerContactoPorColaborador(colaboradorSeleccionado).orElse(null);
+                contactoSeleccionado = this.colaboradoresService.obtenerContactoPorColaborador(colaboradorSeleccionado);
                 if ("editar".equals(accion)) {
                     modoPanel = "editar";
                 } else {
@@ -68,7 +68,6 @@ public class ColaboradorController {
             modoPanel = "anadir";
         }
 
-        // Pasar todos los datos a la vista .jsp
         model.addAttribute("colaboradores", colaboradores);
         model.addAttribute("zonasDisponibles", zonasDisponibles);
         model.addAttribute("colaboradorSeleccionado", colaboradorSeleccionado);

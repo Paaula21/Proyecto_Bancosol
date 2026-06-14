@@ -104,6 +104,26 @@
                         <button type="submit" class="btn btn--primary">Descargar datos</button>
                     </form>
                 </div>
+                <% }else{ %>
+                <div class="content content-double">
+                    <h3 class="title">Exportar Datos del Sistema</h3>
+
+                    <form action="/perfil/exportar" method="POST">
+                        <div class="data-item">
+                            <label class="label-name">Tablas a exportar:</label>
+                            <div class="selection-content" style="display: flex; flex-direction: column; gap: 10px; padding: 5px;">
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="campana" class="selection" /> Campañas
+                                </label>
+                                <label class="label-selection">
+                                    <input type="checkbox" name="tablas" value="voluntario" class="selection" /> Voluntarios
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary">Descargar datos</button>
+                    </form>
+                </div>
                 <% } %>
             </div>
         </main>

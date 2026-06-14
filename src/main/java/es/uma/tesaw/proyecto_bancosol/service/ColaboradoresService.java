@@ -1,6 +1,6 @@
 /*
-Paula Fernández Jiménez: 75%
-IA: 25%
+Paula Fernández Jiménez: 85%
+IA: 15%
 */
 
 package es.uma.tesaw.proyecto_bancosol.service;
@@ -9,6 +9,7 @@ import es.uma.tesaw.proyecto_bancosol.dao.*;
 import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.FormularioColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
+import es.uma.tesaw.proyecto_bancosol.mapper.PersonaMapper;
 import es.uma.tesaw.proyecto_bancosol.mapper.VistaColaboradoresMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,9 @@ public class ColaboradoresService {
     private final CodigoPostalRepository codigoPostalRepository;
     private final PersonaRepository personaRepository;
     private final VistaColaboradoresMapper vistaColaboradoresMapper;
+    private final PersonaMapper personaMapper;
 
 
-    @Transactional(readOnly = true)
     public List<ColaboradorDTO> listarColaboradoresDTO(String busqueda, String zona) {
         String busquedaNormalizada = busqueda == null ? "" : busqueda;
         String zonaNormalizada = zona == null || zona.isEmpty() ? TODAS_LAS_ZONAS : zona;
@@ -54,7 +55,6 @@ public class ColaboradoresService {
         return this.vistaColaboradoresMapper.toDTOList(vistas);
     }
 
-    @Transactional
     public void guardarColaborador(FormularioColaboradorDTO dto) {
         // Ponemos final para que se guarde correctamente el valor deseado
         final ZonaGeografica zona;
@@ -125,52 +125,75 @@ public class ColaboradoresService {
         colaborador = colaboradorRepository.save(colaborador);
 
         if (dto.getContactoNombre() != null && !dto.getContactoNombre().isEmpty()) {
-            ContactoColaborador contacto = contactoColaboradorRepository.findByColaborador(colaborador).orElse(null);
-            Persona persona;
+            ContactoColaborador contacto = contactoColaboradorRepository.findByColaborador(colaborador);
 
-            if (contacto != null) {
-                persona = contacto.getPersona();
-            } else {
+            if (contacto == null) {
                 contacto = new ContactoColaborador();
                 contacto.setColaborador(colaborador);
                 contacto.setEsPrincipal(true);
+            }
+
+            Persona persona = null;
+
+            if (dto.getContactoEmail() != null && !dto.getContactoEmail().isEmpty()) {
+                persona = personaRepository.findByEmail(dto.getContactoEmail()).orElse(null);
+            }
+
+            if (persona == null && contacto.getPersona() != null) {
+                persona = contacto.getPersona();
+            }
+
+            if (persona == null) {
                 persona = new Persona();
             }
 
             persona.setNombreCompleto(dto.getContactoNombre());
             persona.setEmail(dto.getContactoEmail());
             persona.setTelefono(dto.getContactoTel());
+
             persona = personaRepository.save(persona);
 
             contacto.setPersona(persona);
             contactoColaboradorRepository.save(contacto);
+
+        } else {
+            ContactoColaborador contacto = contactoColaboradorRepository.findByColaborador(colaborador);
+
+            if (contacto != null) {
+                Persona persona = contacto.getPersona();
+
+                contacto.setPersona(null);
+                contactoColaboradorRepository.save(contacto);
+
+                colaborador.setContacto(null);
+                colaboradorRepository.save(colaborador);
+
+                contactoColaboradorRepository.delete(contacto);
+
+                if (persona != null) {
+                    personaRepository.delete(persona);
+                }
+            }
         }
     }
-
-    @Transactional
     public void eliminarColaboradorCompleto(String idColaborador) {
         Colaborador colab = colaboradorRepository.findById(idColaborador).orElse(null);
         if (colab != null) {
-            contactoColaboradorRepository.findByColaborador(colab)
-                    .ifPresent(contactoColaboradorRepository::delete);
+            contactoColaboradorRepository.findByColaborador(colab);
 
             colaboradorRepository.delete(colab);
         }
     }
 
-
-
-    @Transactional(readOnly = true)
+    //Funciones específicas
     public Optional<Colaborador> obtenerColaboradorEntidad(String id) {
         return this.colaboradorRepository.findById(id);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<ContactoColaborador> obtenerContactoPorColaborador(Colaborador colaborador) {
+    public ContactoColaborador obtenerContactoPorColaborador(Colaborador colaborador) {
         return this.contactoColaboradorRepository.findByColaborador(colaborador);
     }
 
-    @Transactional(readOnly = true)
     public long contarColaboradores() {
         return this.colaboradorRepository.count();
     }

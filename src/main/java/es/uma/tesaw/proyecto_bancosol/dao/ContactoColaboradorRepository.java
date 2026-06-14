@@ -14,5 +14,5 @@ import java.util.Optional;
 
 public interface ContactoColaboradorRepository extends JpaRepository<ContactoColaborador, Integer>{
     @Query("SELECT cc FROM ContactoColaborador cc WHERE cc.colaborador = :colaborador")
-    Optional<ContactoColaborador> findByColaborador(@Param("colaborador") Colaborador colaboradorSeleccionado);
+    ContactoColaborador findByColaborador(@Param("colaborador") Colaborador colaboradorSeleccionado);
 }

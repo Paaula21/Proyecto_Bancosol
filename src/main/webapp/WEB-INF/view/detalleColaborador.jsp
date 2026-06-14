@@ -14,6 +14,7 @@
     String localidadDetalle = "Sin asignar";
     String direccionDetalle = "---";
 
+    // Unimos todos los valores necesarios de la dirección para que se guarden en uno solo
     if (colab != null && colab.getDireccion() != null) {
         String tipoVia = colab.getDireccion().getTipoVia() != null ? colab.getDireccion().getTipoVia() + " " : "";
         String nombreVia = colab.getDireccion().getNombreVia() != null ? colab.getDireccion().getNombreVia() : "";
@@ -32,7 +33,7 @@
 
     String personaNombre = "---";
     String personaEmail = "---";
-    String personaTel = null; // Se deja null para evaluar la condición más abajo
+    String personaTel = null;
 
     if (contactoDetalle != null && contactoDetalle.getPersona() != null) {
         personaNombre = contactoDetalle.getPersona().getNombreCompleto() != null ? contactoDetalle.getPersona().getNombreCompleto() : "---";
