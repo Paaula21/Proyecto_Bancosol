@@ -1,3 +1,8 @@
+<!--
+Página JSP que muestra el listado completo de los colaboradores con o sin filtrado y permite realizar las diferentes acciones añadidas
+Autores:
+- Paula Fernández Jiménez: 100%
+-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
@@ -37,9 +42,12 @@
 <div class="main-layout">
         <jsp:include page="sidebar.jsp" />
     <div class="right-content">
-            <jsp:include page="header.jsp" />
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Colaboradores" />
+            <jsp:param name="subtitulo" value="Gestión de entidades colaboradoras" />
+        </jsp:include>
         <main>
-            <form action="/colaboradores" method="GET" style="margin: 0; padding: 0; display: contents;">
+            <form action="/colaboradores" method="GET">
                 <section class="filters">
                     <div class="filter-group">
                         <label>Zona Geográfica</label>
@@ -74,9 +82,12 @@
                     <header class="list-header">
                         <h2>Listado de Colaboradores</h2>
                         <p id="contador-colaboradores"><%= colaboradores != null ? colaboradores.size() : 0 %> colaboradores encontrados</p>
-                        <button type="button" class="btn btn--primary" id="btn-abrir-registro" onclick="window.location.href='/colaboradores?accion=nuevo'">
-                            Añadir Colaborador
-                        </button>
+                        <form action="/colaboradores" method="get">
+                            <input type="hidden" name="accion" value="nuevo">
+                            <button type="submit" class="btn btn--primary" id="btn-abrir-registro">
+                                Añadir Colaborador
+                            </button>
+                        </form>
                     </header>
                     <div class="table-wrapper">
                         <table>
@@ -99,7 +110,7 @@
                             %>
                             <tr>
                                 <td>
-                                    <a href="/colaboradores?id=<%= c.getIdColaborador() %>" style="color: inherit; text-decoration: none; font-weight: bold;">
+                                    <a href="/colaboradores?id=<%= c.getIdColaborador() %>" class="colabName">
                                         <%= c.getNombreColaborador() %>
                                     </a>
                                 </td>
@@ -111,7 +122,7 @@
                             } else {
                             %>
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 20px;">No se encontraron colaboradores.</td>
+                                <td colspan="4">No se encontraron colaboradores.</td>
                             </tr>
                             <%  } %>
                             </tbody>
@@ -127,38 +138,47 @@
                         <% } else if ("anadir".equals(modoPanel)) { %>
                         <jsp:include page="anadirColaboradores.jsp" />
                         <% } else { %>
-                        <div style="text-align: center; padding: 40px; color: #888;">Selecciona un colaborador para ver sus detalles.</div>
+                        <div class='infoSide'>Selecciona un colaborador para ver sus detalles.</div>
                         <% } %>
                     </div>
 
                     <div class="detail-actions-sticky" id="acciones-detalle-colaborador" style="<%= "detalle".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="button" id="btn-editar-colaborador" class="btn btn--primary" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>&accion=editar'">
-                            Editar Colaborador
-                        </button>
-                        <form action="/colaboradores/eliminar" method="POST" style="display: contents;">
+                        <form action="/colaboradores" method="get" class="pos-content">
                             <input type="hidden" name="id" value="<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>">
-                            <button type="submit" id="btn-eliminar-colaborador" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar este colaborador?');">
+                            <input type="hidden" name="accion" value="editar">
+                            <button type="submit" id="btn-editar-colaborador" class="btn btn--primary">
+                                Editar Colaborador
+                            </button>
+                        </form>
+                        <form action="/colaboradores/eliminar" method="post" class="pos-content">
+                            <input type="hidden" name="id" value="<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>">
+                            <button type="submit" id="btn-eliminar-colaborador" class="btn btn--delete">
                                 Eliminar
                             </button>
                         </form>
                     </div>
 
                     <div class="detail-actions-sticky" id="acciones-edicion-colaborador" style="<%= "editar".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="submit" form="form-edicion-colaborador" id="btn-guardar-cambios" class="btn btn--primary">
+                        <!--Empleamos el atributo form, ya que el botón pertenece a un formulario que no se encuentra en este archivo-->
+                        <button type="submit" form="form-edicion-colaborador" id="btn-guardar-cambios" class="btn btn--primary pos-content">
                             Guardar Cambios
                         </button>
-                        <button type="button" id="btn-cancelar-edicion" class="btn btn--cancel" onclick="window.location.href='/colaboradores?id=<%= seleccionado != null ? seleccionado.getIdColaborador() : "" %>'">
-                            Cancelar
-                        </button>
+                        <form action="/colaboradores" method="get" class="pos-content">
+                            <button type="submit" id="btn-cancelar-nuevo" class="btn btn--cancel">
+                                Cancelar
+                            </button>
+                        </form>
                     </div>
 
                     <div class="detail-actions-sticky" id="acciones-anadir-colaborador" style="<%= "anadir".equals(modoPanel) ? "display: flex;" : "display: none;" %>">
-                        <button type="submit" form="form-nuevo-colaborador-lateral" id="btn-guardar-nuevo" class="btn btn--primary">
+                        <button type="submit" form="form-nuevo-colaborador-lateral" id="btn-guardar-nuevo" class="btn btn--primary pos-content">
                             Guardar Colaborador
                         </button>
-                        <button type="button" id="btn-cancelar-nuevo" class="btn btn--cancel" onclick="window.location.href='/colaboradores'">
+                        <form action="/colaboradores" method="get"class="pos-content">
+                        <button type="submit" id="btn-cancelar-nuevo" class="btn btn--cancel">
                             Cancelar
                         </button>
+                        </form>
                     </div>
                 </aside>
             </div>

@@ -233,3 +233,21 @@ tbody tr.selected {
 .scrollbar-ui {
     display: none;
 }
+
+.colabName {
+    color: #111827;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.infoSide{
+    text-align: center;
+    padding: 40px;
+    color: #888;
+
+}
+.pos-content{
+    flex: 1 !important;
+    display: flex !important;
+    margin: 0 !important;
+}
