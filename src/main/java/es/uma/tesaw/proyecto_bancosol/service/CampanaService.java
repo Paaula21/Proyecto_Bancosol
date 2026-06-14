@@ -231,7 +231,6 @@ public class CampanaService {
 
     @Transactional(readOnly = true)
     public List<CampanaDTO> listarProximasCampanasDTO() {
-        // En tu código original hacías un findAll() para esto
         return campanaMapper.toDTOList(this.campanaRepository.findAll());
     }
 }

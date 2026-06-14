@@ -9,7 +9,6 @@ import es.uma.tesaw.proyecto_bancosol.entities.Notificacion;
 import es.uma.tesaw.proyecto_bancosol.entities.TipoNotificacion;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.mapper.NotificacionMapper;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ public class NotificacionService {
 
     private final NotificacionRepository notificacionRepository;
     private final TipoNotificacionRepository tipoNotificacionRepository;
-    private final PersonaRepository personaRepository;
     private final UsuarioRepository usuarioRepository;
     private final NotificacionMapper notificacionMapper;
 
