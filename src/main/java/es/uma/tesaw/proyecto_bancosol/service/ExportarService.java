@@ -23,8 +23,9 @@ public class ExportarService {
     private final ColaboradorRepository colaboradoresRepository;
     private final VoluntarioRepository voluntarioRepository;
 
-    @Transactional(readOnly = true)
-    public ByteArrayInputStream generarExcelCompleto() throws IOException {
+
+    //Hay que poner el IOException por si hay fallo al escribir en el archivo
+    public ByteArrayInputStream generarExcel(List<String> tablas) throws IOException {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -35,12 +36,23 @@ public class ExportarService {
             headerStyle.setFont(headerFont);
 
             //Cada una de las hojas a exportar
-            crearHojaCampanas(workbook, headerStyle);
-            crearHojaCadenas(workbook, headerStyle);
-            crearHojaEstablecimientos(workbook, headerStyle);
-            crearHojaColaboradores(workbook, headerStyle);
-            crearHojaVoluntarios(workbook, headerStyle);
-
+            if (tablas != null && !tablas.isEmpty()) {
+                if (tablas.contains("campana")) {
+                    crearHojaCampanas(workbook, headerStyle);
+                }
+                if (tablas.contains("cadena")) {
+                    crearHojaCadenas(workbook, headerStyle);
+                }
+                if (tablas.contains("establecimiento")) {
+                    crearHojaEstablecimientos(workbook, headerStyle);
+                }
+                if (tablas.contains("colaborador")) {
+                    crearHojaColaboradores(workbook, headerStyle);
+                }
+                if (tablas.contains("voluntario")) {
+                    crearHojaVoluntarios(workbook, headerStyle);
+                }
+            }
             workbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         }
