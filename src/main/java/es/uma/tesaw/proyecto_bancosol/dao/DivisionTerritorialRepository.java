@@ -1,4 +1,5 @@
 /**
+ * Repositorio que utiliza JPQL para acceder a la base de datos de las divisiones territoriales.
 *Autores:
 *- Paula Fernández Jiménez: 50%
 *- María Muñoz Martín: 50%
