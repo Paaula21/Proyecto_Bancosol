@@ -1,6 +1,7 @@
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
+import es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.*;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;

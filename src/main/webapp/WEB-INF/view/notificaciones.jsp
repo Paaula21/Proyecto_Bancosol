@@ -95,9 +95,12 @@
                             </div>
 
                             <div class="notif-actions">
-                                <button class="btn-notif-delete" onclick="abrirModalEliminar()">
-                                    Borrar notificación
-                                </button>
+                                <form action="/notificaciones/borrar" method="POST">
+                                    <input type="hidden" name="id" value="<%= seleccionada.getIdNotificacion() %>">
+                                    <button type="submit" class="btn-notif-delete">
+                                        Borrar notificación
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         <% } %>
