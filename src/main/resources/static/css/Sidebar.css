@@ -52,6 +52,7 @@
 .user-role {
     font-size: 0.8rem;
     margin: 2px 0 0 0;
+    color: white !important; ;
 }
 
 .menu-heading {

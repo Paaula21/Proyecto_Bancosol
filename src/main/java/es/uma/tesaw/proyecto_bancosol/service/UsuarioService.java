@@ -4,7 +4,6 @@
  *- Paula Fernández Jiménez: 80%
  *- Andrea Pérez Rodríguez: 20%
  **/
-
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
@@ -24,6 +23,10 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+
+    public List<Usuario> listarCoordinadores() {
+        return usuarioRepository.findByRolId(2);
+    }
 
     public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
         Usuario usuario = this.usuarioRepository.findById(idUsuario).get();
