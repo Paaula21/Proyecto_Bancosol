@@ -1,6 +1,4 @@
 /**
- * Archivo mapper que se encarga de la asignación de los turnos
- /**
  * Archivo Mapper que se encarga de transformar de entidad a DTO la asignación de los turnos
  *Autores:
  *- Paula Fernández Jiménez: 100%

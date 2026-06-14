@@ -1,7 +1,9 @@
 /**
- *Autores:
- *- Paula Fernández Jiménez: 100%
- **/
+ * DTO de tipo de notificaciones.
+ *
+ * Autores:
+ * - Paula Fernández Jiménez: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import lombok.AllArgsConstructor;

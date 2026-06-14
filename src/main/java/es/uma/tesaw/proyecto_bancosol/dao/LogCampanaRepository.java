@@ -1,3 +1,9 @@
+/**
+ * Repositorio que utiliza JPQL para registrar el historial de campaña
+ * Autoras:
+ * - Ainhoa García Rebollo: 90%
+ * - IA generativa: 10%
+ */
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.entities.LogCampana;

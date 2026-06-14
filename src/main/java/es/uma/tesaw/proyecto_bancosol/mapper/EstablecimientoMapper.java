@@ -2,8 +2,7 @@
  * Mapper que transforma de entidad a DTO para establecimiento.
  *
  * Autores:
- * - María Muñoz Martín: 85%
- * - IA generativa: 15%
+ * - María Muñoz Martín: 100%
  */
 
 

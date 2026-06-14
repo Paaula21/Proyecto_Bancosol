@@ -1,3 +1,8 @@
+/**
+ * Repositorio que utiliza JPQL para mostrar la asignacion turno del colaborador
+ * Autoras:
+ * - Ainhoa García Rebollo: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.entities.AsignacionTurnoColaborador;
