@@ -19,7 +19,7 @@ public class ExportarService {
     private final CampanaRepository campanaRepository;
     private final CadenaRepository cadenaRepository;
     private final EstablecimientoRepository establecimientoRepository;
-    private final ColaboradorRepository colaboradorRepository;
+    private final ColaboradorRepository colaboradoresRepository;
     private final VoluntarioRepository voluntarioRepository;
 
     @Transactional(readOnly = true)
@@ -102,7 +102,7 @@ public class ExportarService {
         }
 
         int rowIdx = 1;
-        for (Establecimiento e : establecimientoRepository.findAll()) {
+        for (Establecimiento e : establecimientoRepository.ExportarEstablecimientos()) {
             String direccion = "";
             if (e.getDireccion() != null) {
                 direccion = (e.getDireccion().getNombreVia() != null ? e.getDireccion().getNombreVia() + "" : "") +
@@ -132,19 +132,22 @@ public class ExportarService {
         }
 
         int rowIdx = 1;
-        for (Colaborador c : colaboradorRepository.exportarColaborador()) {
-            String direccion = "";
-            if (c.getDireccion() != null) {
-                direccion = (c.getDireccion().getNombreVia() != null ? c.getDireccion().getNombreVia() + "" : "") +
-                        (c.getDireccion().getNumero() != null ? ", " + c.getDireccion().getNumero() : "");
-            }
+        for (Colaborador c : colaboradoresRepository.ExportarColaboradores()) {
+            String direccion = (c.getDireccion().getNombreVia() != null ? c.getDireccion().getNombreVia() + "" : "") +
+                               (c.getDireccion().getNumero() != null ? ", " + c.getDireccion().getNumero() : "") ;
             Row row = sheet.createRow(rowIdx++);
             row.createCell(0).setCellValue(c.getIdColaborador() != null ? c.getIdColaborador() : "");
             row.createCell(1).setCellValue(c.getNombreColaborador() != null ? c.getNombreColaborador() : "");
             row.createCell(2).setCellValue(direccion);
-            row.createCell(3).setCellValue(c.getContacto() != null && c.getContacto().getPersona() != null && c.getContacto().getPersona().getNombreCompleto() != null ? c.getContacto().getPersona().getNombreCompleto() : "");
-            row.createCell(4).setCellValue(c.getContacto() != null && c.getContacto().getPersona() != null && c.getContacto().getPersona().getEmail() != null ? c.getContacto().getPersona().getEmail() : "");
-            row.createCell(5).setCellValue(c.getContacto() != null && c.getContacto().getPersona() != null && c.getContacto().getPersona().getTelefono() != null ? c.getContacto().getPersona().getTelefono() : "");
+            row.createCell(3).setCellValue(c.getContacto() != null
+                    && c.getContacto().getPersona() != null
+                    && c.getContacto().getPersona().getNombreCompleto() != null ? c.getContacto().getPersona().getNombreCompleto() : "");
+            row.createCell(4).setCellValue(c.getContacto() != null
+                    && c.getContacto().getPersona() != null
+                    && c.getContacto().getPersona().getEmail() != null? c.getContacto().getPersona().getEmail() : "");
+            row.createCell(5).setCellValue(c.getContacto() != null
+                    && c.getContacto().getPersona() != null
+                    && c.getContacto().getPersona().getTelefono() != null? c.getContacto().getPersona().getTelefono() : "");
             row.createCell(6).setCellValue(c.getObservaciones() != null ? c.getObservaciones() : "");
         }
         for (int i = 0; i < columnas.length; i++) sheet.autoSizeColumn(i);
@@ -162,7 +165,7 @@ public class ExportarService {
         }
 
         int rowIdx = 1;
-        for (Voluntario v : voluntarioRepository.findAll()) {
+        for (Voluntario v : voluntarioRepository.ExportarVoluntarios()) {
             Row row = sheet.createRow(rowIdx++);
             row.createCell(0).setCellValue(v.getIdVoluntario() != null ? String.valueOf(v.getIdVoluntario()) : "");
 

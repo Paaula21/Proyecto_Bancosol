@@ -26,17 +26,12 @@ public interface ColaboradorRepository extends JpaRepository<Colaborador, String
     @Query("SELECT c FROM Colaborador c WHERE LOWER(c.nombreColaborador) LIKE LOWER(CONCAT('%', :busqueda, '%')) AND c.direccion.cp.division.zona.nombreZona = :zona")
     List<Colaborador> findByNombreColaboradorContainingIgnoreCaseAndZona(@Param("busqueda") String busqueda, @Param("zona") String zona);
 
-    //Para la exportación, necesitamos una gran cantidad de datos
-    //Lo
-    @Query("SELECT new es.uma.tesaw.proyecto_bancosol.dto.ColaboradorDTO(" +
-                  "c.idColaborador, " +
-                  "c.nombreColaborador, " +
-                  "c.observaciones, " +
-                  "c.direccion.cp.division.nombreDivision, " +
-                  "c.direccion.cp.division.zona.nombreZona, " +
-                  "c.contacto.persona.nombreCompleto, " +
-                  "c.contacto.persona.email, " +
-                  "c.contacto.persona.telefono) " +
-                  "FROM Colaborador c")
-    List<ColaboradorDTO> exportarColaborador();
+    @Query("SELECT c FROM Colaborador c " +
+            "LEFT JOIN FETCH c.direccion d " +
+            "LEFT JOIN FETCH d.cp cp " +
+            "LEFT JOIN FETCH cp.division dt " +
+            "LEFT JOIN FETCH dt.zona zg " +
+            "LEFT JOIN FETCH c.contacto con " +
+            "LEFT JOIN FETCH con.persona p")
+    List<Colaborador> ExportarColaboradores();
 }

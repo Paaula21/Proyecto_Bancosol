@@ -25,6 +25,17 @@ public class VistaColaboradores {
 
     private String observaciones;
 
+    @Column(name = "tipo_via")
+    private String tipoVia;
+
+    @Column(name = "nombre_via")
+    private String nombreVia;
+
+    private String numero;
+
+    @Column(name = "codigo_postal")
+    private String codigoPostal;
+
     @Column(name = "nombre_division")
     private String nombreDivision;
 

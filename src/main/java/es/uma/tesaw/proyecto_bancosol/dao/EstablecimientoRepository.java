@@ -1,3 +1,6 @@
+/*
+    Paula Fernández Jiménez: 25%
+ */
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;
@@ -52,4 +55,12 @@ public interface EstablecimientoRepository extends JpaRepository<Establecimiento
             @Param("localidad") String localidad,
             @Param("idZona") Integer idZona
     );
+
+    @Query("SELECT e FROM Establecimiento e " +
+            "LEFT JOIN FETCH e.cadena " +
+            "LEFT JOIN FETCH e.direccion d " +
+            "LEFT JOIN FETCH d.cp cp " +
+            "LEFT JOIN FETCH cp.division div " +
+            "LEFT JOIN FETCH div.zona")
+    List<Establecimiento> ExportarEstablecimientos();
 }
