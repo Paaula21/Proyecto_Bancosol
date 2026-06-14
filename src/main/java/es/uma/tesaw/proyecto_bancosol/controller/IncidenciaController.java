@@ -1,3 +1,9 @@
+/**
+ * Controller que permite registrar una incidencia.
+ *
+ * Autores:
+ * - María Muñoz Martín: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
