@@ -49,7 +49,7 @@
 
         <!-- ADMINISTRADOREs -->
         <% if (idRol == 1) { %>
-        <li class="<%= currentURI.contains("/tiendas") ? "active" : "" %>">
+        <li class="<%= currentURI.contains("/tienda") ? "active" : "" %>">
             <a href="/tiendas">Tiendas</a>
         </li>
         <li class="<%= currentURI.contains("/colaboradores") ? "active" : "" %>">
