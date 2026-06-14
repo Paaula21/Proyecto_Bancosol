@@ -1,7 +1,11 @@
+/*
+* Andrea Pérez Rodríguez: 85%
+* IA Generativa: 15%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.NotificacionRepository;
-import es.uma.tesaw.proyecto_bancosol.dao.PersonaRepository;
 import es.uma.tesaw.proyecto_bancosol.dao.TipoNotificacionRepository;
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
 import es.uma.tesaw.proyecto_bancosol.dto.NotificacionDTO;
@@ -11,7 +15,6 @@ import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
 import es.uma.tesaw.proyecto_bancosol.mapper.NotificacionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,19 +28,18 @@ public class NotificacionService {
     private final NotificacionMapper notificacionMapper;
 
 
-    @Transactional(readOnly = true)
     public List<NotificacionDTO> obtenerNotificacionesUsuario(Integer idPersona) {
         return notificacionMapper.toDTOList(
                 notificacionRepository.findByPersonaDestinoOrderByFechaCreacionDesc(idPersona)
         );
     }
 
-    @Transactional(readOnly = true)
+
     public long contarNoLeidas(Integer idPersona) {
         return notificacionRepository.countNoLeidasPorPersona(idPersona);
     }
 
-    @Transactional
+
     public NotificacionDTO obtenerYMarcarLeida(Integer idNotificacion, Integer idPersonaLogueada) {
         if (idNotificacion == null) return null;
 
@@ -52,7 +54,7 @@ public class NotificacionService {
         return null;
     }
 
-    @Transactional
+
     public void borrarNotificacion(Integer idNotificacion, Integer idPersonaLogueada) {
         Notificacion notif = notificacionRepository.findById(idNotificacion).orElse(null);
         if (notif != null && notif.getPersonaDestino().getIdPersona().equals(idPersonaLogueada)) {
@@ -60,9 +62,8 @@ public class NotificacionService {
         }
     }
 
-    @Transactional
+
     public void notificarACoordinadores(String titulo, String mensaje) {
-        // Obtenemos a todos los usuarios que son Coordinadores (Rol = 2)
         List<Usuario> coordinadores = usuarioRepository.findByRolId(2);
         TipoNotificacion tipoCampana = tipoNotificacionRepository.findById("CAMPANA").orElse(null);
 

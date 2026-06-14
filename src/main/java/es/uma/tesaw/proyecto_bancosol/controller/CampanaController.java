@@ -1,3 +1,10 @@
+/*
+ * Andrea Pérez Rodríguez: 30%
+ * Ainhoa García Rebollo: 30%
+ * María Muñoz Martín: 30%
+ * IA Generativa: 10%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
@@ -32,9 +39,6 @@ public class CampanaController {
         return user == null || (user.getIdRol() != 1 && user.getIdRol() != 2);
     }
 
-    // ==========================================
-    // GESTIÓN DE CAMPAÑAS (CRUD Y FILTROS)
-    // ==========================================
 
     @GetMapping("/campanas")
     public String verCampanas(
@@ -108,10 +112,6 @@ public class CampanaController {
         campanaService.borrarCampana(idCampana);
         return "redirect:/campanas";
     }
-
-    // ==========================================
-    // HISTORIAL Y ASIGNACIÓN DE TURNOS
-    // ==========================================
 
     @GetMapping("/historial")
     public String verHistorial(@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {

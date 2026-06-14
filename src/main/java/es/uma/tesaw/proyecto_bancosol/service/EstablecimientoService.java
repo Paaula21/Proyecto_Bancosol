@@ -1,5 +1,6 @@
 /*
 Ainhoa García Rebollo: 100%
+Andrea Pérez Rodríguez: 10% (pd: creo que ainhoa se ha equivocado con su porcentaje?)
 */
 
 package es.uma.tesaw.proyecto_bancosol.service;
@@ -181,12 +182,12 @@ public class EstablecimientoService {
         return trim.isEmpty() ? null : trim;
     }
 
-    @Transactional(readOnly = true)
+
     public long contarEstablecimientos() {
         return this.establecimientoRepository.count();
     }
 
-    @Transactional(readOnly = true)
+
     public List<CoberturaZonaDTO> obtenerCoberturaPorZona() {
         List<Object[]> conteoPorZona = this.establecimientoRepository.countEstablecimientosPorZona();
         List<CoberturaZonaDTO> coberturas = new ArrayList<>();

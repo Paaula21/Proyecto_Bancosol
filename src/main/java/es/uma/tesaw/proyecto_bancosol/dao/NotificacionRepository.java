@@ -1,3 +1,8 @@
+/*
+* Andrea Pérez Rodríguez: 95%
+* IA Generativa: 5%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.dao.NotificacionRepository;

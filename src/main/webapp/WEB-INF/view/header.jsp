@@ -1,7 +1,12 @@
-<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
+<%--
+Autores:
+- Andrea Pérez Rodríguez: 90%
+- IA Generativa: 10%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    // Recogemos los parámetros inyectados dinámicamente
+    // Recogemos los parámetros inyectados dinámicamente con jsp:param por recomendación de la ia para no hardcodear
     String titulo = request.getParameter("titulo");
     String subtitulo = request.getParameter("subtitulo");
 

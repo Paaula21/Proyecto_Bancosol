@@ -1,3 +1,7 @@
+/*
+* Andrea Pérez Rodríguez: 100%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import lombok.AllArgsConstructor;

@@ -1,3 +1,9 @@
+<%--
+Autores:
+- Andrea Pérez Rodríguez: 95%
+- IA Generativa: 5%
+--%>
+
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -11,10 +17,10 @@
 </head>
 
 <aside class="sidebar">
-    <!-- BLOQUE DEL USUARIO / PERFIL -->
+    <!-- PERFIL -->
     <a href="/perfil" class="enlace-perfil" title="Perfil de usuario">
         <div class="user-block">
-            <!-- Primera letra del usuario para el Avatar -->
+            <!-- Primera letra del usuario para el Avatar, sacado de la ia -->
             <div class="avatar avatar-jc"><%= usuario.getUsuario().substring(0,1).toUpperCase() %></div>
             <div class="user-info">
                 <p class="user-name"><%= usuario.getUsuario() %></p>

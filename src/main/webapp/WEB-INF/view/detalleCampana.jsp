@@ -1,3 +1,8 @@
+<%--
+Autores:
+- Andrea Pérez Rodríguez: 100%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
 <%
@@ -23,9 +28,9 @@
     <div class="ficha-tarjeta-info sin-margen-inferior">
         <h5>Cadenas Asociadas</h5>
         <% if (campana.getIdsCadenas() != null && !campana.getIdsCadenas().isEmpty()) { %>
-        <ul class="lista-cadenas-detalle" style="padding-left: 20px; margin-top: 5px;">
+        <ul class="lista-cadenas-detalle">
             <% for (String idCadena : campana.getIdsCadenas()) { %>
-            <li style="margin-bottom: 4px;"><%= idCadena %></li>
+            <li><%= idCadena %></li>
             <% } %>
         </ul>
         <% } else { %>

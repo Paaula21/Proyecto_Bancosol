@@ -1,3 +1,7 @@
+/*
+* Andrea Pérez Rodríguez: 100%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.NotificacionDTO;
@@ -27,20 +31,17 @@ public class NotificacionesController {
             return "redirect:/";
         }
 
-        // 1. Obtener lista (el repo ya las trae filtradas y ordenadas)
+        // Notificaciones de cada usuario
         List<NotificacionDTO> notificaciones = notificacionService.obtenerNotificacionesUsuario(user.getIdPersona());
         model.addAttribute("notificaciones", notificaciones);
 
-        // 2. Gestionar la leída
+        // Leer notificaciones
         NotificacionDTO seleccionada = notificacionService.obtenerYMarcarLeida(idNotificacion, user.getIdPersona());
         model.addAttribute("seleccionada", seleccionada);
 
-        // 3. Contar no leídas para la vista
+        // Sacar si no hay leídas para el header
         long noLeidas = notificacionService.contarNoLeidas(user.getIdPersona());
         model.addAttribute("hayNoLeidas", noLeidas > 0);
-
-        // Para mostrar en el header notificaciones sin leer
-        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
 
         return "notificaciones";
     }
