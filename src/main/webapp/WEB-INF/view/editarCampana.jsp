@@ -57,7 +57,7 @@ Autores:
 
         <div class="ficha-tarjeta-info sin-margen-inferior">
             <h5>Cadenas Participantes</h5>
-            <div class="checkbox-list"
+            <div class="checkbox-list">
                 <% if (todasCadenas != null && !todasCadenas.isEmpty()) {
                     for (CadenaDTO cadena : todasCadenas) {
                         boolean checked = isEdit && campana != null && campana.getIdsCadenas() != null && campana.getIdsCadenas().contains(cadena.getIdCadena());

@@ -1,6 +1,8 @@
-/*
-* Andrea Pérez Rodríguez: 66% (hola maría, como hemos hecho 2 y 1 había pensado en 66/33 pero como tú lo veas mejor jeje)
-*
+/**
+ * Repositorio que utiliza JPQL para acceder a la base de datos a los usuarios.
+ * Autoras:
+ * - Andrea Pérez Rodríguez: 75%
+ * - María Muñoz Martín: 25%
  */
 
 package es.uma.tesaw.proyecto_bancosol.dao;

@@ -29,7 +29,6 @@ Autores:
             <label for="password">Contraseña</label><br>
             <input type="password" id="password" name="password" required autocomplete="current-password" /><br><br>
 
-            <br>
             <button type="submit">Inicio de sesión</button>
         </form>
     </fieldset>
