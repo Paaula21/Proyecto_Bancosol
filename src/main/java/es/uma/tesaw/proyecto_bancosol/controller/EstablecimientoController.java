@@ -2,11 +2,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
-import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
-import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
-import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
-import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
-import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
+import es.uma.tesaw.proyecto_bancosol.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +20,7 @@ public class EstablecimientoController {
     private final CampanaService campanaService;
     private final ZonaGeograficaService zonaGeograficaService;
     private final UsuarioService usuarioService;
+    private final NotificacionService notificacionService;
 
     @GetMapping("")
     public String doInit(
@@ -68,6 +65,9 @@ public class EstablecimientoController {
         model.addAttribute("localidad", localidad != null ? localidad : "");
         model.addAttribute("idZona", idZona);
         model.addAttribute("coordinador", coordinador != null ? coordinador : "");
+
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
 
         return "tienda";
     }

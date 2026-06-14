@@ -1,12 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.NotificacionDTO" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
 <%
     List<NotificacionDTO> notificaciones = (List<NotificacionDTO>) request.getAttribute("notificaciones");
     NotificacionDTO seleccionada = (NotificacionDTO) request.getAttribute("seleccionada");
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -58,7 +55,7 @@
                             </div>
                             <div class="notif-date-container">
                                     <span class="notif-date">
-                                        <%= n.getFechaCreacion() != null ? n.getFechaCreacion().format(formatter) : "" %>
+                                        <%= n.getFechaCreacion() != null ? n.getFechaCreacion().toString() : "" %>
                                     </span>
                                 <% if (!n.getLeida()) { %>
                                 <span class="notif-new-badge">Nueva</span>
@@ -89,7 +86,7 @@
 
                             <div class="notif-card">
                                 <h5>Fecha de recepción</h5>
-                                <p><%= seleccionada.getFechaCreacion() != null ? seleccionada.getFechaCreacion().format(formatter) : "" %></p>
+                                <p><%= seleccionada.getFechaCreacion() != null ? seleccionada.getFechaCreacion().toString() : "" %></p>
                             </div>
 
                             <div class="notif-card">

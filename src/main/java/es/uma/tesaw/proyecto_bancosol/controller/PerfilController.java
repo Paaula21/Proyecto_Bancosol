@@ -7,6 +7,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 import es.uma.tesaw.proyecto_bancosol.dto.CambioContrasenaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.entities.Usuario;
+import es.uma.tesaw.proyecto_bancosol.service.NotificacionService;
 import es.uma.tesaw.proyecto_bancosol.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PerfilController {
 
     private final UsuarioService usuarioService;
+    private final NotificacionService notificacionService;
 
     @GetMapping("/perfil")
     public String mostrarPerfil(HttpSession session, Model model) {
@@ -31,6 +33,9 @@ public class PerfilController {
         if (usuarioLogueado == null) {
             return "redirect:/";
         }
+
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(usuarioLogueado.getIdPersona()) > 0);
 
         return "perfil";
     }

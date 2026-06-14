@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class CampanaService {
     private final CadenaRepository cadenaRepository;
     private final CampanaMapper campanaMapper;
     private final NotificacionService notificacionService;
+    private final LogCampanaRepository logCampanaRepository;
 
     private static final Map<String, String> DIAS_ES = Map.of(
             "MONDAY",    "lunes",
@@ -134,6 +136,12 @@ public class CampanaService {
             notificacionService.notificarACoordinadores("Nueva campaña: " + campana.getNombreCampana(), mensaje);
         }
 
+        LogCampana log = new LogCampana();
+        log.setCampaignName(campana.getNombreCampana());
+        log.setAction(esNueva ? "creado" : "modificado");
+        log.setTimestamp(LocalDateTime.now());
+        logCampanaRepository.save(log);
+
         return campana.getIdCampana();
     }
 
@@ -204,6 +212,12 @@ public class CampanaService {
                 c.getCampanas().remove(campana);
             }
             this.cadenaRepository.saveAll(campana.getCadenas());
+
+            LogCampana log = new LogCampana();
+            log.setCampaignName(campana.getNombreCampana());
+            log.setAction("eliminado");
+            log.setTimestamp(LocalDateTime.now());
+            logCampanaRepository.save(log);
 
             // 3. Borramos la entidad
             this.campanaRepository.delete(campana);

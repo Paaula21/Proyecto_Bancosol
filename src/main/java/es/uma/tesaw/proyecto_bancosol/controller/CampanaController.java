@@ -2,11 +2,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
-import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
-import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
-import es.uma.tesaw.proyecto_bancosol.service.EstablecimientoService;
-import es.uma.tesaw.proyecto_bancosol.service.HistorialService;
-import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
+import es.uma.tesaw.proyecto_bancosol.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -29,6 +25,7 @@ public class CampanaController {
     private final HistorialService historialService;
     private final EstablecimientoService establecimientoService;
     private final VoluntariosService voluntariosService;
+    private final NotificacionService notificacionService;
 
 
     private boolean sinPermiso(UsuarioDTO user) {
@@ -78,6 +75,9 @@ public class CampanaController {
             model.addAttribute("todasCadenas", cadenaService.listarCadenas());
         }
 
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
+
         return "campanas";
     }
 
@@ -86,8 +86,8 @@ public class CampanaController {
             @SessionAttribute(name = "user", required = false) UsuarioDTO user,
             @RequestParam(required = false) String idCampana,
             @RequestParam String nombreCampana,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fechaFin,
             @RequestParam String estado,
             @RequestParam(required = false) List<String> cadenasIds) {
 

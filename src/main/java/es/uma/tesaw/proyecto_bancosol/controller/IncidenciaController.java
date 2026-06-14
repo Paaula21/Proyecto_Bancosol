@@ -4,6 +4,7 @@ import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
 import es.uma.tesaw.proyecto_bancosol.service.IncidenciaService;
+import es.uma.tesaw.proyecto_bancosol.service.NotificacionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ public class IncidenciaController {
     private final IncidenciaService incidenciaService;
     private final CampanaService campanaService;
     private final CadenaService cadenaService;
+    private final NotificacionService notificacionService;
 
     @GetMapping("/incidencias")
     public String mostrarFormulario(
@@ -29,6 +31,10 @@ public class IncidenciaController {
         }
         model.addAttribute("campanas", campanaService.listarCampanasDTO());
         model.addAttribute("todasCadenas", cadenaService.listarCadenas());
+
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
+
         return "incidencias";
     }
 

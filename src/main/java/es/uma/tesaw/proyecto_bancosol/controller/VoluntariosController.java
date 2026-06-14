@@ -7,6 +7,7 @@ package es.uma.tesaw.proyecto_bancosol.controller;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VistaVoluntarioDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.VoluntarioDTO;
+import es.uma.tesaw.proyecto_bancosol.service.NotificacionService;
 import es.uma.tesaw.proyecto_bancosol.service.VoluntariosService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import java.util.List;
 public class VoluntariosController {
 
     private final VoluntariosService voluntariosService;
+    private final NotificacionService notificacionService;
 
     @GetMapping({"", "/"})
     public String doInit(
@@ -31,6 +33,9 @@ public class VoluntariosController {
         } else {
             List<VistaVoluntarioDTO> voluntarios = voluntariosService.listarVoluntarios(null);
             model.addAttribute("voluntarios", voluntarios);
+
+            // Para mostrar en el header notificaciones sin leer
+            model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
 
             return "voluntarios";
         }

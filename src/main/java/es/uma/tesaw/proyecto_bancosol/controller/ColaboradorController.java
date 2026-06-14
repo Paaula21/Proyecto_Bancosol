@@ -13,6 +13,7 @@ import es.uma.tesaw.proyecto_bancosol.entities.Colaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador;
 import es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica;
 import es.uma.tesaw.proyecto_bancosol.service.ColaboradoresService;
+import es.uma.tesaw.proyecto_bancosol.service.NotificacionService;
 import es.uma.tesaw.proyecto_bancosol.service.ZonaGeograficaService;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class ColaboradorController {
 
     private final ColaboradoresService colaboradoresService;
     private final ZonaGeograficaService zonaGeograficaService;
+    private final NotificacionService notificacionService;
 
     // Listar colaboradores
     @GetMapping("/colaboradores")
@@ -74,6 +76,9 @@ public class ColaboradorController {
         model.addAttribute("modoPanel", modoPanel);
         model.addAttribute("busqueda", busqueda);
         model.addAttribute("zona", zona);
+
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
 
         return "colaboradores";
     }

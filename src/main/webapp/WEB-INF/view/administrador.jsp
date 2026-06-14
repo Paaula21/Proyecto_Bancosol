@@ -82,7 +82,7 @@
                         <div class="campaign-item">
                             <div class="campaign-info">
                                 <h4><%= campana.getNombreCampana() %></h4>
-                                <span><%= fechaInicioStr %> - <%= fechaFinStr %></span>
+                                <span> Desde <%= fechaInicioStr %> hasta <%= fechaFinStr %></span>
                             </div>
                             <div class="campaign-stats">
                                 <div class="stat">

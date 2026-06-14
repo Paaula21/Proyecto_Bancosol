@@ -66,13 +66,13 @@ public class NotificacionService {
     public void notificarACoordinadores(String titulo, String mensaje) {
         // Obtenemos a todos los usuarios que son Coordinadores (Rol = 2)
         List<Usuario> coordinadores = usuarioRepository.findByRolId(2);
-        TipoNotificacion tipoSistema = tipoNotificacionRepository.findById("CAMPANA").orElse(null);
+        TipoNotificacion tipoCampana = tipoNotificacionRepository.findById("CAMPANA").orElse(null);
 
-        if (tipoSistema != null) {
+        if (tipoCampana != null) {
             for (Usuario coordinador : coordinadores) {
                 Notificacion n = new Notificacion();
                 n.setPersonaDestino(coordinador.getPersona());
-                n.setTipo(tipoSistema);
+                n.setTipo(tipoCampana);
                 n.setTitulo(titulo);
                 n.setMensaje(mensaje);
                 n.setLeida(false);

@@ -39,6 +39,9 @@ public class NotificacionesController {
         long noLeidas = notificacionService.contarNoLeidas(user.getIdPersona());
         model.addAttribute("hayNoLeidas", noLeidas > 0);
 
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
+
         return "notificaciones";
     }
 

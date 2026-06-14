@@ -4,6 +4,7 @@ import es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO;
 import es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO;
 import es.uma.tesaw.proyecto_bancosol.service.CadenaService;
 import es.uma.tesaw.proyecto_bancosol.service.CampanaService;
+import es.uma.tesaw.proyecto_bancosol.service.NotificacionService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ public class CadenaController {
 
     private final CadenaService cadenaService;
     private final CampanaService campanaService;
+    NotificacionService notificacionService;
 
     @GetMapping("")
     public String doInit(
@@ -47,6 +49,9 @@ public class CadenaController {
 
         model.addAttribute("nombre", nombre != null ? nombre : "");
         model.addAttribute("idCampana", idCampana != null ? idCampana : "");
+
+        // Para mostrar en el header notificaciones sin leer
+        model.addAttribute("hayNoLeidas", notificacionService.contarNoLeidas(user.getIdPersona()) > 0);
 
         return "cadenas";
     }

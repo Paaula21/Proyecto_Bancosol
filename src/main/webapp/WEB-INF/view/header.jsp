@@ -1,3 +1,4 @@
+<%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     // Recogemos los parámetros inyectados dinámicamente
@@ -11,6 +12,12 @@
     if (subtitulo == null) {
         subtitulo = "";
     }
+
+    Boolean hayNoLeidas = (Boolean) request.getAttribute("hayNoLeidas");
+    if (hayNoLeidas == null) {
+        hayNoLeidas = false;
+    }
+
 %>
 
 <header class="main-header">

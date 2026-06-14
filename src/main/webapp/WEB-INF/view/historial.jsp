@@ -1,6 +1,10 @@
-
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="es.uma.tesaw.proyecto_bancosol.entities.LogCampana" %>
+<%
+    // Recuperamos la lista de logs que el controlador ha enviado
+    List<LogCampana> logs = (List<LogCampana>) request.getAttribute("logs");
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,44 +35,39 @@
 
                 <div class="historial-container">
 
-                    <div class="historial-header" style="margin-bottom: 20px;">
-                        <h2 class="historial-titulo" style="margin: 0;">Registro de Acciones</h2>
+                    <div class="historial-header">
+                        <h2 class="historial-titulo">Registro de Acciones</h2>
                     </div>
 
-                    <ul class="historial-lista" style="list-style: none; padding: 0; margin: 0;">
-
+                    <ul class="historial-lista">
+                        <%
+                            if (logs != null && !logs.isEmpty()) {
+                                for (LogCampana log : logs) {
+                        %>
                         <li class="historial-item">
                             <div class="historial-info">
-                                <span class="historial-accion">Campaña Verano se ha creado</span>
+                                <span class="historial-accion">Campaña <%= log.getCampaignName() %> se ha <%= log.getAction() %></span>
                             </div>
                             <div class="historial-fecha">
-                                12 de junio de 2026 a las 10:30
+                                <%= log.getTimestamp() != null ? log.getTimestamp().toString().substring(0, 19).replace("T", " a las ") : "" %>
                             </div>
                         </li>
-
+                        <%
+                            }
+                        } else {
+                        %>
                         <li class="historial-item">
-                            <div class="historial-info">
-                                <span class="historial-accion">Recogida de Alimentos se ha modificado</span>
-                            </div>
-                            <div class="historial-fecha">
-                                11 de junio de 2026 a las 16:45
-                            </div>
+                            <div class="historial-mensaje">No hay ningún registro en el historial.</div>
                         </li>
-
-                        <li class="historial-item">
-                            <div class="historial-info">
-                                <span class="historial-accion">Campaña Navidad se ha eliminado</span>
-                            </div>
-                            <div class="historial-fecha">
-                                10 de junio de 2026 a las 09:15
-                            </div>
-                        </li>
-
+                        <%
+                            }
+                        %>
                     </ul>
 
                 </div>
             </main>
         </div>
+    </div>
 </div>
 
 </body>

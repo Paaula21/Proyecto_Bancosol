@@ -165,7 +165,7 @@
                             <a href="/campanas?id=<%= campanaSeleccionada.getIdCampana() %>&accion=editar" class="btn btn--primary">Editar Campaña</a>
                             <form action="/campanas/eliminar" method="POST" style="display: contents;">
                                 <input type="hidden" name="id" value="<%= campanaSeleccionada.getIdCampana() %>">
-                                <button type="submit" class="btn btn--delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta campaña de forma permanente?');">
+                                <button type="submit" class="btn btn--delete">
                                     Eliminar
                                 </button>
                             </form>
