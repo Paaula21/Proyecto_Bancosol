@@ -73,14 +73,12 @@ public class VoluntariosService {
 
 
 
-    @Transactional(readOnly = true)
     public Optional<VistaVoluntarioDTO> obtenerVoluntario(Integer id) {
         return vistaVoluntarioRepository.findById(id)
                 .map(vistaVoluntarioMapper::toDTO);
     }
 
 
-    @Transactional
     public void guardarVoluntario(Integer id, String nombreCompleto,
                                   String email, String telefono,
                                   String disponibilidad) {
@@ -112,7 +110,6 @@ public class VoluntariosService {
         voluntarioRepository.save(voluntario);
     }
 
-    @Transactional
     public void eliminarVoluntarioConPersona(Integer idVoluntario) {
         Voluntario voluntario = voluntarioRepository.findById(idVoluntario).orElse(null);
         if (voluntario != null) {

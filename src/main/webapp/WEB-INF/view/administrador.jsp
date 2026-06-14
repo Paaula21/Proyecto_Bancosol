@@ -1,3 +1,9 @@
+<%--
+Autores:
+- Andrea Pérez Rodríguez: 90%
+- IA Generativa: 10%
+--%>
+
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO" %>

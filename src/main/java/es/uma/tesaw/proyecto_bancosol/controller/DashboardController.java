@@ -1,3 +1,7 @@
+/*
+* Andrea Pérez Rodríguez: 100%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.controller;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CoberturaZonaDTO;
@@ -26,7 +30,7 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String verDashboard (@SessionAttribute(name = "user", required = false) UsuarioDTO user, Model model) {
         if (user == null) {
-            return "redirect:/"; // Protegemos la ruta si no hay sesión
+            return "redirect:/";
         }
 
         model.addAttribute("campanasActivasCount", campanaService.contarCampanasActivas());

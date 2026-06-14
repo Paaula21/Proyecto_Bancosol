@@ -1,3 +1,8 @@
+/*
+* Andrea Pérez Rodríguez: 66% (hola maría, como hemos hecho 2 y 1 había pensado en 66/33 pero como tú lo veas mejor jeje)
+*
+ */
+
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;

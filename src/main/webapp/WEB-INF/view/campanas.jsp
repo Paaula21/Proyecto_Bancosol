@@ -1,3 +1,9 @@
+<%--
+Autores:
+- Andrea Pérez Rodríguez: 90%
+- IA Generativa: 10%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>
@@ -45,17 +51,16 @@
 
         <div class="main-layout">
             <main>
-                <!-- Formulario GET para los filtros -->
                 <form action="/campanas" method="GET">
                     <section class="filters">
                         <div class="filter-group">
                             <label>Estado</label>
                             <select name="estado">
                                 <option value="Todos" <%= "Todos".equals(estadoFiltro) ? "selected" : "" %>>Todos</option>
-                                <option value="planificada" <%= "planificada".equals(estadoFiltro) ? "selected" : "" %>>Planificada</option>
-                                <option value="activa" <%= "activa".equals(estadoFiltro) ? "selected" : "" %>>Activa</option>
-                                <option value="finalizada" <%= "finalizada".equals(estadoFiltro) ? "selected" : "" %>>Finalizada</option>
-                                <option value="cancelada" <%= "cancelada".equals(estadoFiltro) ? "selected" : "" %>>Cancelada</option>
+                                <option value="Planificada" <%= "Planificada".equals(estadoFiltro) ? "selected" : "" %>>Planificada</option>
+                                <option value="Activa" <%= "Activa".equals(estadoFiltro) ? "selected" : "" %>>Activa</option>
+                                <option value="Finalizada" <%= "Finalizada".equals(estadoFiltro) ? "selected" : "" %>>Finalizada</option>
+                                <option value="Cancelada" <%= "Cancelada".equals(estadoFiltro) ? "selected" : "" %>>Cancelada</option>
                             </select>
                         </div>
 

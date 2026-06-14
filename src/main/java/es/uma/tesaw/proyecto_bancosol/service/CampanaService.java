@@ -1,3 +1,9 @@
+/*
+ * Andrea Pérez Rodríguez: 42%
+ * Ainhoa García Rebollo: 43%
+ * IA Generativa: 15%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;
@@ -6,7 +12,6 @@ import es.uma.tesaw.proyecto_bancosol.entities.*;
 import es.uma.tesaw.proyecto_bancosol.mapper.CampanaMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -40,16 +45,11 @@ public class CampanaService {
             "SATURDAY",  "sabado"
     );
 
-    // ==========================================
-    // MÉTODOS DE BÚSQUEDA Y LISTADO
-    // ==========================================
 
-    @Transactional(readOnly = true)
     public List<CampanaDTO> listarCampanasDTO() {
         return campanaMapper.toDTOList(this.campanaRepository.findAll());
     }
 
-    @Transactional(readOnly = true)
     public List<CampanaDTO> listarCampanasDTO(String estado, String busqueda) {
         String estadoFinal = (estado == null || estado.isBlank()) ? "Todos" : estado;
         String busquedaFinal = (busqueda == null) ? "" : busqueda;
@@ -58,7 +58,6 @@ public class CampanaService {
         return campanaMapper.toDTOList(lista);
     }
 
-    @Transactional(readOnly = true)
     public CampanaDTO buscarCampana(String id) {
         if (id == null || id.isEmpty()) {
             return new CampanaDTO();
@@ -66,7 +65,6 @@ public class CampanaService {
         return this.campanaRepository.findById(id).map(campanaMapper::toDTO).orElse(new CampanaDTO());
     }
 
-    @Transactional(readOnly = true)
     public Map<String, String> obtenerAsignaciones(String idCampana, Integer idTienda) {
         Map<String, String> asignacionesGuardadas = new HashMap<>();
 
@@ -90,11 +88,7 @@ public class CampanaService {
         return asignacionesGuardadas;
     }
 
-    // ==========================================
-    // MÉTODOS DE GUARDADO Y EDICIÓN
-    // ==========================================
 
-    @Transactional
     public String guardarCampana(String idCampana, String nombre, LocalDate inicio, LocalDate fin, String estado, List<String> cadenasIds) {
         Campana campana;
         boolean esNueva = false;
@@ -127,6 +121,7 @@ public class CampanaService {
         }
         this.cadenaRepository.saveAll(todasLasCadenas);
 
+        // notificaciones
         if (esNueva) {
             String mensaje = String.format("Se ha programado una nueva campaña '%s' que estará activa desde el %s hasta el %s. Por favor, revise la asignación de turnos.",
                     campana.getNombreCampana(),
@@ -136,6 +131,7 @@ public class CampanaService {
             notificacionService.notificarACoordinadores("Nueva campaña: " + campana.getNombreCampana(), mensaje);
         }
 
+        // historial
         LogCampana log = new LogCampana();
         log.setCampaignName(campana.getNombreCampana());
         log.setAction(esNueva ? "creado" : "modificado");
@@ -145,7 +141,6 @@ public class CampanaService {
         return campana.getIdCampana();
     }
 
-    @Transactional
     public void guardarTurnos(String idCampana, String idTienda, Map<String, String> formData) {
         Campana campana = this.campanaRepository.findById(idCampana).get();
         Establecimiento tienda = this.establecimientoRepository.findById(Integer.parseInt(idTienda)).get();
@@ -190,16 +185,12 @@ public class CampanaService {
         }
     }
 
-    // ==========================================
-    // MÉTODOS DE BORRADO
-    // ==========================================
 
-    @Transactional
     public void borrarCampana(String idCampana) {
         Campana campana = this.campanaRepository.findById(idCampana).orElse(null);
 
         if (campana != null) {
-            // 1. Borramos los turnos asociados para evitar el error de base de datos
+            // Borramos los turnos
             List<AsignacionTurnoColaborador> turnosAsignados = this.asignacionTurnoRepository.findAll();
             for(AsignacionTurnoColaborador turno : turnosAsignados){
                 if(turno.getCampana().getIdCampana().equals(campana.getIdCampana())){
@@ -207,12 +198,13 @@ public class CampanaService {
                 }
             }
 
-            // 2. Limpiamos las relaciones ManyToMany (igual que hacéis en borrarMovie)
+            // Borramos las cadenas
             for (Cadena c : campana.getCadenas()) {
                 c.getCampanas().remove(campana);
             }
             this.cadenaRepository.saveAll(campana.getCadenas());
 
+            // historial
             LogCampana log = new LogCampana();
             log.setCampaignName(campana.getNombreCampana());
             log.setAction("eliminado");
@@ -224,12 +216,10 @@ public class CampanaService {
         }
     }
 
-    @Transactional(readOnly = true)
     public int contarCampanasActivas() {
         return this.campanaRepository.findByEstado("Activa").size();
     }
 
-    @Transactional(readOnly = true)
     public List<CampanaDTO> listarProximasCampanasDTO() {
         return campanaMapper.toDTOList(this.campanaRepository.findAll());
     }

@@ -1,5 +1,6 @@
 /*
     Paula Fernández Jiménez: 25%
+    Andrea Pérez Rodríguez: 10%
  */
 package es.uma.tesaw.proyecto_bancosol.dao;
 

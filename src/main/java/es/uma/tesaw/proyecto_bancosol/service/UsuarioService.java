@@ -1,3 +1,7 @@
+/*
+* Andrea Pérez Rodríguez: 10%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.UsuarioRepository;
@@ -18,12 +22,10 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
 
-    @Transactional(readOnly = true)
     public List<Usuario> listarCoordinadores() {
         return usuarioRepository.findByRolId(2);
     }
 
-    @Transactional
     public void cambiarContrasena(Integer idUsuario, CambioContrasenaDTO dto) {
         Usuario usuario = this.usuarioRepository.findById(idUsuario).get();
 
@@ -41,7 +43,6 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    @Transactional(readOnly = true)
     public UsuarioDTO autenticar(String username, String password) {
         Usuario usuario = this.usuarioRepository.autenticar(username, password);
         if (usuario == null) {
@@ -50,7 +51,6 @@ public class UsuarioService {
         return usuarioMapper.toDTO(usuario);
     }
 
-    @Transactional(readOnly = true)
     public int contarCoordinadores() {
         return this.usuarioRepository.countByIdRol(2).size();
     }
