@@ -160,7 +160,7 @@
 
                         <% if ("detalle".equals(modoPanel) && campanaSeleccionada != null) { %>
 
-                        <% if (user.getIdRol() == 1) { %>
+                        <% if (user.getIdRol() == 1 | user.getIdRol() == 2) { %>
                         <div class="detail-actions-sticky">
                             <a href="/campanas?id=<%= campanaSeleccionada.getIdCampana() %>&accion=editar" class="btn btn--primary">Editar Campaña</a>
                             <form action="/campanas/eliminar" method="POST" style="display: contents;">

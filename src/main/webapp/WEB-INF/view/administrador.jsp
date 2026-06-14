@@ -67,7 +67,7 @@
                             <h2>Próximas Campañas</h2>
                             <p>Campañas programadas</p>
                         </div>
-                        <% if (user.getIdRol() == 1) { %>
+                        <% if (user.getIdRol() == 1 | user.getIdRol() == 2) { %>
                         <button class="btn-view-all" onclick="window.location.href='/campanas'">Ver todas</button>
                         <% } %>
                     </div>
