@@ -1,3 +1,10 @@
+<%--
+Página JSP que muestra el formulario de editar/añadir tienda.
+
+- Maria Muñoz Martin: 100%
+--%>
+
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.EstablecimientoDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>

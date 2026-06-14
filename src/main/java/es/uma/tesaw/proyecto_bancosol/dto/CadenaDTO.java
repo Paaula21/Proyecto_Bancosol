@@ -1,3 +1,11 @@
+/**
+ * DTO de cadena.
+ *
+ * Autores:
+ * - María Muñoz Martín: 100%
+ */
+
+
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import lombok.Data;

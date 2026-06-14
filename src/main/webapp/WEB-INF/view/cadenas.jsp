@@ -1,3 +1,9 @@
+<%--
+Página JSP que muestra la pagina principal de cadena.
+
+- Maria Muñoz Martin: 100%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>

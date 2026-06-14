@@ -1,3 +1,12 @@
+/**
+ * Service que implementa las operaciones CRUD de cadena.
+ *
+ * Autores:
+ * - María Muñoz Martín: 90%
+ * - IA Generativa: 10%
+ */
+
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.CadenaRepository;
@@ -63,6 +72,7 @@ public class CadenaService {
         cadenaRepository.save(cadena);
     }
 
+    //El ID es un String
     private String normalizarId(String nombre) {
         return nombre.toUpperCase()
                      .replaceAll("\\s+", "_")

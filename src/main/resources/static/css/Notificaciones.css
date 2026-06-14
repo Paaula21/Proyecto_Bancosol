@@ -118,6 +118,7 @@
 .notif-card p.content-text {
     line-height: 1.6;
     font-size: 15px;
+    white-space: pre-line;
 }
 
 .notif-actions {

@@ -1,3 +1,10 @@
+<%--
+Página JSP que muestra el panel de detalle de cadena.
+
+- Maria Muñoz Martin: 95%
+- IA generativa: 5%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>

@@ -1,8 +1,11 @@
-/*
- * Andrea Pérez Rodríguez: 30%
- * Ainhoa García Rebollo: 30%
- * María Muñoz Martín: 30%
- * IA Generativa: 10%
+/**
+ * Controlador que gestiona las operaciones CRUD de campaña.
+ *
+ * Autores:
+ * - IA Generativa: 10%
+ * - Andrea Pérez Rodriguez: 30%
+ * - Ainhoa García Rebollo: 30%
+ * - María Muñoz Martín: 90%
  */
 
 package es.uma.tesaw.proyecto_bancosol.controller;

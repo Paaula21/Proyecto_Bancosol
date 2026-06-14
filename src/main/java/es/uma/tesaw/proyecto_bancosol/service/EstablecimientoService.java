@@ -1,7 +1,15 @@
-/*
-Ainhoa García Rebollo: 100%
-Andrea Pérez Rodríguez: 10% (pd: creo que ainhoa se ha equivocado con su porcentaje?)
-*/
+/**
+ * Service que implementa las operaciones CRUD de establecimiento.
+ *
+ * Autores:
+ * - María Muñoz Martín: 70%
+ * - Ainhoa García Rebollo: 10%
+ * - Andrea Pérez Rodríguez: 10%
+ * - IA Generativa: 10%
+ */
+
+
+
 
 package es.uma.tesaw.proyecto_bancosol.service;
 
@@ -93,7 +101,6 @@ public class EstablecimientoService {
         return establecimientoMapper.toDTO(entidad, asigs);
     }
 
-    @Transactional
     public void guardarTienda(Integer idEstablecimiento, String idCadena, String nombreResena,
                               Integer lineales, String tipoVia, String nombreVia, String numero,
                               String codigoPostal, String localidad, Integer idZona) {
@@ -169,7 +176,6 @@ public class EstablecimientoService {
         establecimientoRepository.save(tienda);
     }
 
-    @Transactional
     public void borrarTienda(Integer idEstablecimiento) {
         Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
                 .orElseThrow(() -> new IllegalArgumentException("Tienda no encontrada: " + idEstablecimiento));

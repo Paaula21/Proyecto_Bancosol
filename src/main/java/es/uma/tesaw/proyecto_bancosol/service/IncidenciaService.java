@@ -1,3 +1,11 @@
+/**
+ * Service que registra la incidencia en la base de datos.
+ *
+ * Autores:
+ * - María Muñoz Martín: 85%
+ * - IA Generativa: 15%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.NotificacionRepository;
@@ -22,6 +30,9 @@ public class IncidenciaService {
     private final TipoNotificacionRepository tipoNotificacionRepository;
     private final PersonaRepository personaRepository;
 
+    /**
+     * Asegura que el tipo de notificación "INCIDENCIA" exista en la BD al arrancar la aplicación.
+     */
     @PostConstruct
     public void garantizarTipoIncidencia() {
         if (tipoNotificacionRepository.findById(TIPO_INCIDENCIA_ID).isEmpty()) {
@@ -55,14 +66,14 @@ public class IncidenciaService {
         String tiendaTexto = (tienda != null && !tienda.trim().isEmpty()) ? tienda.trim() : "No especificada";
 
         String mensaje = String.format(
-                "Cadena: %s\nTienda: %s\nTurno: %s %s\nUrgencia: %s\nDescripción: %s\nPersona: %s\nRol: %s",
+                "Rol: %s<br>Persona: %s<br>Cadena: %s<br>Tienda: %s<br>Turno: %s %s<br>Urgencia: %s<br>Descripción: %s",
+                rol,
+                nombrePersona,
                 nombreCadena.isEmpty() ? "-" : nombreCadena,
                 tiendaTexto,
                 turnoDia, turnoFranja,
                 urgencia,
-                descripcion,
-                nombrePersona,
-                rol
+                descripcion
         );
 
         String titulo = nombreCampana.isEmpty() ? "Incidencia" : "Incidencia en " + nombreCampana;

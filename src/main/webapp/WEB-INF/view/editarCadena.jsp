@@ -1,3 +1,9 @@
+<%--
+Página JSP que muestra el formulario de editar/añadir cadena.
+
+- Maria Muñoz Martin: 100%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO" %>

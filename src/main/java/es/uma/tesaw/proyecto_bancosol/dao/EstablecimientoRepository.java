@@ -1,6 +1,14 @@
+/**
+ * Repositorio que utiliza JPQL para acceder a la base de datos en cadena.
+ *
+ * Autores:
+ * - María Muñoz Martín: 65%
+ * - Paula Fernández Jiménez: 25%
+ * - Andrea Pérez Rodríguez: 10%
+ */
+
 /*
-    Paula Fernández Jiménez: 25%
-    Andrea Pérez Rodríguez: 10%
+
  */
 package es.uma.tesaw.proyecto_bancosol.dao;
 

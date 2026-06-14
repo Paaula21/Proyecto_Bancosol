@@ -1,3 +1,12 @@
+/**
+ * Mapper que transforma de entidad a DTO para cadena.
+ *
+ * Autores:
+ * - María Muñoz Martín: 85%
+ * - IA generativa: 15%
+ */
+
+
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CadenaDTO;

@@ -34,3 +34,13 @@
     color: #111827;
 }
 
+.data-table td a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.detail-actions-sticky a {
+    text-decoration: none;
+}
+
