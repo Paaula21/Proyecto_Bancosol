@@ -1,4 +1,5 @@
 <%--
+Página JSP que proporciona el menú lateral de todas las páginas
 Autores:
 - Andrea Pérez Rodríguez: 95%
 - IA Generativa: 5%

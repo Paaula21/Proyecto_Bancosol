@@ -1,4 +1,5 @@
 <%--
+Página JSP que muestra la vista de los dashboards
 Autores:
 - Andrea Pérez Rodríguez: 90%
 - IA Generativa: 10%

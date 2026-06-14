@@ -1,5 +1,7 @@
-/*
-* Andrea Pérez Rodríguez: 100%
+/**
+ * DTO para poder calcular cómodamente el porcentaje de cobertura de cada zona
+ * Autora:
+ * - Andrea Pérez Rodríguez: 100%
  */
 
 package es.uma.tesaw.proyecto_bancosol.dto;
@@ -7,10 +9,6 @@ package es.uma.tesaw.proyecto_bancosol.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-/*
-* DTO para poder calcular cómodamente el porcentaje de cobertura de cada zona
-* */
 
 @Data
 @NoArgsConstructor

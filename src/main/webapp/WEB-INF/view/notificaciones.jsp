@@ -1,4 +1,5 @@
 <%--
+Página JSP que muestra la vista de las notificaciones
 Autores:
 - Andrea Pérez Rodríguez: 95%
 - IA Generativa: 5%

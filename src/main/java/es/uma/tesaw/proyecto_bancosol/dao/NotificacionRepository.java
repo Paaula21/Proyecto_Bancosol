@@ -1,6 +1,8 @@
-/*
-* Andrea Pérez Rodríguez: 95%
-* IA Generativa: 5%
+/**
+ * Repositorio que utiliza JPQL para acceder en la base de datos a las notificaciones
+ * Autores:
+ * Andrea Pérez Rodríguez: 95%
+ * IA Generativa: 5%
  */
 
 package es.uma.tesaw.proyecto_bancosol.dao;

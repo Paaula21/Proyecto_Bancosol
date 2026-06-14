@@ -1,5 +1,7 @@
-/*
-* Andrea Pérez Rodríguez: 100%
+/**
+ * Controlador para gestionar la sesión, tanto inicio como cierre
+ * Autora:
+ * - Andrea Pérez Rodríguez: 100%
  */
 
 package es.uma.tesaw.proyecto_bancosol.controller;

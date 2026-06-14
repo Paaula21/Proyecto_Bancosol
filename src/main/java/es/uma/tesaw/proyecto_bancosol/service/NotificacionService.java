@@ -1,6 +1,8 @@
-/*
-* Andrea Pérez Rodríguez: 85%
-* IA Generativa: 15%
+/**
+ * Service que maneja todas las funciones relacionadas con el manejo de las notificaciones
+ * Autores:
+ * - Andrea Pérez Rodríguez: 85%
+ * - IA Generativa: 15%
  */
 
 package es.uma.tesaw.proyecto_bancosol.service;

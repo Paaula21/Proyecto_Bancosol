@@ -1,4 +1,5 @@
 <%--
+Página JSP que proporciona la cabecera de todas las páginas
 Autores:
 - Andrea Pérez Rodríguez: 90%
 - IA Generativa: 10%

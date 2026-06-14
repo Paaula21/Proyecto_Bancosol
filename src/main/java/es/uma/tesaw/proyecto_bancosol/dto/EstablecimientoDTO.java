@@ -1,5 +1,5 @@
 /**
- * DTO de cadena.
+ * DTO de establecimiento.
  *
  * Autores:
  * - María Muñoz Martín: 100%

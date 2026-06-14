@@ -7,9 +7,7 @@
  * - Andrea Pérez Rodríguez: 10%
  */
 
-/*
 
- */
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.entities.Establecimiento;

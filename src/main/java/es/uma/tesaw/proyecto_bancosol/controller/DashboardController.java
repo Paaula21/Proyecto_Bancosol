@@ -1,5 +1,7 @@
-/*
-* Andrea Pérez Rodríguez: 100%
+/**
+ * Controlador que gestiona la visualización de los dashboards
+ * Autora:
+ * - Andrea Pérez Rodríguez: 100%
  */
 
 package es.uma.tesaw.proyecto_bancosol.controller;

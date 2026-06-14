@@ -1,6 +1,8 @@
-/*
-* Ainhoa García Rebollo: 50%
-* Andrea Pérez Rodríguez: 50%
+/**
+ * Repositorio que utiliza JPQL para acceder a la base de datos a las campañas
+ * Autoras:
+ * - Ainhoa García Rebollo: 50%
+ * - Andrea Pérez Rodríguez: 50%
  */
 
 package es.uma.tesaw.proyecto_bancosol.dao;

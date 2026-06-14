@@ -1,4 +1,5 @@
 <%--
+Página JSP que muestra el panel de los detalles de las campañas
 Autores:
 - Andrea Pérez Rodríguez: 100%
 --%>

@@ -1,4 +1,5 @@
 <%--
+Página JSP que muestra la vista del inicio de sesión
 Autores:
 - Andrea Pérez Rodríguez: 100%
 --%>
