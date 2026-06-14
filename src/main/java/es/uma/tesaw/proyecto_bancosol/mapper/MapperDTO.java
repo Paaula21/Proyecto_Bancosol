@@ -1,3 +1,8 @@
+/**
+ * Archivo Mapper genérico que sirve como plantilla
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
 import java.util.List;

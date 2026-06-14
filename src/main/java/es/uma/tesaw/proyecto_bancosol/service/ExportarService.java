@@ -1,3 +1,8 @@
+/**
+ * Archivo Service, que se encarga de la exportación de los datos seleccionados a un archivo excel
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;

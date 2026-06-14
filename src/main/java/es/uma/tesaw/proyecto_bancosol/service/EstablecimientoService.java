@@ -8,9 +8,6 @@
  * - IA Generativa: 10%
  */
 
-
-
-
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.dao.*;

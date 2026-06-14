@@ -1,7 +1,8 @@
-/*
-Paula Fernández Jiménez: 85%
-IA: 15%
-*/
+/**
+ * Archivo Service, que se encarga de las diferentes operaciones CRUD respecto a los colaboradores
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 
 package es.uma.tesaw.proyecto_bancosol.service;
 

@@ -1,3 +1,8 @@
+<!--
+Página JSP que muestra los detalles del colaborador seleccionado, inyectado en el archivo colaboradores.jsp
+Autores:
+- Paula Fernández Jiménez: 100%
+-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>

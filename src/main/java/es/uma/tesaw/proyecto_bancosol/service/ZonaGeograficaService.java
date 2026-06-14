@@ -1,7 +1,9 @@
-/*
-* Andrea Pérez Rodríguez: 45% (Te parece bien? que cada una ha hecho un metodo pero tu lo has creado y te he puesto un poco mas)
-* Paula Fernández Jiménez: 55%
- */
+/**
+ * Archivo Service, que se encarga de manejar las zonas geográficas
+ *Autores:
+ *- Paula Fernández Jiménez: 50%
+ *-Andrea Pérez Rodríguez: 50%
+ **/
 
 package es.uma.tesaw.proyecto_bancosol.service;
 

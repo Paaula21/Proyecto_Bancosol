@@ -1,7 +1,7 @@
-/*
-Paula Fernández Jiménez: 100%
-*/
-
+/**
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 package es.uma.tesaw.proyecto_bancosol.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;

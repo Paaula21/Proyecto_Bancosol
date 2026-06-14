@@ -1,3 +1,9 @@
+/**
+ * Archivo Mapper que se encarga de transformar de entidad a DTO las campañas
+ *Autores:
+ *- Paula Fernández Jiménez: 70%
+ *- María Muñoz Martín: 30%
+ **/
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
 import es.uma.tesaw.proyecto_bancosol.dto.CampanaDTO;

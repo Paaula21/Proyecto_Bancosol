@@ -1,4 +1,7 @@
-
+/**
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.entities.VistaColaboradores;

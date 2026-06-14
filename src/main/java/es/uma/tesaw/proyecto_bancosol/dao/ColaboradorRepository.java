@@ -1,7 +1,7 @@
-/*
-    Paula Fernández Jiménez: 90%
-    IA: 10%
- */
+/**
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 
 package es.uma.tesaw.proyecto_bancosol.dao;
 

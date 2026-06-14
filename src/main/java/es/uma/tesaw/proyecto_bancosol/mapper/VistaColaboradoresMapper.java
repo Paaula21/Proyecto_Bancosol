@@ -1,6 +1,8 @@
-/*
-Paula Fernández Jiménez: 100%
-*/
+/**
+ * Archivo Mapper que se encarga de transformar de entidad a DTO la vista de colaboradores
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
+ **/
 
 package es.uma.tesaw.proyecto_bancosol.mapper;
 

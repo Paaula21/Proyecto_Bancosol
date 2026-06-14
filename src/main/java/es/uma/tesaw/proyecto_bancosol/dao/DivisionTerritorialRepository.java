@@ -1,3 +1,8 @@
+/**
+*Autores:
+*- Paula Fernández Jiménez: 50%
+*- María Muñoz Martín: 50%
+*/
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.dao.DivisionTerritorialRepository;

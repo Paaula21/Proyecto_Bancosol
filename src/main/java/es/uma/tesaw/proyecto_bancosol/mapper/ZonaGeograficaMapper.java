@@ -1,3 +1,7 @@
+/**
+ * Archivo Mapper que se encarga de transformar de entidad a DTO las xonas geográficas
+ *- Paula Fernández Jiménez: 100%
+ **/
 package es.uma.tesaw.proyecto_bancosol.mapper;
 
 import es.uma.tesaw.proyecto_bancosol.dto.ZonaGeograficaDTO;
