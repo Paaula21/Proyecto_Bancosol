@@ -37,7 +37,7 @@ public class ColaboradoresService {
     @Transactional(readOnly = true)
     public List<ColaboradorDTO> listarColaboradoresDTO(String busqueda, String zona) {
         String busquedaNormalizada = busqueda == null ? "" : busqueda;
-        String zonaNormalizada = zona == null || zona.isBlank() ? TODAS_LAS_ZONAS : zona;
+        String zonaNormalizada = zona == null || zona.isEmpty() ? TODAS_LAS_ZONAS : zona;
 
         List<VistaColaboradores> vistas;
 

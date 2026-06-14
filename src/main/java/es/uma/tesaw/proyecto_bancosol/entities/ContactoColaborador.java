@@ -17,7 +17,7 @@ public class ContactoColaborador {
   @JoinColumn(name = "id_contacto")
   private Persona persona;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_colaborador", nullable = false)
   private Colaborador colaborador;
 

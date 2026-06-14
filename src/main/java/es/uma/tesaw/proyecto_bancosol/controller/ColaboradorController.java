@@ -29,6 +29,7 @@ public class ColaboradorController {
     private final ColaboradoresService colaboradoresService;
     private final ZonaGeograficaService zonaGeograficaService;
 
+    // Listar colaboradores
     @GetMapping("/colaboradores")
     public String listarYGestionarColaboradores(
             @SessionAttribute(name = "user", required = false) UsuarioDTO user,
@@ -77,6 +78,7 @@ public class ColaboradorController {
         return "colaboradores";
     }
 
+    // Guardar colaborador
     @PostMapping("/colaboradores/guardar")
     public String guardarColaborador(
             @SessionAttribute(name = "user", required = false) UsuarioDTO user,

@@ -23,6 +23,6 @@ public class Colaborador {
   @JoinColumn(name = "id_direccion", nullable = false)
   private Direccion direccion;
 
-  @OneToMany(mappedBy = "colaborador", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ContactoColaborador> contactos;
+  @OneToOne(mappedBy = "colaborador", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  private ContactoColaborador contacto;
 }
