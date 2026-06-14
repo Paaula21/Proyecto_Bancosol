@@ -1,3 +1,8 @@
+<%--
+Página JSP que permite gestionar voluntarios
+- Ainhoa García Rebollo: 100%
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Establecimiento" %>
