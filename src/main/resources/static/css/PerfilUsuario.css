@@ -20,9 +20,9 @@
 
 .title{
     margin-Top: 0;
-    font-size: '18px';
-    color: '#111827';
-    margin-bottom: '8px' 
+    font-size: 18px;
+    color: #111827;
+    margin-bottom: 8px
 }
 
 .label-name{
@@ -52,7 +52,6 @@
 }
 
 .table-data{
-    display: 'grid';
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px
 }
@@ -64,8 +63,8 @@
 }
 
 .selection-content{
-    display: flex;
-    align-items: left;
+    display: grid;
+    align-items: start;
     gap: 10px;
     font-size: 15px;
     margin-bottom: 25px;
@@ -91,5 +90,9 @@
     flex-direction: row;
     gap: 30px;
     flex-wrap: wrap;
+}
+.text-mensaje{
+    margin-bottom: 15px;
+    font-weight: bold;
 }
 

@@ -1,3 +1,8 @@
+<!--
+Página JSP que se añade dentro de Colaboradores.jsp que muestra el formulario para añadir un nuevo colaborador a la base de datos
+Autores:
+- Paula Fernández Jiménez: 100%
+-->
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ZonaGeografica" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -80,7 +85,7 @@
             </div>
         </div>
 
-        <div class="ficha-tarjeta-info sin-margen-inferior" style="margin-top: 15px;">
+        <div class="ficha-tarjeta-info sin-margen-inferior">
             <h5>Observaciones</h5>
             <input type="text" id="nuevo-observaciones" name="observaciones" class="input-ficha-lateral" placeholder="Detalles adicionales...">
         </div>

@@ -1,3 +1,8 @@
+<!--
+Página JSP que se inyecta en colaboradores.jsp que permite editar el colaborador seleccionado del listado
+Autores:
+- Paula Fernández Jiménez: 100%
+-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.Colaborador" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.entities.ContactoColaborador" %>
@@ -123,7 +128,7 @@
             </div>
         </div>
 
-        <div class="ficha-tarjeta-info sin-margen-inferior" style="margin-top: 15px;">
+        <div class="ficha-tarjeta-info sin-margen-inferior">
             <h5>Observaciones</h5>
             <input type="text" id="edit-observaciones" name="observaciones" value="<%= observaciones %>" class="input-ficha-lateral" placeholder="Detalles adicionales...">
         </div>

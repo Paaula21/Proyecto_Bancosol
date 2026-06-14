@@ -1,5 +1,8 @@
 /*
-Paula Fernández Jiménez: 100%
+Clase que representa el controller de los colaboradores
+Autores:
+- Paula Fernández Jiménez: 90%
+- IA: 10%
 */
 
 package es.uma.tesaw.proyecto_bancosol.controller;

@@ -1,3 +1,10 @@
+<!--
+Página JSP que muestra el perfil de usuario para cambiar la contraseña y exportar los datos
+
+Autores:
+- Paula Fernández Jiménez: 100%
+-->
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="es.uma.tesaw.proyecto_bancosol.dto.UsuarioDTO" %>
 <%
@@ -27,7 +34,10 @@
 <div class="main-layout">
         <jsp:include page="sidebar.jsp" />
     <div class="right-content">
-            <jsp:include page="header.jsp" />
+        <jsp:include page="header.jsp">
+            <jsp:param name="titulo" value="Perfil de usuario" />
+            <jsp:param name="subtitulo" value="Ajustes del usuario" />
+        </jsp:include>
         <main class="content-wrapper">
             <div class="content">
                 <h3 class="title">Información del Perfil</h3>
@@ -63,14 +73,13 @@
                                 <input class="input" type="password" name="confirmacion" required />
                             </div>
                         </div>
-                        <!-- REFACTORIZAR ESTILO A CSS SEGÚN EL TIPO DE MENSAJE-->
                         <div>
                             <% if (mensajeTexto != null) { %>
-                            <div style="color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>; margin-bottom: 15px; font-weight: bold;">
+                            <div class='text-mensaje' style='color: <%= "error".equals(mensajeTipo) ? "red" : "green" %>'>
                                 <%= mensajeTexto %>
                             </div>
                             <% } %>
-                            <button type="submit" class="btn btn--primary">Guardar Cambios</button>
+                            <button type='submit' class='btn btn--primary'>Guardar Cambios</button>
                         </div>
                     </form>
                 </div>
@@ -82,7 +91,7 @@
                     <form action="/perfil/exportar" method="POST">
                         <div class="data-item">
                             <label class="label-name">Tablas a exportar:</label>
-                            <div class="selection-content" style="display: flex; flex-direction: column; gap: 10px; padding: 5px;">
+                            <div class="selection-content">
                                 <label class="label-selection">
                                     <input type="checkbox" name="tablas" value="campana" class="selection" /> Campañas
                                 </label>
@@ -111,7 +120,7 @@
                     <form action="/perfil/exportar" method="POST">
                         <div class="data-item">
                             <label class="label-name">Tablas a exportar:</label>
-                            <div class="selection-content" style="display: flex; flex-direction: column; gap: 10px; padding: 5px;">
+                            <div class="selection-content">
                                 <label class="label-selection">
                                     <input type="checkbox" name="tablas" value="campana" class="selection" /> Campañas
                                 </label>
