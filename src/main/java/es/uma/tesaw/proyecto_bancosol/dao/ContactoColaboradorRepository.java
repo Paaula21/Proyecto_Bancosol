@@ -1,5 +1,7 @@
-/*
-    Paula Fernández Jiménez: 100%
+/**
+ * Repositorio que utiliza JPQL para acceder a la base de datos en contactos de colaboradores.
+ *Autores:
+ *- Paula Fernández Jiménez: 100%
  */
 package es.uma.tesaw.proyecto_bancosol.dao;
 

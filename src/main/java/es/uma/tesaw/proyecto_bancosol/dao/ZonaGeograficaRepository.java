@@ -1,4 +1,5 @@
 /**
+ * Repositorio que utiliza JPQL para acceder a la base de datos de las zonas geográficas.
  *Autores:
  *- Paula Fernández Jiménez: 100%
  **/

@@ -1,4 +1,5 @@
 /**
+ * Repositorio que utiliza JPQL para acceder a la base de datos en colaboradores.
  *Autores:
  *- Paula Fernández Jiménez: 100%
  **/
