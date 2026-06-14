@@ -1,7 +1,8 @@
-<!--
-Ainhoa García Rebollo: 80%
-IA: 20% -> Dudas al implementar el pop-up
--->
+<%--
+Página JSP que permite muestra la pagina principal de voluntarios
+- Ainhoa García Rebollo: 100%
+- IA generativa: 20% -> Dudas al implementar el pop-up
+--%>
 
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

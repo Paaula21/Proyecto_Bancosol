@@ -1,3 +1,10 @@
+/**
+ * Repository que utiliza JPQL para acceder a la base de datos y obtener informacion de voluntario.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
+
 package es.uma.tesaw.proyecto_bancosol.dao;
 
 import es.uma.tesaw.proyecto_bancosol.dao.VoluntarioRepository;

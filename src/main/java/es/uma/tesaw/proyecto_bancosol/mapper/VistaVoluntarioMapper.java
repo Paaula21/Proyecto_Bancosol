@@ -1,6 +1,9 @@
-/*
-Ainhoa García Rebollo: 100%
-*/
+/**
+ * Mapper que transforma de entidad a DTO un voluntario.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
 
 package es.uma.tesaw.proyecto_bancosol.mapper;
 

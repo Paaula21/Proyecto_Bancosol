@@ -1,7 +1,11 @@
-/*
-Ainhoa García Rebollo: 80%
-IA: 20%
-*/
+/**
+ * Service que implementa las operaciones CRUD de voluntarios.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 80%
+ * - IA Generativa: 20%
+ */
+
 
 package es.uma.tesaw.proyecto_bancosol.service;
 

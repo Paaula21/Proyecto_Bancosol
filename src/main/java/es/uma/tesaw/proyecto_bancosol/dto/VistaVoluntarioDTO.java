@@ -1,7 +1,9 @@
-/*
-Ainhoa García Rebollo: 100%
-*/
-
+/**
+ * DTO de voluntario.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import es.uma.tesaw.proyecto_bancosol.entities.Voluntario;

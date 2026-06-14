@@ -1,6 +1,7 @@
-<!--
-Ainhoa García Rebollo: 100%
--->
+<%--
+Página JSP que muestra un formulario para editar voluntario.
+- Ainhoa García Rebollo: 100%
+--%>
 
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

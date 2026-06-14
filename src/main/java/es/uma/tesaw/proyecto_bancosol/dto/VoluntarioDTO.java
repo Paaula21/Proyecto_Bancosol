@@ -1,3 +1,9 @@
+/**
+ * DTO de voluntario.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.dto;
 
 import lombok.AllArgsConstructor;

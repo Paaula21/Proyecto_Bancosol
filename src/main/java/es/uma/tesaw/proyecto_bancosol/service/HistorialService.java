@@ -1,7 +1,9 @@
-/*
-Ainhoa García Rebollo: 100%
-*/
-
+/**
+ * Service que muestra todas las acciones registradas.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
 package es.uma.tesaw.proyecto_bancosol.service;
 
 import es.uma.tesaw.proyecto_bancosol.entities.LogCampana;

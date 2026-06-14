@@ -1,7 +1,10 @@
-<!--
-Ainhoa García Rebollo: 80%
-IA: 20% -> Dudas con guardar valores en la asignación de horarios
--->
+<%--
+Página JSP que muestra la asignacion de turnos.
+
+- Ainhoa García Rebollo: 80%
+- IA generativa: 20% -> Dudas con guardar valores en la asignación de horarios
+--%>
+
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>

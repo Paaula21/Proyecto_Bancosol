@@ -1,7 +1,10 @@
-/*
- * Andrea Pérez Rodríguez: 42%
- * Ainhoa García Rebollo: 43%
- * IA Generativa: 15%
+/**
+ * Service que implementa las operaciones CRUD de campaña
+ *
+ * Autores:
+ * - Andrea Pérez Rodríguez: 42%
+ * - Ainhoa García Rebollo: 43%
+ * - IA generativa: 15%
  */
 
 package es.uma.tesaw.proyecto_bancosol.service;

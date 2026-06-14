@@ -1,6 +1,10 @@
-/*
-Ainhoa García Rebollo: 100%
-*/
+/**
+ * Controller que implementa las operaciones CRUD sobre voluntarios.
+ *
+ * Autores:
+ * - Ainhoa García Rebollo: 100%
+ */
+
 
 package es.uma.tesaw.proyecto_bancosol.controller;
 
