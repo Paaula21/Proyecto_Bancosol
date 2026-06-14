@@ -38,6 +38,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Tiendas</title>
+    <link rel="stylesheet" href="../css/InformacionTienda.css">
     <link rel="stylesheet" href="../css/TablaEstilos.css">
     <link rel="stylesheet" href="../css/Common.css">
     <link rel="stylesheet" href="../css/Sidebar.css">
@@ -60,76 +61,80 @@
                 <!--FILTROS-->
                 <form action="/tiendas" method="GET">
                     <section class="filters">
-                        <div class="filter-group">
-                            <label for="filter-chain">Cadena</label>
-                            <select id="filter-chain" name="idCadena">
-                                <option value="">Todas las cadenas</option>
-                                <% if (todasCadenas != null) {
-                                    for (CadenaDTO c : todasCadenas) { %>
-                                        <option value="<%= c.getIdCadena() %>" <%= idCadena.equals(c.getIdCadena()) ? "selected" : "" %>>
-                                            <%= c.getNombreCadena() %>
-                                        </option>
-                                <%  }
-                                } %>
-                            </select>
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="filter-chain">Cadena</label>
+                                <select id="filter-chain" name="idCadena">
+                                    <option value="">Todas las cadenas</option>
+                                    <% if (todasCadenas != null) {
+                                        for (CadenaDTO c : todasCadenas) { %>
+                                            <option value="<%= c.getIdCadena() %>" <%= idCadena.equals(c.getIdCadena()) ? "selected" : "" %>>
+                                                <%= c.getNombreCadena() %>
+                                            </option>
+                                    <%  }
+                                    } %>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-name">Nombre</label>
+                                <input type="text" id="filter-name" name="nombre" value="<%= nombre %>" placeholder="Buscar por nombre" />
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-campaign">Campaña</label>
+                                <select id="filter-campaign" name="idCampana">
+                                    <option value="">Todas las campañas</option>
+                                    <% if (campanas != null) {
+                                        for (CampanaDTO camp : campanas) { %>
+                                            <option value="<%= camp.getIdCampana() %>" <%= idCampana.equals(camp.getIdCampana()) ? "selected" : "" %>>
+                                                <%= camp.getNombreCampana() %>
+                                            </option>
+                                    <%  }
+                                    } %>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-zone">Zona</label>
+                                <select id="filter-zone" name="idZona">
+                                    <option value="">Todas las zonas</option>
+                                    <% if (zonas != null) {
+                                        for (ZonaGeografica z : zonas) { %>
+                                            <option value="<%= z.getIdZona() %>" <%= idZonaAttr != null && idZonaAttr.equals(z.getIdZona()) ? "selected" : "" %>>
+                                                <%= z.getNombreZona() %>
+                                            </option>
+                                    <%  }
+                                    } %>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-coordinator">Coordinador</label>
+                                <input type="text" id="filter-coordinator" name="coordinador" value="<%= coordinador %>" placeholder="Buscar por coordinador" />
+                            </div>
                         </div>
-                        <div class="filter-group">
-                            <label for="filter-name">Nombre</label>
-                            <input type="text" id="filter-name" name="nombre" value="<%= nombre %>" placeholder="Buscar por nombre" />
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-campaign">Campaña</label>
-                            <select id="filter-campaign" name="idCampana">
-                                <option value="">Todas las campañas</option>
-                                <% if (campanas != null) {
-                                    for (CampanaDTO camp : campanas) { %>
-                                        <option value="<%= camp.getIdCampana() %>" <%= idCampana.equals(camp.getIdCampana()) ? "selected" : "" %>>
-                                            <%= camp.getNombreCampana() %>
-                                        </option>
-                                <%  }
-                                } %>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-street-type">Tipo Vía</label>
-                            <select id="filter-street-type" name="tipoVia">
-                                <option value="">Todos</option>
-                                <% for (String tv : tiposVia) { %>
-                                    <option value="<%= tv %>" <%= tipoVia.equals(tv) ? "selected" : "" %>><%= tv %></option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-street-name">Nombre Vía</label>
-                            <input type="text" id="filter-street-name" name="nombreVia" value="<%= nombreVia %>" placeholder="Buscar por vía" />
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-zip">Código Postal</label>
-                            <input type="text" id="filter-zip" name="codigo" value="<%= codigo %>" placeholder="Buscar por CP" />
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-locality">Localidad</label>
-                            <input type="text" id="filter-locality" name="localidad" value="<%= localidad %>" placeholder="Buscar por localidad" />
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-zone">Zona</label>
-                            <select id="filter-zone" name="idZona">
-                                <option value="">Todas las zonas</option>
-                                <% if (zonas != null) {
-                                    for (ZonaGeografica z : zonas) { %>
-                                        <option value="<%= z.getIdZona() %>" <%= idZonaAttr != null && idZonaAttr.equals(z.getIdZona()) ? "selected" : "" %>>
-                                            <%= z.getNombreZona() %>
-                                        </option>
-                                <%  }
-                                } %>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-coordinator">Coordinador</label>
-                            <input type="text" id="filter-coordinator" name="coordinador" value="<%= coordinador %>" placeholder="Buscar por coordinador" />
-                        </div>
-                        <div class="filter-button">
-                            <button type="submit" id="btn-filter" class="btn btn--primary">Filtrar</button>
+                        <div class="filter-row">
+                            <div class="filter-group filter-group--small">
+                                <label for="filter-street-type">Tipo Vía</label>
+                                <select id="filter-street-type" name="tipoVia">
+                                    <option value="">Todos</option>
+                                    <% for (String tv : tiposVia) { %>
+                                        <option value="<%= tv %>" <%= tipoVia.equals(tv) ? "selected" : "" %>><%= tv %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-street-name">Nombre Vía</label>
+                                <input type="text" id="filter-street-name" name="nombreVia" value="<%= nombreVia %>" placeholder="Buscar por vía" />
+                            </div>
+                            <div class="filter-group filter-group--small">
+                                <label for="filter-zip">Código Postal</label>
+                                <input type="text" id="filter-zip" name="codigo" value="<%= codigo %>" placeholder="Buscar por CP" />
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-locality">Localidad</label>
+                                <input type="text" id="filter-locality" name="localidad" value="<%= localidad %>" placeholder="Buscar por localidad" />
+                            </div>
+                            <div class="filter-group filter-group--btn">
+                                <button type="submit" id="btn-filter" class="btn btn--primary">Filtrar</button>
+                            </div>
                         </div>
                     </section>
                 </form>
